@@ -76,6 +76,7 @@ LTM2 <-  convert.fun(LTM1, c('MDID', allnames, 'PREPREG_WEIGHT_B1',
                                      'PPVISITTIME1', 'PPVISITTIME2', 'EXCLUSIVEBF', 
                                      'EXCLUSIVEBF', 'EXCLBFGOAL', 'WEAN', 'BFGOAL', 'TRAP3'))
 
-
+LTM_final <- LTM2 %>% 
+  mutate(wght = rnorm(1613, mean = 1, sd = .02))
 
 
