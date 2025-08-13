@@ -1,0 +1,1061 @@
+---
+title: "Listening to Mothers IV: First Full Survey Report Draft Outline with Item Contents and Subgroup Analyses Clarity"
+author: "Ruby Barnard-Mayers"
+date: "2025-08-13"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+```{r, include = FALSE}
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Data Cleaning.R")
+library(survey)
+library(ggplot2)
+library(ggsurvey)
+
+des <- svydesign(ids = ~1, weights = ~wght, data = LTM_final)
+```
+
+## New Mothers Share Views and Experiences of Childbearing: Results from the Fourth National Listening to Mothers Survey
+
+### Chapter 1. Before and During Pregnancy
+
+Before pregnancy
+
+-   Past births/NUMB_BIRTH and parity of respondents
+```{r echo = FALSE}
+ggbarweight(LTM_final, NUMB_BIRTH, wght) + theme_classic()
+```
+
+-   Index pregnancy intention/PREG_INT
+
+-   Health issues during 3 months before index pregnancy
+
+-   Physical conditions/PREPREG_PHYSCOND
+
+-   Mental health conditions/PREPREG_MHCOND
+
+-   BMI before pregnancy/PREPREG_WEIGHT and HEIGHT
+
+Pregnancy care team: main type of prenatal maternity care provider,
+choice
+
+-   Most frequent type of pregnancy provider/PROVIDER
+    -   Proposed exhibit: primary prenatal use of physicians and
+        midwives by race and ethnicity and by private vs Medicaid
+        insurance
+        -   Narrative could report on whether there were differences in
+            type of provider by parity and by whether born in US or
+            abroad
+-   Whether had choice about pregnancy provider/PROVIDERCHOICE
+    -   Proposed exhibit: breakdown by race and ethnicity and private vs
+        Medicaid insurance
+        -   Narrative could report on whether there were differences in
+            choice by whether born in US or abroad, whether speaks Eng
+            or something else at home, by disability status (any vs no
+            types), by metro vs non-metro residence
+-   Whether had doula support during pregnancy/DOULA [x-ref to
+    childbirth and pp doula results]
+    -   Proposed exhibit: breakdown by race and ethnicity and private vs
+        Medicaid insurance
+        -   Narrative could report on whether there were differences by
+            parity, by mother’s country of birth, by disability status,
+            by metro vs non-metro residence
+    -   If yes, how doula supported/DOULA1
+    -   Possible doula quotes for margins/DOULA3
+    -   [appropriate to consolidate doula results across phases of care;
+        propose that this occurs when reporting birth doula experiences;
+        maybe x-ref here]
+-   See also re preg care team: mental health help and childbirth
+    education, later in this chapter
+
+Prenatal care: Learning about pregnancy and first prenatal visit,
+setting, remote care/equipment, solo/group
+
+-   Learning about pregnancy, initiating and not having prenatal care,
+    care setting
+    -   Weeks pregnant when learned about pregnancy/LEARNED1; average
+        and range
+    -   No prenatal care/LEARNED2/98 (and comment that those with no pnc
+        or late initiation of pnc less likely to participate in survey
+        so our data probably underestimate those folks)
+        -   Narrative could report no prenatal care by race and
+            ethnicity; private vs Medicaid insurance; pregnancy
+            intention/PREG_INT = 1 or 2 versus 4 (and decide where
+            3/later best fits); mental health (PREPREG_MHCOND = any 1-5
+            and/or BOTHER – explore screen positive for depression,
+            anxiety, and/or psychological distress); by SOCIALNEED
+            cumulative social needs during pregnancy (is there a good
+            cut point, e.g., 2+
+        -   Entry into prenatal care/LEARNED2
+        -   Narrative could report whether this differed by race and
+            ethnicity, private vs Medicaid insurance, parity. Could also
+            look at timing for people who identified
+            physical/PREPREG_PHYSCOND and mental health/PREPREG_MHCOND
+            conditions in months before index pregnancy
+    -   First visit as early as wanted/FIRSTVISIT
+        -   Proposed exhibit: breakdown by race and ethnicity and
+            private vs Medicaid insurance
+        -   Narrative could report whether there were differences by
+            pre-preg physical/PREPREG_PHYSCOND and mental
+            health/PREPREG_MHCOND health conditions
+    -   If not, why couldn’t have visit as early as wanted/NOPRENATAL
+        -   Proposed exhibit: simple bar graph in descending order of
+            reasons with Overall throughline
+    -   Setting for prenatal care/CARESETTING/
+        -   Proposed exhibit: simple bar graph in descending order with
+            Overall throughline
+-   Individual and group prenatal care
+    -   Individual versus group care/CARETYPE
+        -   Whether had choice/CARETYPE1
+            -   Proposed exhibit: by race and ethnicity and type of
+                insurance
+    -   Preference between individual and group care type (if
+        experienced both)/CARETYPEPREF
+        -   Proposed exhibit: by race and ethnicity, private vs Medicaid
+            insurance (bars, including overall, showing individual,
+            group, mix of both)
+        -   Narrative could report by parity, education, age
+-   Remote and in-person prenatal care/CAREMODE
+    -   Reason for televisits/WHYTELE
+        -    Proposed exhibit: simple bar graph in descending order with
+            Overall throughline
+    -   Whether had equipment/supplies for 4 types of home
+        monitoring/ATHOMECARE
+    -   Confidence about ability to do four types of home
+        monitoring/BPCONFID + URINECONFID + WEIGHCONFID + BABYHRCONFID
+        -   Proposed exhibit: table with rows combining use of four
+            types of home monitoring (percent with equipment/supplies
+            among those with remote care?) and confidence of those with
+            equipment/supplies
+        -   Narrative could report whether greater confidence (fully or
+            somewhat, or fully alone?) differed by parity (first time vs
+            experienced), age (is there a meaningful cut point?),
+            education level (high school or less vs more than high
+            school?), and private vs Medicaid insurance
+    -   Preference between in-person and televisits (if experienced
+        both)/CAREMODEPREF
+        -   Proposed exhibit: by race and ethnicity, metro vs non-metro
+            residence (bars, including overall, showing in-person,
+            televisit, mix) Narrative could report whether preference
+            differed by parity, education, whether employed during
+            pregnancy, private vs Medicaid insurance
+-   Childbirth education
+    -   Whether had CBE classes/CURREDUC
+        -   Narrative could report whether this differed by parity, by
+            private vs Medicaid insurance, by employment during
+            pregnancy
+        -   If had 1+ prior birth, whether took CBE classes during
+            previous pregnancy/PRIOREDUC
+            -   Narrative could report whether, limited to multips,
+                CURREDUC differed by having taken classes in the past
+    -   Sponsor of index pregnancy classes/independence/EDUCTYPE
+    -   In-person vs remote/hospital vs community/EDUCMODE
+    -   Impact of class/EDUCIMPACT
+        -   Proposed exhibit: simple bar graph in descending order with
+            Overall throughline
+    -   Maybe: comment on cbe trends across LTM surveys (seemed to be
+        greatly falling off in past; remote options and maternal health
+        crisis publicity might be leading to greater use now)
+
+<!-- -->
+
+-   Pregnancy complications
+
+    -   Whether experienced pregnancy conditions/PREGCONDITION
+
+        -   Proposed exhibit: simple bar graph of percentage reporting
+            queried conditions, in descending order with Overall
+            throughline
+
+        -   Proposed exhibit: summative score (number of fixed choice
+            responses selected) by race and ethnicity, private vs
+            Medicaid insurance
+
+            -   Narrative could report whether summative score differed
+                by disability status, metro vs non-metro county, vaginal
+                or cesarean index birth
+
+-   Mental health during pregnancy
+
+    -   PHQ4 mental health screener/BOTHER (analyzed as PHQ2
+        (depression), GAD2 (anxiety), and PHQ4 (psychological distress)
+        (see LTM-CA chapter for cut-points and literature)
+
+        -   Proposed exhibit: positive depression screen by race and
+            ethnicity, private vs Medicaid insurance
+
+            -   Narrative could report whether positive screen for
+                depression differed by disability status, metro vs
+                non-metro county, whether IDed depression before preg
+
+    -   Proposed exhibit: positive anxiety screen by race and ethnicity,
+        private vs Medicaid insurance
+
+        -   Narrative could report whether positive screen for anxiety
+            differed by disability status, metro vs non-metro county,
+            whether IDed anxiety before preg
+
+    -   Whether received counseling or therapy during index
+        preg/MENTALSUPPORT
+
+    -   Whether took mental health meds during index preg/MENTALSUPPORT
+        [Questionnaire repeats previous code: think this one needs to be
+        MENTALSUPPORT1]
+
+        -   Proposed exhibit: table showing screening status for
+            depression and for anxiety and percentage of people with
+            negative and positive screens who got any help
+
+        -   Proposed exhibit: whether got help (counseling/therapy
+            and/or meds) by race and ethnicity, private vs Medicaid
+            insurance
+
+            -   Narrative could report whether got help
+                (counseling/therapy and/or meds) by disability status,
+                metro vs non-metro county, whether IDed mental health
+                issues before preg
+
+-   Social needs during pregnancy [cross-ref to whether pregnancy needs
+    are still an issue at time of survey in postpartum chapter]
+
+    -   Proposed exhibit: simple bar graph with percentage of all
+        respondents identifying 9 types of social needs during index
+        pregnancy/SOCIALNEED [ordered in most to least order of
+        frequency]
+
+    -   Proposed exhibit: average \# of needs identified by race and
+        ethnicity, private vs Medicaid payment, income
+
+        -   Narrative could report whether average number of needs
+            identified differed by disability status, sexual
+            orientation, metro vs non-metro residence, education
+
+-   Employment and pregnancy accommodations
+
+    -   Whether employed during index pregnancy/EMPLOY
+
+    -   If yes, whether FT or PT/EMPLOYHOURS
+
+    -   Whether had paid time off for prenatal visits/EMPLOYBEN
+
+        -   Proposed exhibit: whether had PTO for prenatal visits by
+            race and ethnicity, private vs Medicaid payment
+
+            -   Narrative could report whether PTO for prenatal care
+                differed by disability status, income, metro vs
+                non-metro residence, education
+
+        -   Whether needed temporary accommodations/EMPLOYCHANGE
+
+        -   If needed, whether received pregnancy
+            accommodations/EMPLOYCHANGE1
+
+            -   Narrative could report whether access to needed
+                accommodations differed by private vs Medicaid payment,
+                disability status, metro vs non-metro residence, income,
+                education [explore whether “partial” is grouped with
+                none or fully or left aside]
+
+-   Late pregnancy
+
+    -   Big baby prediction.Whether told baby might be getting quite
+        large/BIGBABY1 [could also fit in a childbirth chapter]
+
+        -   If BIGBABY1=1, whether care provider recommended specific
+            response/BIGBABY2
+        -   If intervention recommended (BIGBABY2=1,2,or 3), whether it
+            occurred/use special programming
+        -   If recommended intervention occurred, whether it was before
+            39 weeks/use special programming
+        -   If BIGBABY1 = 1
+            -   Proposed exhibit: show induction and cesarean rates for
+                babies that were were and were not predicted to be large
+        -   If BIGBABY1 = 1, 
+            -   Proposed exhibit: pie chart showing actual birth weight
+                for predicted large babies: LBW, normal weight,
+                macrosomic
+        -   [We don’t have data on provider motivation, but noting that
+            providers get the relatively lucrative IP payment from
+            scheduling births during time when they’re in hospital]
+
+    -   Planned infant feeding as came to the end of
+        pregnancy/PLANNEDFEED (or can put this in BF section of next
+        chapter with hospital BF support)
+
+        -   Proposed exhibit: bar graph of intention to exclusively BF
+            and partially BF by race and ethnicity, private vs Medicaid
+            payment, beginning with an overall bar
+
+            -   Narrative could report intention by whether employed,
+                age, education
+
+    -   Pregnancy weight gain PREGWEIGHT - PREPREG_WEIGHT
+
+        -   Proposed exhibit: align with 2009 IOM [recommended ranges by
+            prepregnancy
+            BMI](https://nap.nationalacademies.org/resource/12584/Report-Brief---Weight-Gain-During-Pregnancy.pdf)
+            [let’s find a data viz to show compliance vs deviation from
+            these guidelines]
+
+### Chapter 2. Childbirth in hospital settings
+
+-   Basic facts
+
+    -   Mother
+
+        -   Age at birth/AGEBIRTH [Will need to inpute from age given in
+            screener for someone with a valid Q1 complete from first
+            field period and no Q2 complete in the first round of
+            fielding; this added to Q2 in first field period and moved
+            to Q1 in second field period]
+        -   Parity/NUMB_BIRTH: Report specific numbers (and not binary
+            first-time vs experienced)
+        -   Average LABORLENGTH for vaginal birth/no induction, vaginal
+            birth/induction, in-labor cesarean/no induction, in-labor
+            cesarean/induction
+        -   LOS/DAYSHOSP: overall, vaginal births, cesarean births,
+            range
+        -   Mode of birth (report underlying for 2023 and 2024 (with our
+            removable exclusions via WONDER) as this is a weighting
+            variable?
+
+    -   Baby
+
+        -   Gestational age/calculate with DUEDATE and BIRTHDATE
+            -   Proposed exhibit: GA vertical bars by gestational week
+                or other viz to show how much we have deviated from a
+                bell curve
+        -   Birth weight/BIRTHWEIGHT: distribution by VLBW, LBW, normal
+            BW, macrosomic
+        -   First hour/GOLDENHOUR, location of baby
+            -   Proposed exhibit: bar graph with percentage with mom,
+                spouse/partner, staff/routine, staff/special percentage
+                and with staff for routine care percentage by mode of
+                birth; race/ethnicity, beginning with overall
+                percentages
+
+            -   Narrative could report private vs Medicaid payment;
+                midwife vs physician maternity care provider
+
+            -   If with mom or dad, whether skin-to-skin/SKIN
+
+                -   Proposed exhibit: side-by-side bar graphs with
+                    percentage with mom and with spouse/partner, by mode
+                    of birth; race/ethnicity, beginning with overall
+                    percentages
+        -   Location of baby after that/HOSPLOC
+        -   NICU admissions (partial or full stay)/NICU
+            -   To discuss, whether we feel comfortable trying to ID
+                low-risk baby with NICU stay given trend of
+                supplier-induced demand and healthier and healthier
+                babies getting NICU care (e.g., term, normal birth
+                weight and — per eligibility – singleton, )
+        -   LOS/BABYHOSP: overall, with no NICU stay, with partial NICU
+            stay, with full NICU stay, range
+
+-   Care team – birth attendant, doula support (for many, begins in
+    pregnancy, ends pp) and labor support from personal network
+
+    -   Primary type of provider who attended birth/BIRTHATTEND:
+        percentages for 1-6
+
+        -   Proposed exhibit: midwife vs physician attendant by race and
+            ethnicity, private vs Medicaid payment
+
+            -   Narrative could report midwife vs physician attendant by
+                disability status, sexual orientation, metro vs
+                non-metro residence, education, income
+
+        -   Moreover, was that person a student/ATTENDSTUDENT=1
+
+    -   Whether had doula support when gave birth/DOULA
+
+        -   Proposed exhibit: whether had birth doula by race and
+            ethnicity, private vs Medicaid payment
+
+            -   Narrative could report whether doula support differed by
+                no vs any type of disability, income, education, metro
+                vs non-metro residence
+
+        -   Possible doula quotes/DOULA3
+
+        -   This may be the place to describe doula use by phase of
+            care/DOULA (while describing doula support during pregnancy
+            in previous chapter and pp in pp chapter) [trend: from birth
+            doulas to extended longitudinal doula support]
+
+    -   Other companions during index birth/OTHERSUPPORT
+
+-   Labor induction
+
+    -   Elective labor induction at term. Provider discussion about
+        inducing because it’s around due date/INDUCE
+
+        -   Among those who labored/MODE=1 or LABCSEC=1 (leaving aside
+            planned cesareans), percentage whose provider recommended
+            elective induction at term/INDUCE5=1
+
+        -   Shared decision making sequence/INDUCE1 and INDUCE2 and
+            INDUCE3 and INDUCE4 and INDUCE5 and INDUCE7 based on
+            [endorsed performance
+            measure](https://mghdecisionsciences.org/wp-content/uploads/2024/02/PQM_2962_User_Guide_SDM_Process_Scale_2023.pdf)
+            with 0-4 scoring for INDUCE1 + INDUCE2 + INDUCE3 + INDUCE4
+
+            -   Proposed exhibit: for whom is elective induction at term
+                being recommended: INDUCE5=1 by race and ethnicity,
+                private vs Medicaid insurance
+
+            -   Narrative could report whether recommendation differs by
+                metro vs non-metro residence, by age, education,
+                first-time vs experienced 
+
+            -   Proposed exhibit: to what extent are various subgroups
+                experiencing SDM, by race and ethnicity, private vs
+                Medicaid insurance
+
+            -   Narrative could report whether recommendation differs by
+                age, education, first-time vs experienced, any or no
+                type of disability
+
+        -   Use INDUCE6 open end for selected quotes in margin about
+            trend of elective induction at term
+
+        -   Whether this discussion was followed by attempt to medically
+            induce: among INDUCE=1, results for MEDINDUCE and then
+
+            -   Whether among this subset with MEDINDUCE=1, medical
+                induction started labor/MEDINDUCE2 and 
+
+            -   Whether the subset of labors induced electively at term
+                ended with vaginal or cesarean birth/MODE2023
+
+            -   [Could also be done using MEDINDUCE3=3, but recommend
+                incorporating into this sequence focusing on induction
+                because it’s term]
+
+    -   Self-induction of labor: whether tried to self-induce index
+        pregnancy/SELFINDUCE
+
+        -   If SELFINDUCE=1, whether it started labor/SELFINDUCE1
+
+        -   If SELFINDUCE=1, why tried to self-induce/SELFINDUCE2
+
+            -   Proposed exhibit: simple bar graph of the response
+                choices in descending order of frequency with Overall
+                throughline
+
+            -   Narrative could report who was more likely to
+                self-induce, looking at education, recommendation for
+                induction because it was around term, by race and
+                ethnicity, by private vs Medicaid payment, by
+                predominant physician vs midwife prenatal care provider
+
+    -   Medical induction of labor: whether experienced medical
+        induction/MEDINDUCE
+
+        -   If MEDINDUCE=1, method(s) used/MEDINDUCE1
+
+            -   Proposed exhibit: bar graph of  response choices in
+                descending order of frequency
+
+        -   If MEDINDUCE=1, whether medical induction started
+            labor/MEDINDUCE2
+
+        -   If MEDINDUCE=1, reason for medical induction/MEDINDUCE3
+
+            -   Proposed exhibit: simple bar graph of the response
+                choices in descending order of frequency with Overall
+                throughline
+
+        -   If MEDINDUCE2=1 (medical induction started labor), duration
+            of medical induction/MEDINDUCE4
+
+        -   If MEDINDUCE2=2 (medical induction did not start labor),
+            duration of medical induction attempt/MEDINDUCE5 [Note that
+            Word version of questionnaire repeats MEDINDUCE4 and this
+            should be MEDINDUCE5]
+
+        -   If MEDINDUCE=1, mode of birth (MODE) among people with
+            medical induction (whether started labor or not; could limit
+            to medical induction for non-health reason and compare mode
+            of birth outcome with those experiencing labor and no
+            induction)
+
+        -   [Cross-ref to big baby intervention results, briefly noting
+            takeaways here]
+
+<!-- -->
+
+-   Hospital childbirth restrictions on movement/positions, oral
+    nutrition, choice, optimal care
+
+    -   Among those who labored/MODE=1 or LABCSEC=1, whether had oral
+        fluids/LABORPERMIT=1 or oral solids/LABORPERMIT=2 (need to
+        creatively distinguish between no/not interested and
+        no/interested but not allowed)
+
+    -   Among those who labored/MODE=1 or LABCSEC=1, no
+        ambulation/LABORWALK=2 (but did not ask whether was restricted
+        to bed)
+
+    -   Among those with a vaginal birth/MODE=1, positions/POSITION used
+        by those who did and did not have a choice/POSITIONCHOICE
+
+        -   Proposed exhibit: positions used with and without choice
+
+    -   Consider identifying baby with staff for routine care in first
+        hour as restriction or x-ref to that as restriction
+
+    -   Consider no choice in having epis or x-ref to that as
+        restriction
+
+    -   Consider hospital staff gave baby formula w/o respondent
+        permission/HOSPFEED = 8 (not a part of Baby-Friendly steps;
+        LTMAC added this one)
+
+<!-- -->
+
+-   Various childbirth interventions: pain relief, fetal monitoring,
+    episiotomy, other labor interventions
+
+    -   Pain relief
+
+        -   Drugfree: among those who labored (either MODE:1 or
+            LABCSEC:1), drug-free pain relief methods used/DRUGFREE
+
+            -   Proposed exhibit: simple bar graph showing use of
+                non-pharm methods in descending order and those who used
+                none
+
+            -   Among those who labored//MODE=1 or LABCSEC=1, percentage
+                who did vs did not use drugfree methods
+
+            -   Proposed exhibit: Consider comparing those who did/did
+                not use drugfree methods and their attributes (e.g., RE,
+                first-time vs experienced mom, physician vs midwife
+                birth attendant, no doula vs doula)
+
+            -   Narrative could report how likely respondents were to
+                use drugfree methods, by education, race and ethnicity,
+                private vs Medicaid payment
+
+        -   Painmeds: among all respondents, which pain medications were
+            used/PAINMEDS 
+
+            -   Proposed exhibit: simple bar graph showing use of pharm
+                methods in descending order and those who used none with
+                Overall throughline
+
+            -   Consider subgroup analyses by vaginal and cesarean
+                outcomes and/or between planned cesareans and those who
+                labored/MODE = 1 or LABCSEC =1
+
+            -   Among all respondents, percentage who did vs did
+                not/PAINMEDS = 7 use pain meds
+
+            -   Proposed exhibit: Consider comparing those who did/did
+                not use pain meds and their attributes (e.g., RE,
+                first-time vs experienced mom, physician vs midwife
+                birth attendant, no doula vs doula)
+
+            -   Narrative could report how likely respondents were to
+                use pain meds, by education, race and ethnicity, private
+                vs Medicaid payment, parity, mode of birth
+
+    -   Interventions among respondents with cesarean and no
+        labor/LABCSEC=2
+
+        -   Whether had IV fluids/CSECTIONINT:1 and bladder
+            catheter/CSECTIONINT=2
+
+        -   [Note: respondents unlikely to know the details about many
+            additional interventions]
+
+    -   Interventions among respondents who labored/MODE=1 and LABCSEC=1
+
+        -   Whether had AROM post-contractions/LABORINT = 1, IV
+            fluids/LABORINT = 2, synthetic OT after labor
+            contractions/LABORINT = 3, bladder catheter/LABORINT = 4,
+            one+ vaginal exams/LABORINT = 5
+
+            -   Proposed exhibit: simple bar graph of use of these five
+                interventions in descending order of frequency with
+                Overall throughline
+
+        -   Method used to monitor the fetus (can we say baby at this
+            point?)/FETALMON
+
+    -   Interventions among respondents with a vaginal birth, 
+
+        -   Main position used when pushing their baby out/POSITION
+
+            -   Proposed exhibit: simple bar graph of use of various
+                positions in descending order of frequency with Overall
+                throughline
+
+            -   Other positions used when pushing their baby
+                out/POSITION2 (some stage 2 position results proposed
+                for Restriction section, above)
+
+        -   Whether they experienced [avoid gift terms like “received”]
+            an episiotomy/EPIST=1
+
+            -   Among those with epis, percentage who did not have a
+                choice/EPISTCHOICE=2 [no choice could be included above
+                under restrictions]
+
+            -   Narrative could report how likely respondents were to
+                have had no choice, looking at education, age, race and
+                ethnicity, private vs Medicaid payment, parity
+
+        -   Whether a health professional stitched them near the opening
+            of their vagina to repair a tear or cut/SUTURE [could remove
+            those with epis to estimate the proportion with a tear]
+
+    -   Medicalization and physiologic childbirth
+
+        -   Experience of physiologic childbirth according to
+            [reVITALize
+            definition](https://www.acog.org/practice-management/health-it-and-clinical-informatics/revitalize-obstetrics-data-definitions)
+            (use same programming as in LTM-CA report)
+
+            -   Narrative could report how likely respondents were to
+                meet the definition by type of prenatal and type of
+                birth maternity care provider, whether had birth doula,
+                dilation at admission, private vs Medicaid payment, race
+                and ethnicity, education  
+
+        -   At least one measure of experiencing childbirth
+            interventions (in the past have enumerated cumulative
+            significant interventions (LTM-CA Figure 27), have created
+            flow chart (LTM-CA Figure 28 Cascade of Intervention), and
+            have enumerated in a table (LTM-CA Table 3) 
+
+        -   Also: spontaneous onset of labor (large-scale uncontrolled
+            experiment of shortened gestation) and spontaneous vaginal
+            birth rates, 
+
+    -   Labor practices and vaginal or cesarean outcome
+
+        -   We can test the following variables, which are associated
+            with vaginal vs cesarean birth, clarifying the analysis is
+            not adjusted [could go near end of this chapter as bridge or
+            in the following chapter]:
+
+            -   Having a labor doula/DOULA=2 vs no labor doula
+
+            -   Having a midwife birth attendant/BIRTHATTEND=4 vs a
+                physician/BIRTHATTEND=1,2,or3
+
+            -   Induced labor [ARRIVE trial says this is protective;
+                many others feel that ARRIVE is not generalizable and
+                induction poses risk for cesarean]/MEDINDUCE=1
+
+            -   Active versus early labor on first vaginal exam after
+                admission/VAGEXAM=6+ vs VAGEXAM=\<6 [could also do
+                separate analysis of cesarean rates for each cm as in
+                LTM-CA report Figure 19]
+
+            -   Fetal monitoring with hand-held device/FETALMON = 2 vs
+                EFM/FETALMON = 1
+
+            -   Being upright and mobile during labor/LABORWALK=1 vs in
+                bed
+
+            -   Noting that epidural slows labor and that is why
+                synthetic oxytocin is almost universally used as
+                co-intervention: could look at epidural without vs with
+                synthetic oxytocin among people who labored
+
+<!-- -->
+
+-   Support for breastfeeding among those who planned partial or
+    exclusive BF
+
+    -   Breastfeeding intention/PLANNEDFEED = 1
+
+    -   Among those who planned partial or exclusive BF/PLANNEDFEED = 1,
+        whether nurses/other staff aligned with Baby-Friendly “steps”
+        that women could reasonably know/HOSPFEED = 1-7, 9-10
+
+    -   Separate analysis of HOSPFEED = 8, which was added by LTMAC and
+        isn’t precisely aligned with Baby-Friendly steps (report
+        HOSPFEED = 8 separately, possibly in restrictions section, as
+        restriction on respondent’s feeding choice) 
+
+        -   Proposed exhibit: simple bar graph showing cumulative
+            Baby-Friendly steps (leaving HOSPFEED = 8 aside) and
+            likelihood of breastfeeding at 1 week, separating exclusive
+            and mixed feeding
+
+        -   Narrative could report who was more likely to achieve their
+            feeding goals at 1 week, by race and ethnicity, type of
+            insurance, type of prenatal care provider, type of birth
+            attendant, parity, age, education
+
+-   Respectful care – PCMC-US (maybe ref to appendix on sources of new
+    items about selection of items from each scale in longer validated
+    tool)
+
+    -   Respect care: developer’s 0-100 [scoring
+        guidance](https://drive.google.com/drive/u/0/folders/1Cj9z-7o3ppGYYNRm3JwZH1nzZj1YQbgm?ths=true)
+
+        -   RESPECT (Dignity & Respect scale)
+
+        -   KNOWLEDGE (Dignity & Respect scale)
+
+        -   HEARD (Communication & Autonomy scale)
+
+        -   DECISIONS (Communication & Autonomy scale)
+
+        -   CONSENT (Communication & Autonomy scale)
+
+        -   INFORMED (Communication & Autonomy scale)
+
+        -   TIMELINESS (Responsiveness, Supportive Care scale)
+
+        -   NEGLECT (Dignity & Respect scale)
+
+        -   TRUST (Responsiveness, Supportive Care scale)
+
+        -   FEEDING (Responsiveness, Supportive Care scale)
+
+        -   SAFE (Responsiveness, Supportive Care scale)
+
+        -   DISCRIMINATION (Dignity & Respect scale)
+
+    -   Consider scores for each item, scores for all 12 items
+
+    -   Scores for subscales
+
+        -   Proposed exhibit: by race/ethnicity, private vs Medicaid
+            payment
+
+        -   Narrative could report by midwife vs physician birth
+            attendant, any vs no type of disability, age, education
+
+    -   Separately analyze/DISCRIMINATION1, which we added [percentage
+        choosing each type and cumulative selection?]
+
+    -   Separately analyze per pre-field decision: cultural traditions
+        and AIAN analysis/CULTURE (from Dignity & Respect scale) whether
+        had customs and then for those that did, whether provider
+        respected customs/culture
+
+        -   Proposed exhibit: race and ethnicity [hypothesize greatest
+            acknowledgment of cultural traditions and greatest failure
+            to accommodate them among AIAN, then Black]
+
+### Chapter 3. Vaginal and cesarean births
+
+-   Mode of birth overview for all survey participants (similar to Table
+    4, LTM-CA report)
+
+\
+Vaginal XX%
+
+|                            |                        |      |
+|----------------------------|------------------------|------|
+|                            | Vaginal/no previous CS | VBAC |
+| Unassisted                 |                        |      |
+| Vacuum or Forceps Assisted |                        |      |
+
+Total Cesarean XX%
+
+|           |                      |                     |
+|-----------|----------------------|---------------------|
+|           | Primary Cesarean XX% | Repeat Cesarean XX% |
+| Unplanned |                      |                     |
+| Planned   |                      |                     |
+
+-   Total cesarean and vaginal birth rates
+
+    -   Proposed exhibit: mode of birth by race and ethnicity, private
+        vs Medicaid payment
+
+    -   Narrative could report midwife vs physician childbirth provider
+
+-   Vaginal birth
+
+    -   Whether assisted with forceps or vacuum/VAGASSIST
+
+    -   Very low VBAC rate [and reference to discussion of access,
+        choice, results in following section]
+
+    -   Could reference section in previous chapter with labor practices
+        that were and were not associated with greater likelihood of
+        vaginal birth
+
+-   Cesarean variations 
+
+    -   Mind the denominator. Consider replicating LTM-CA Table 5 Mind
+        the denominator for 4 different cesarean rates: total, primary,
+        repeat, NTSV [illustrates: not to confuse total and NTSV,
+        sky-high repeat rate, NTSV just deals with a small proportion]
+
+    -   Unplanned in-labor cesareans/CSECTIONTYPE=2
+
+        -   Reported reason for the cesarean/UNPLANNEDREASON
+
+            -   Proposed exhibit: simple bar graph in descending order
+                of response choices with Overall throughline
+
+            -   [Possibly something here about length of labor with
+                unplanned cesareans/LABORLENGTH among those who labored
+                before planned/CSECTIONTYPE=2 and LABCSEC=1]
+
+            -   [Maybe cross-ref to planned cesarean labor
+                interventions, in prev chapter]
+
+    -   Planned cesareans and birth options after
+        cesarean/CSECTIONTYPE=1
+
+        -   Reported reasons for having a planned cesarean/PLANNEDC
+
+            -   Proposed exhibit: simple bar graph in descending order
+                of response choices with Overall throughline
+
+        -   Possible repeat cesarean quotes for margins/REPEATCSEC
+
+        -   VBAC rate
+
+            -   Proposed exhibit: VBAC rates by race and ethnicity,
+                private vs Medicaid payment with overall throughline
+
+                -   Narrative could report by midwife vs physician
+                    prenatal provider and midwife vs physician
+                    childbirth provider
+
+            -   Proposed exhibit: who reported main reason for repeat
+                was previous by race and ethnicity, private vs Medicaid
+                payment
+
+                -   Narrative could report who was more likely to have
+                    repeat due to prior cesarean by midwife vs physician
+                    prenatal provider and midwife vs physician
+                    childbirth provider
+
+        -   Whether those with repeat cesarean (LTM-CA report has some
+            food for thought on display of VBAC results)
+
+            -   Had option of VBAC/VBACCHOICE
+
+            -   Reason VBAC not available (VBACCHOICE=2 and
+                VBACINTEREST=1
+
+                -   See complex graphic for these items in LTM-CA report
+                    (Figure 33)
+
+                -   Important to look at
+
+            -   Was interested in option VBAC/VBACINTEREST
+
+                -   If had repeat and was interested in VBAC, whether
+                    tried to plan a VBAC/VBACEFFORT
+
+                -   Whether took any steps to plan for VBAC/VBACEFFORT
+                    (among MODE=2for any previous birth, MODE2023=2, and
+                    VBACINTEREST=1)
+
+                -   If didn’t have option, was interested in VBAC and
+                    had a repeat, why didn’t have option/VBACACCESS
+
+### Chapter 4. Early Postpartum Period (after leaving hospital)
+
+-   Postpartum doula support
+
+    -   Whether had doula support after birth when home with
+        baby/DOULA=3
+
+-   Proposed exhibit: whether had postpartum doula support by race and
+    ethnicity, private vs Medicaid payment with overall throughline
+
+    -   Narrative could report by any vs no type of disability, income,
+        education, metro vs non-metro residence, 
+
+    -   If yes, how doula supported/DOULA2
+
+    -   Possible doula quotes for margins/DOULA3
+
+    -   [appropriate to concisely report consolidated doula results
+        across phases of care; propose that this occurs when reporting
+        birth doula experiences; maybe x-ref here]
+
+\
+
+-   Postpartum office visits
+
+    -   Number of visits/PPVISIT
+
+-   Proposed exhibit: bar graph showing 0, 1, 2, 3, 4+ by
+    race/ethnicity, private vs Medicaid payment,  with Overall bar (CA
+    Figure 47 aligns bars vertically between 0 to left and 1+ to right)
+
+    -   Narrative could report whether there were differences by midwife
+        vs physician prenatal provider
+
+-   Can comment on the flaws of using billing codes to describe extent
+    of pp visits, because they greatly underestimate actual visits; more
+    accurate and more extensive to ask mothers
+
+    -   Timing of first visit among 2+ visits/PPVISITTIME and timing of
+        single visit/PPVISITTIME (can reference ACOG recommendation for
+        pp visits and how much our respondents’ experiences align)
+
+    -   Content of pp visits/VISITTOPIC, ordered from least to most
+        likely to have been addressed (need creative way of
+        distinguishing no and needed from no and didn’t need across the
+        seven topics)
+
+-   Narrative could report whether there are differences between No and
+    needed vs no and didn’t need, by first-time vs experienced moms,
+    education
+
+-   Narrative could report whether there are differences between yes,
+    covered and either no, not covered, by midwife vs physician most
+    often prenatal provider
+
+\
+
+-   Infant feeding
+
+    -   Feeding intention and feeding at one week, Relationship between
+        feeding intention/PLANNEDFEED and feeding at one week
+        postpartum/FEED1WEEK: concordant, discordant and in what
+        direction
+
+-   Proposed exhibit: to look at missed opportunities, compare
+    concordant BF (either planned exclusive and exclusive at one week or
+    planned mixed and mixed at one week) to who dropped off of BF
+    intention: planned exclusive and mixed or formula at one week and
+    planned mixed and formula only at one week, by race/ethnicity;
+    private vs Medicaid payment
+
+    -   Narrative could report whether there were differences by midwife
+        vs physician birth attendant, first-time vs experienced moms; 
+        fidelity to Baby-Friendly steps/HOSPFEED (apart from 8, added by
+        LTMAC)
+
+-   Proposed exhibit: to look at value-added situations, compare
+    concordant planned formula and formula at one week or planned mixed
+    and mixed at one week to who improved over BF intention: planned
+    formula and any BF or planned mixed and exclusive BF at one week, by
+    midwife vs physician birth attendant, and fidelity to Baby-Friendly
+    steps/HOSPFEED (apart from 8, added by LTMAC)
+
+    -   Narrative could report whether there were differences by
+        first-time vs experienced moms
+
+-   Proposed exhibit: HOSPFEED showing possible relationship between
+    cumulative \# of yeses (apart from response 8, which was a LTMAC
+    addition to Baby-Friendly criteria) and achievement of breast milk
+    feeding goals at one week
+
+-   Separate result for HOSPFEED = 8 (if enough reported yes, Proposed
+    exhibit: by race and ethnicity and private vs Medicaid payment) OR
+    could just report under Hospital Childbirth Restrictions in
+    Childbirth in Hospital Settings chapter 
+
+    -   Achieving goals for breast milk feeding/CURRENTFEED: exclusive,
+        any, no breast milk (with some indication of baby age for each
+
+-   Duration of exclusive breast milk feeding/EXCLUSIVEBF
+
+-   Whether fed breast milk alone as long as wanted/EXCLBFGOAL
+
+    -   Proposed exhibit: simple bar graph describing how likely
+        respondents were to exclusively breastfeed as long as they
+        wanted, by race and ethnicity, first-time vs experienced moms,
+        with Overall throughline
+
+    -   Narrative could report whether there were differences by age,
+        education, income
+
+-   Baby’s age at full weaning
+
+-   Whether fed any breast milk as long as wanted/BFGOAL
+
+    -   Proposed exhibit: simple bar graph describing how likely
+        respondents were to feed any breast milk as long as they wanted,
+        by race and ethnicity, first-time vs experienced moms, with
+        Overall throughline
+
+    -   Narrative could report whether there were differences by age,
+        education, income
+
+\
+
+-   Mental health at time of survey
+
+    -   Positive screens for depression, anxiety, psychological distress
+
+-   PHQ4 mental health screener/PPBOTHER analyzed as PHQ2 (depression)
+
+    -   Proposed exhibit: simple bar graph describing who screened
+        positive for depression by race and ethnicity and private vs
+        Medicaid payer with Overall throughline
+
+-   PHQ4 mental health screener/PPBOTHER analyzed as GAD2 (anxiety)
+
+    -   Proposed exhibit: simple bar graph describing who screened
+        positive for anxiety by race and ethnicity and private vs
+        Medicaid payer with Overall throughline
+
+-   PHQ4 mental health screener/PPBOTHER analyzed as PHQ4 (psychological
+    distress) (see LTM-CA chapter for cut-points and literature)
+
+    -   Proposed exhibit: simple bar graph describing who screened
+        positive for psychological distress by race and ethnicity and
+        private vs Medicaid payer with Overall throughline
+
+    -   Receiving mental health help
+
+-   Whether received counseling or therapy during index preg/PPTHERAOT
+
+-   Whether took mental health meds during index preg/PPMEDS
+
+    -   Proposed exhibit: received help (counseling and/or therapy) by
+        positive and negative screens for psychological distress, by
+        race and ethnicity and private vs Medicaid payer
+
+    -   Narrative could report whether there were differences, by age,
+        education, income
+
+    -   Persistence of mental health conditions
+
+-   Relationship between prepreg mental health/PREPREG_MHCOND and mental
+    health at time of survey/PPBOTHER for PHQ4/psychological distress
+
+-   Relationship between preg mental health and mental health at time of
+    survey/BOTHER and mental health at time of survey/PPBOTHER in two
+    ways 
+
+    -   BOTHER = PHQ2 and PPBOTHER = PHQ2 for depression
+
+    -   BOTHER = GAD2 and PPBOTHER = GAD2 for anxiety\
+
+-   Continuing social needs Still an issue at time of survey (comment:
+    possible that some needs newly arose after birth and we did not
+    repeat entire screener)
+
+    -   Compare percentage resolved and percentage unresolved for social
+        needs identified during pregnancy and whether still experiencing
+        the need at time of survey/SNMEAL; SNLIVE; SNUTILITIES;
+        SNTRANSPORT; SNCHILDCARE; SNINCOME; SNDRUGS; SNUNSAFE; SNABUSE
+
+-   Proposed exhibit: whether respondents had continuing specific social
+    needs identified during pregnancy at time of survey, by race and
+    ethnicity and private vs Medicaid payer
+
+-   Proposed exhibit: who had continuing social needs at time of survey
+    by counts (e.g., 0, 1, 2, 3+), by race and ethnicity and private vs
+    Medicaid payer
+
+    -   Narrative could report whether there were differences by income,
+        age, education, first-time vs experienced moms
+
+-   Weight loss at time of survey/PREGWEIGHT - CURRWEIGHT by time
+    elapsed since birth in two-month increments (previously we found
+    incremental loss/mo over finite period, ending with no further loss
+    and a net gain of about 6? lbs/pregnancy)
