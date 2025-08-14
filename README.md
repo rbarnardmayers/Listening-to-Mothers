@@ -4,6 +4,8 @@ Listening to Mothers is a project from the National Partnership for Women and Fa
 
 This repository contains the code and data (eventually) that we used to generate our reports. 
 
-The files are as follows: 
-1) 
+The files are as follows:
+Data Cleaning.R: R code for reading in the Listening to Mothers data and cleaning up the data
+Report.Rmd: An RMarkdown file with the report outline and results embedded into it
+Listening-to-Mothers.RProj: The project file that will automatically open the necessary files and folders
 
