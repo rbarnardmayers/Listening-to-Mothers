@@ -12,6 +12,8 @@ editor_options:
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Data Cleaning.R")
 library(survey)
 library(ggplot2)
+library(kableExtra)
+library(tidyr)
 library(ggsurvey)
 library(knitr)
 des <- svydesign(ids = ~1, weights = ~wght, data = LTM_final)
@@ -26,18 +28,22 @@ des <- svydesign(ids = ~1, weights = ~wght, data = LTM_final)
 ##### Past births/NUMB_BIRTH and parity of respondents
 
 ```{r echo = FALSE}
-ggbarweight(LTM_final, NUMB_BIRTH, wght) + 
-  theme_classic()
+# ggbarweight(LTM_final, NUMB_BIRTH, wght) + 
+#   theme_classic()
+
+tab1 <- print.cat(NUMB_BIRTH)
+  
+kbl(tab1) %>% 
+  kable_styling()
 ```
 
 #####  Index pregnancy intention/PREG_INT
 
-```{r results = 'asis', echo = FALSE}
-tab1 <- as.data.frame(svytable(~ PREG_INT, design = des))
-tab1 <- tab1 %>% mutate(Freq = round(Freq, 2), 
-                        PREG_INT = case_when(PREG_INT == 99 ~ "Missing", 
-                                             TRUE ~ PREG_INT))
-kable(tab1)
+```{r, results = "asis", echo = FALSE, message = FALSE}
+tab1 <- print.cat(PREG_INT)
+  
+kbl(tab1) %>% 
+  kable_styling()
 ```
 
 ##### Health issues during 3 months before index pregnancy
@@ -50,122 +56,152 @@ kable(tab1)
 ```
 #####   Physical conditions/PREPREG_PHYSCOND
 ```{r results = 'asis' ,echo = FALSE}
-tab1 <- as.data.frame(svytable(~ PREGCONDITIONC1, design = des))
-tab1 <- tab1 %>% mutate(Freq = round(Freq, 2),
-                        PREGCONDITIONC1 = case_when(PREGCONDITIONC1 == 99 ~ "Missing",
-                                             TRUE ~ PREGCONDITIONC1)) %>% rename(HIGH_BP = PREGCONDITIONC1)
+# tab1 <- as.data.frame(svytable(~ PREGCONDITIONC1, design = des))
+# tab1 <- tab1 %>% mutate(Freq = round(Freq, 2),
+#                         PREGCONDITIONC1 = case_when(PREGCONDITIONC1 == 99 ~ "Missing",
+#                                              TRUE ~ PREGCONDITIONC1)) %>% rename(HIGH_BP = PREGCONDITIONC1)
 ```
 
+######  High Blood Pressure 
 ```{r, echo = FALSE}
-kable(tab1)
+tab1 <- print.cat(PREGCONDITIONC1)
+  
+kbl(tab1) %>% 
+  kable_styling()
 ```
 
 ```{r results = 'asis' ,echo = FALSE}
-tab1 <- as.data.frame(svytable(~ PREGCONDITIONC2, design = des))
-tab1 <- tab1 %>% mutate(Freq = round(Freq, 2),PREGCONDITIONC2 = case_when(PREGCONDITIONC2 == 99 ~ "Missing", TRUE ~ PREGCONDITIONC2)) %>% rename(DIABETES = PREGCONDITIONC2)
+# tab1 <- as.data.frame(svytable(~ PREGCONDITIONC2, design = des))
+# tab1 <- tab1 %>% mutate(Freq = round(Freq, 2),PREGCONDITIONC2 = case_when(PREGCONDITIONC2 == 99 ~ "Missing", TRUE ~ PREGCONDITIONC2)) %>% rename(DIABETES = PREGCONDITIONC2)
 ```
 
+######  Diabetes 
 ```{r, echo = FALSE}
-kable(tab1)
+tab1 <- print.cat(PREGCONDITIONC2)
+  
+kbl(tab1) %>% 
+  kable_styling()
+```
+
+
+```{r results = 'asis' ,echo = FALSE}
+# tab1 <- as.data.frame(svytable(~ PREGCONDITIONC3, design = des))
+# tab1 <- tab1 %>% mutate(Freq = round(Freq, 2)) %>% rename(OTHER = PREGCONDITIONC3)
+```
+
+######  Other Condition 
+```{r, echo = FALSE}
+tab1 <- print.cat(PREGCONDITIONC3)
+  
+kbl(tab1) %>% 
+  kable_styling()
 ```
 
 ```{r results = 'asis' ,echo = FALSE}
-tab1 <- as.data.frame(svytable(~ PREGCONDITIONC3, design = des))
-tab1 <- tab1 %>% mutate(Freq = round(Freq, 2)) %>% rename(OTHER = PREGCONDITIONC3)
+# tab1 <- as.data.frame(svytable(~ PREGCONDITIONC4, design = des))
+# tab1 <- tab1 %>% mutate(Freq = round(Freq, 2),PREGCONDITIONC4 = case_when(PREGCONDITIONC4 == 99 ~ "Missing", TRUE ~ PREGCONDITIONC4)) %>% rename(NONE = PREGCONDITIONC4)
 ```
 
+######  None
 ```{r, echo = FALSE}
-kable(tab1)
-```
-
-```{r results = 'asis' ,echo = FALSE}
-tab1 <- as.data.frame(svytable(~ PREGCONDITIONC4, design = des))
-tab1 <- tab1 %>% mutate(Freq = round(Freq, 2),PREGCONDITIONC4 = case_when(PREGCONDITIONC4 == 99 ~ "Missing", TRUE ~ PREGCONDITIONC4)) %>% rename(NONE = PREGCONDITIONC4)
-```
-
-```{r, echo = FALSE}
-kable(tab1)
+tab1 <- print.cat(PREGCONDITIONC4)
+  
+kbl(tab1) %>% 
+  kable_styling()
 ```
 
 
 #####  Mental health conditions/PREPREG_MHCOND
+######  Depression 
+
 ```{r results = 'asis' ,echo = FALSE}
-tab1 <- as.data.frame(svytable(~ PREPREG_MHCONDC1, design = des))
-tab1 <- tab1 %>% mutate(Freq = round(Freq, 2),PREPREG_MHCONDC1 = case_when(PREPREG_MHCONDC1 == 99 ~ "Missing", TRUE ~ PREPREG_MHCONDC1)) %>% rename(DEPRESSION = PREPREG_MHCONDC1)
+tab1 <- print.cat(PREPREG_MHCONDC1)
+  
+kbl(tab1) %>% 
+  kable_styling()
 ```
 
+##### Anxiety
+```{r results = 'asis' ,echo = FALSE}
+tab1 <- print.cat(PREPREG_MHCONDC2)
+  
+kbl(tab1) %>% 
+  kable_styling()
+```
+
+##### Substance Use
 ```{r, echo = FALSE}
-kable(tab1)
+tab1 <- print.cat(PREPREG_MHCONDC3)
+  
+kbl(tab1) %>% 
+  kable_styling()
 ```
 
+##### Trauma
 ```{r results = 'asis' ,echo = FALSE}
-tab1 <- as.data.frame(svytable(~ PREPREG_MHCONDC2, design = des))
-tab1 <- tab1 %>% mutate(Freq = round(Freq, 2),PREPREG_MHCONDC2 = case_when(PREPREG_MHCONDC2 == 99 ~ "Missing", TRUE ~ PREPREG_MHCONDC2)) %>% rename(ANXIETY = PREPREG_MHCONDC2)
+tab1 <- print.cat(PREPREG_MHCONDC4)
+  
+kbl(tab1) %>% 
+  kable_styling()
 ```
 
-```{r, echo = FALSE}
-kable(tab1)
-```
-
+##### Other
 ```{r results = 'asis' ,echo = FALSE}
-tab1 <- as.data.frame(svytable(~ PREPREG_MHCONDC3, design = des))
-tab1 <- tab1 %>% mutate(Freq = round(Freq, 2),PREPREG_MHCONDC3 = case_when(PREPREG_MHCONDC3 == 99 ~ "Missing", TRUE ~ PREPREG_MHCONDC3)) %>% rename(SUBSTANCE_USE = PREPREG_MHCONDC3)
+tab1 <- print.cat(PREPREG_MHCONDC5)
+  
+kbl(tab1) %>% 
+  kable_styling()
+
 ```
 
-```{r, echo = FALSE}
-kable(tab1)
-```
-
+##### None
 ```{r results = 'asis' ,echo = FALSE}
-tab1 <- as.data.frame(svytable(~ PREPREG_MHCONDC4, design = des))
-tab1 <- tab1 %>% mutate(Freq = round(Freq, 2),PREPREG_MHCONDC4 = case_when(PREPREG_MHCONDC4 == 99 ~ "Missing", TRUE ~ PREPREG_MHCONDC4)) %>% rename(TRAUMA = PREPREG_MHCONDC4)
+tab1 <- print.cat(PREPREG_MHCONDC6)
+  
+kbl(tab1) %>% 
+  kable_styling()
 
-kable(tab1)
-```
-
-
-```{r results = 'asis' ,echo = FALSE}
-tab1 <- as.data.frame(svytable(~ PREPREG_MHCONDC5, design = des))
-tab1 <- tab1 %>% mutate(Freq = round(Freq, 2),PREPREG_MHCONDC5 = case_when(PREPREG_MHCONDC5 == 99 ~ "Missing", TRUE ~ PREPREG_MHCONDC5)) %>% rename(OTHER = PREPREG_MHCONDC5)
-
-kable(tab1)
-```
-
-```{r results = 'asis' ,echo = FALSE}
-tab1 <- as.data.frame(svytable(~ PREPREG_MHCONDC6, design = des))
-tab1 <- tab1 %>% mutate(Freq = round(Freq, 2),PREPREG_MHCONDC6 = case_when(PREPREG_MHCONDC6 == 99 ~ "Missing", TRUE ~ PREPREG_MHCONDC6)) %>% rename(NONE = PREPREG_MHCONDC6)
-
-kable(tab1)
 ```
 
 #####  BMI before pregnancy/PREPREG_WEIGHT and HEIGHT
-##### Prepregnancy weight in Pounds
-```{r, echo = FALSE}
-LTM_final <- LTM_final %>% 
-  mutate(PREPREG_WEIGHT = case_when(is.na(PREPREG_WEIGHT_A1) ~ 2.20462 * PREPREG_WEIGHT_B1, 
-         !is.na(PREPREG_WEIGHT_A1) ~ PREPREG_WEIGHT_A1))
-
-summary(LTM_final$PREPREG_WEIGHT)
-
+##### Prepregnancy weight (in pounds)
+```{r, results = 'asis',echo = FALSE}
+print.cont(PREPREG_WEIGHT) %>% kbl() %>% kable_styling()
 ```
 
 ##### Height (in inches)
 ```{r, echo = FALSE}
-LTM_final <- LTM_final %>% 
-  mutate(HEIGHT = (HEIGHT_FEET*12) + HEIGHT_INCHES)
+print.cont(HEIGHT) %>% kbl() %>% kable_styling()
 
-summary(LTM_final$HEIGHT)
 ```
 
 ##### BMI 
 ```{r, echo = FALSE}
-summary(LTM_final$PREPREG_WEIGHT *703 / LTM_final$HEIGHT^2)
+print.cont(BMI) %>% kbl() %>% kable_styling()
 ```
 
 #### Pregnancy care team: main type of prenatal maternity care provider,
 choice
 
 -   Most frequent type of pregnancy provider/PROVIDER
+```{r, echo = FALSE}
+print.cat(PROVIDER) %>% kbl() %>% kable_styling()
+```
+
+##### By Race
+```{r, echo = FALSE}
+print.2by2(PROVIDER, RACE) %>% 
+  kbl() %>% 
+  kable_styling()
+```
+
+##### By Insurance type (note, not sure how to deal with multiple insurances)
+```{r, echo = FALSE}
+print.2by2(PROVIDER, INSURANCE) %>% 
+  kbl() %>% 
+  kable_styling()
+```
+
     -   Proposed exhibit: primary prenatal use of physicians and
         midwives by race and ethnicity and by private vs Medicaid
         insurance
