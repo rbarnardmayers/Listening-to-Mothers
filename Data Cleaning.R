@@ -1,64 +1,4 @@
-# Libraries ----
-library(dplyr)
-library(stringr)
-library(ggplot2)
-library(srvyr)
-
-# Functions ---- 
-convert.fun <- function(dat, vars){
-  for(i in vars){
-    dat[[i]] <- as.numeric(dat[[i]])
-  }
-  return(dat)
-}
-
-convert.yn <- function(dat, vars){
-  for(i in vars){
-    dat[[i]] <- ifelse(dat[[i]] == 1, "Yes", 
-                       ifelse(dat[[i]] == 0, "No", NA))
-  }
-  return(dat)
-}
-
-print.cat <- function(var, data = LTM_final){
-  tab1 <- data %>%
-    as_survey(weights = c(wght)) %>%
-    group_by({{var}}) %>%
-    summarize(prop = survey_prop(vartype = "ci")) %>% #n = survey_total(vartype = "ci"),
-    mutate(prop = 100 * prop, 
-           prop_low = 100*prop_low,
-           prop_upp = 100 * prop_upp) %>%
-    as.data.frame() %>% 
-    mutate(ci = paste0(round(prop_low, 1), "%, ", round(prop_upp, 1), "%"), 
-           prop = paste0(round(prop, 1), "%")) %>% 
-    select(-c(prop_low, prop_upp)) %>%
-    rename(Proportion = prop, 
-           CI = ci)
-  colnames(tab1) <- c("Values", "Proportion", "Confidence Interval")
-  return(tab1)
-}
-
-print.cont <- function(var, data = LTM_final){
-  tab1 <- LTM_final %>%
-    as_survey(weights = c(wght)) %>%
-    summarize(mean = survey_mean({{var}}, na.rm = T, vartype = "ci"))%>% 
-    mutate(ci = paste0(round(mean_low, 2), ", ", round(mean_upp, 2)), 
-           mean = round(mean,2)) %>%
-    select(-c(mean_low, mean_upp))
-  colnames(tab1) <- c( "Mean", "Confidence Interval")
-  return(tab1)
-}
-
-print.2by2 <- function(var1, var2){
-  tab1 <- LTM_final %>%
-    as_survey(weights = c(wght)) %>%
-    group_by({{var1}}, {{var2}}) %>%
-    summarize(prop = survey_prop(vartype = "ci")) %>% 
-    mutate(Value = paste0(round(prop,3)*100, "%, (", round(prop_low, 3)*100, "%, ", round(prop_upp,3)*100, "%")) %>% 
-    select(-c(prop, prop_low, prop_upp)) %>% 
-    spread(key = {{var2}}, value = Value)
-  return(tab1)
-}
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Helpful_Functions.R")
 
 # Data Read in ----
 LTM <- read.csv("Data_7.25.25.csv")
@@ -69,7 +9,7 @@ LTM1 <- LTM[,c(1,2,46,47,55,74:736)]
 LTM1 <- LTM1 %>% 
   select(-c(CHILDNAME)) 
 
-# Convert numeric cols
+# Convert numeric cols ----
 births <- LTM1 %>% select(ends_with("BIRTHYEAR")) %>% names()
 pren <- LTM1 %>% select(starts_with("NOPRENATALC")) %>% 
   select(-c("NOPRENATALC13O")) %>% names()
@@ -125,12 +65,18 @@ LTM2 <-  convert.fun(LTM1, c('MDID', allnames, 'PREPREG_WEIGHT_B1',
                              'PPVISITTIME1', 'PPVISITTIME2', 'EXCLUSIVEBF', 
                              'EXCLUSIVEBF', 'EXCLBFGOAL', 'WEAN', 'BFGOAL', 'TRAP3'))
 
+# Convert to factors ----
 LTM3 <- convert.yn(LTM2, c('PREGCONDITIONC1', 'PREGCONDITIONC2', 'PREGCONDITIONC3', 'PREGCONDITIONC4', 
                            'PREPREG_MHCONDC1', 'PREPREG_MHCONDC2', 'PREPREG_MHCONDC3', 'PREPREG_MHCONDC4',
-                           'PREPREG_MHCONDC5', 'PREPREG_MHCONDC6'))
+                           'PREPREG_MHCONDC5', 'PREPREG_MHCONDC6', "DOULAC1", "DOULAC2", "DOULAC3", 
+                           'DOULAC4', 'DOULAC5'))
 
+# Recode variables ----
 LTM_final <- LTM3 %>% 
   mutate(wght = rnorm(1613, mean = 1, sd = .02), 
+         PARITY = case_when(NUMB_BIRTH == 1 ~ "Nulliparous", 
+                            NUMB_BIRTH > 1 ~ "Multiparous", 
+                            TRUE ~ "Missing"),
          HEIGHT = (HEIGHT_FEET*12) + HEIGHT_INCHES, 
          PREPREG_WEIGHT = case_when(is.na(PREPREG_WEIGHT_A1) ~ 2.20462 * PREPREG_WEIGHT_B1, 
                                     !is.na(PREPREG_WEIGHT_A1) ~ PREPREG_WEIGHT_A1), 
@@ -148,7 +94,8 @@ LTM_final <- LTM3 %>%
                               PREG_INT == 2 ~ "Yes, I wanted to become pregnant at that time",
                               PREG_INT == 3 ~ "Yes, but I was hoping to be pregnant later on",
                               PREG_INT == 4 ~ "No, I didn’t want to be pregnant then or at any time in the future",
-                              PREG_INT == 99 ~ "Missing"),
+                              PREG_INT == 99 ~ "Missing", 
+                              is.na(PREG_INT) ~ "Missing"),
          PROVIDER = case_when(PROVIDER == 1 ~ "Obstetrician-gynecologist doctor",
                               PROVIDER == 2 ~ "Family medicine doctor",
                               PROVIDER == 3 ~ "Midwife",
@@ -157,6 +104,16 @@ LTM_final <- LTM3 %>%
                               PROVIDER == 6 ~ "Missing",
                               PROVIDER == 99 ~ "Missing",
                               is.na(PROVIDER) ~ "Missing"),
+         PROVIDER = factor(PROVIDER, levels = c("Obstetrician-gynecologist doctor", 
+                                                "Nurse-practitioner/other nurse",
+                                                "Physician assistant",
+                                                "Family medicine doctor",
+                                                "Midwife", "Missing")),
+         PROVIDERCHOICE = case_when(PROVIDERCHOICE == 1 ~ "Yes, I had a choice and saw one person",
+                                    PROVIDERCHOICE == 2 ~ "Yes, I had a choice and generally saw members of a small team",
+                                    PROVIDERCHOICE == 3 ~ "No I had no choice",
+                                    PROVIDERCHOICE == 99 ~ "Missing", 
+                                    is.na(PROVIDERCHOICE) ~ "Missing"),
          INSURANCE = case_when(INSURC1 == 1 ~ "Private", 
                                INSURC2 == 1 ~ "Medicaid/CHIP", 
                                INSURC3 == 1 ~ "TRICARE or other military health care", 
@@ -165,8 +122,44 @@ LTM_final <- LTM3 %>%
                                INSURC6 == 1 ~ "None", 
                                INSURC7 == 1 ~ "Missing", 
                                TRUE ~ "Missing"),
-         BMI = PREPREG_WEIGHT *703 / HEIGHT^2)
+         LANGUAGE = case_when(LANGHOMEC1 == 1 ~ "English",
+                              LANGHOMEC1 == 0 ~ "Other",
+                              TRUE ~ "Missing"),
+         BIRTHCOUNTRY = case_when(BIRTHCOUNTRY == 1 ~ "US", 
+                                  BIRTHCOUNTRY == 2 ~ "Outside US", 
+                                  BIRTHCOUNTRY == 99 ~ "Missing",
+                                  is.na(BIRTHCOUNTRY) ~ "Missing"),
+         DISABLETECH = case_when(DISABLETECH == 1 ~ "Yes", 
+                                 DISABLETECH == 2 ~ "No", 
+                                 DISABLETECH == 99 ~ "Missing", 
+                                 is.na(DISABLETECH) ~ "Missing"),
+         BMI = PREPREG_WEIGHT *703 / HEIGHT^2, 
+         DOULA = case_when(DOULAC1 == 'Yes' ~ "Yes", 
+                           DOULAC2 == 'Yes' ~ "Yes", 
+                           DOULAC3 == 'Yes' ~ "Yes",
+                           DOULAC4 == 'Yes' ~ "No", 
+                           DOULAC5 == 'Yes' ~ "Missing", 
+                           TRUE ~ "Missing"), 
+         DOULAC1 = case_when(DOULA == "Yes" & DOULAC1 == "Yes" ~ "During Pregnancy", 
+                             DOULA == "Yes" & DOULAC1 == "No" ~ "Not During Pregnancy", 
+                             DOULA == "No" | DOULA == "Missing" ~ NA),
+         DOULAC2 = case_when(DOULA == "Yes" & DOULAC2 == "Yes" ~ "During Birth", 
+                             DOULA == "Yes" & DOULAC2 == "No" ~ "Not During Birth", 
+                             DOULA == "No" | DOULA == "Missing" ~ NA),
+         DOULAC3 = case_when(DOULA == "Yes" & DOULAC3 == "Yes" ~ "Postpartum", 
+                             DOULA == "Yes" & DOULAC3 == "No" ~ "Not Postpartum", 
+                             DOULA == "No" | DOULA == "Missing" ~ NA))
 
+# Refactor ----
+col_list <- c('PROVIDER', 'PROVIDERCHOICE', 'BIRTHCOUNTRY', 'PARITY', 
+              'DISABLETECH', 'DOULA','LANGUAGE', 'INSURANCE', 'PREG_INT', 'RACE')
+for(i in col_list){
+  
+  LTM_final[[i]] <- factor(LTM_final[[i]], levels = refac.fun(i))
+  
+}
+
+# Remove previous versions ----
 rm(LTM1)
 rm(LTM2)
 rm(LTM)
