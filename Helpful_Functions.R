@@ -70,6 +70,20 @@ refac.fun <- function(col){
   t_n <- t$names 
   all <- t_n[t_n != "Missing"]
   all <- c(all, "Missing")
-  return(all)
+  LTM_final[[col]] <- factor(LTM_final[[col]], levels = all)
+  return(LTM_final[[col]])
+}
+
+# Refactor numeric 
+refac.num <- function(col, val = c("Missing")){
+  LTM_final[[col]] <- factor(LTM_final[[col]])
+  t <- data.frame(names = levels(LTM_final[[col]]))
+  t_n <- t$names 
+  all <- t_n[!(t_n %in% val)]
+  all <- as.numeric(all)
+  all <- sort(all)
+  all <- c(all, val)  
+  LTM_final[[col]] <- factor(LTM_final[[col]], levels = all)
+  return(LTM_final[[col]])
   
 }

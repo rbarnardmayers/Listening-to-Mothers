@@ -148,16 +148,35 @@ LTM_final <- LTM3 %>%
                              DOULA == "No" | DOULA == "Missing" ~ NA),
          DOULAC3 = case_when(DOULA == "Yes" & DOULAC3 == "Yes" ~ "Postpartum", 
                              DOULA == "Yes" & DOULAC3 == "No" ~ "Not Postpartum", 
-                             DOULA == "No" | DOULA == "Missing" ~ NA))
+                             DOULA == "No" | DOULA == "Missing" ~ NA), 
+         LEARNED2 = case_when(LEARNED2 == 1 ~ "No Prenatal Care", 
+                              LEARNED2 == 99 ~ "Missing", 
+                              is.na(LEARNED2) ~ "Missing", 
+                              TRUE ~ as.character(LEARNED2)),
+         LEARNED1 = case_when(LEARNED1 == 99 ~ "Missing", 
+                              TRUE ~ as.character(LEARNED1)), 
+         PRENAT = case_when(LEARNED2 == "No Prenatal Care" ~ "No Prenatal Care", 
+                            LEARNED2 == "Missing" ~ "Missing", 
+                            TRUE ~ "Had Prenatal Care"), 
+         FIRSTVISIT = case_when(FIRSTVISIT ==1 ~ "Yes", 
+                                FIRSTVISIT == 2 ~"No", 
+                                FIRSTVISIT == 99 ~ "Missing", 
+                                is.na(FIRSTVISIT) ~ "Missing"))
 
 # Refactor ----
 col_list <- c('PROVIDER', 'PROVIDERCHOICE', 'BIRTHCOUNTRY', 'PARITY', 
-              'DISABLETECH', 'DOULA','LANGUAGE', 'INSURANCE', 'PREG_INT', 'RACE')
+              'DISABLETECH', 'DOULA','LANGUAGE', 'INSURANCE', 'PREG_INT', 'RACE',
+              "PRENAT", "FIRSTVISIT")
 for(i in col_list){
   
-  LTM_final[[i]] <- factor(LTM_final[[i]], levels = refac.fun(i))
+  LTM_final[[i]] <- refac.fun(i)
   
 }
+
+LTM_final$LEARNED1 <- refac.num('LEARNED1')
+LTM_final$LEARNED2 <- refac.num("LEARNED2", val = c("No Prenatal Care", "Missing"))
+  
+
 
 # Remove previous versions ----
 rm(LTM1)

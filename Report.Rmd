@@ -284,26 +284,89 @@ setting, remote care/equipment, solo/group
 
 -   Learning about pregnancy, initiating and not having prenatal care,
 care setting
--   Weeks pregnant when learned about pregnancy/LEARNED1; average
+
+##### Weeks pregnant when learned about pregnancy/LEARNED1; average
 and range
+```{r echo = FALSE}
+print.cat(LEARNED1) %>%
+  kbl() %>%
+  kable_styling()
+
+```
+
 -   No prenatal care/LEARNED2/98 (and comment that those with no pnc
 or late initiation of pnc less likely to participate in survey
 so our data probably underestimate those folks)
--   Narrative could report no prenatal care by race and
+
+-   Entry into prenatal care/LEARNED2
+```{r echo = FALSE}
+print.cat(LEARNED2) %>%
+  kbl() %>%
+  kable_styling()
+
+```
+
+##### No Prenatal Care
+```{r echo = FALSE}
+print.cat(PRENAT) %>%
+  kbl() %>%
+  kable_styling()
+
+```
+
+##### No prenatal care by race
+```{r echo = FALSE}
+print.2by2(PRENAT, RACE) %>%
+  kbl() %>%
+  kable_styling()
+
+```
+
+##### No prenatal care by insurnace 
+```{r echo = FALSE}
+print.2by2(PRENAT, INSURANCE) %>%
+  kbl() %>%
+  kable_styling()
+
+```
+
+##### No prenatal care by pregnancy intention
+```{r echo = FALSE}
+print.2by2(PRENAT, PREG_INT) %>%
+  kbl() %>%
+  kable_styling()
+
+```
+
+#####
+
+```{r echo = FALSE}
+print.2by2(PRENAT, PARITY) %>%
+  kbl() %>%
+  kable_styling()
+
+```
+
+
+- Narrative could report no prenatal care by race and
 ethnicity; private vs Medicaid insurance; pregnancy
 intention/PREG_INT = 1 or 2 versus 4 (and decide where
-3/later best fits); mental health (PREPREG_MHCOND = any 1-5
+3/later best fits); **mental health (PREPREG_MHCOND = any 1-5
 and/or BOTHER – explore screen positive for depression,
 anxiety, and/or psychological distress); by SOCIALNEED
 cumulative social needs during pregnancy (is there a good
-cut point, e.g., 2+
--   Entry into prenatal care/LEARNED2
--   Narrative could report whether this differed by race and
-ethnicity, private vs Medicaid insurance, parity. Could also
-look at timing for people who identified
-physical/PREPREG_PHYSCOND and mental health/PREPREG_MHCOND
-conditions in months before index pregnancy
+cut point, e.g., 2+**
+
+
 -   First visit as early as wanted/FIRSTVISIT
+
+```{r echo = FALSE}
+print.cat(FIRSTVISIT) %>%
+  kbl() %>%
+  kable_styling()
+
+```
+
 -   Proposed exhibit: breakdown by race and ethnicity and
 private vs Medicaid insurance
 -   Narrative could report whether there were differences by
