@@ -5,6 +5,9 @@ library(dplyr)
 library(stringr)
 library(ggplot2)
 library(srvyr)
+library(readxl)
+library(tidyr)
+library(phdcocktail)
 
 # Functions ---- 
 convert.fun <- function(dat, vars){
@@ -66,7 +69,6 @@ print.2by2 <- function(var1, var2){
 refac.fun <- function(col){
   LTM_final[[col]] <- factor(LTM_final[[col]])
   t <- data.frame(names = levels(LTM_final[[col]]))
-  
   t_n <- t$names 
   all <- t_n[t_n != "Missing"]
   all <- c(all, "Missing")
@@ -87,3 +89,29 @@ refac.num <- function(col, val = c("Missing")){
   return(LTM_final[[col]])
   
 }
+
+
+# Data Dictionary ----
+dict <- read_excel("Data_Dictionary.xlsx", 
+                   sheet = "Variable Values") 
+dict2 <-  read_excel("Data_Dictionary.xlsx", 
+                     sheet = "Variable Labels") %>% 
+  select(-c("Variable Type", "Notes"))
+
+colnames(dict) <- c("variable", "value", "value_label")
+
+dict <- dict %>% 
+  fill(variable) #%>% 
+  # mutate(value = as.numeric(value))
+
+colnames(dict2) <- c("variable", "variable_label")
+data_dict <- merge(dict, dict2)
+
+
+
+
+
+
+
+
+
