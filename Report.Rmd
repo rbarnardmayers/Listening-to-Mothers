@@ -11,14 +11,14 @@ editor_options:
 ---
 
 ```{r, include = FALSE}
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Data Cleaning.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/ApplyDictionary.R")
 library(survey)
 library(ggplot2)
 library(kableExtra)
 library(tidyr)
 library(ggsurvey)
 library(knitr)
-des <- svydesign(ids = ~1, weights = ~wght, data = LTM_final)
+# des <- svydesign(ids = ~1, weights = ~wght, data = LTM_final)
 ```
 
 ## New Mothers Share Views and Experiences of Childbearing: Results from the Fourth National Listening to Mothers Survey
@@ -33,9 +33,8 @@ des <- svydesign(ids = ~1, weights = ~wght, data = LTM_final)
 # ggbarweight(LTM_final, NUMB_BIRTH, wght) + 
 #   theme_classic()
 
-tab1 <- print.cat(NUMB_BIRTH)
-
-kbl(tab1) %>% 
+print.cat(NUMB_BIRTH) %>% 
+  kbl() %>% 
   kable_styling()
 ```
 
@@ -138,7 +137,9 @@ kbl(tab1) %>%
 #####  BMI before pregnancy/PREPREG_WEIGHT and HEIGHT
 ##### Prepregnancy weight (in pounds)
 ```{r, results = 'asis',echo = FALSE}
-print.cont(PREPREG_WEIGHT) %>% kbl() %>% kable_styling()
+print.cont(PREPREG_WEIGHT) %>% 
+  kbl() %>% 
+  kable_styling()
 ```
 
 ##### Height (in inches)
@@ -278,7 +279,7 @@ print.cat(DOULAC3, data = subset(LTM_final, DOULA == "Yes")) %>%
 -   See also re preg care team: mental health help and childbirth education, later in this chapter
 
 #### Prenatal care
- 
+
 Learning about pregnancy and first prenatal visit,
 setting, remote care/equipment, solo/group
 
@@ -338,7 +339,7 @@ print.2by2(PRENAT, PREG_INT) %>%
 
 ```
 
-#####
+##### Prenatal by parity
 
 ```{r echo = FALSE}
 print.2by2(PRENAT, PARITY) %>%
@@ -367,52 +368,162 @@ print.cat(FIRSTVISIT) %>%
 
 ```
 
--   Proposed exhibit: breakdown by race and ethnicity and
-private vs Medicaid insurance
+-   Proposed exhibit: breakdown by race and ethnicity 
+
+```{r, echo = F} 
+
+print.2by2(FIRSTVISIT, RACE) %>%
+  kbl() %>%
+  kable_styling()
+
+```
+
+-   Proposed exhibit: breakdown by private vs Medicaid insurance
+
+```{r, echo = F} 
+
+print.2by2(FIRSTVISIT, INSURANCE) %>%
+  kbl() %>%
+  kable_styling()
+
+```
+
+
 -   Narrative could report whether there were differences by
 pre-preg physical/PREPREG_PHYSCOND and mental
 health/PREPREG_MHCOND health conditions
--   If not, why couldn’t have visit as early as wanted/NOPRENATAL
--   Proposed exhibit: simple bar graph in descending order of
-reasons with Overall throughline
--   Setting for prenatal care/CARESETTING/
--   Proposed exhibit: simple bar graph in descending order with
-Overall throughline
--   Individual and group prenatal care
--   Individual versus group care/CARETYPE
--   Whether had choice/CARETYPE1
--   Proposed exhibit: by race and ethnicity and type of
-insurance
--   Preference between individual and group care type (if
-experienced both)/CARETYPEPREF
--   Proposed exhibit: by race and ethnicity, private vs Medicaid
+
+##### First visit by High Blood Pressure
+```{r, echo = F} 
+
+print.2by2(FIRSTVISIT, PREPREG_PHYSCONDC1) %>%
+  kbl() %>%
+  kable_styling()
+
+```
+
+##### First visit by Diabetes
+```{r, echo = F} 
+
+print.2by2(FIRSTVISIT, PREPREG_PHYSCONDC2) %>%
+  kbl() %>%
+  kable_styling()
+
+```
+
+##### First visit by Other
+```{r, echo = F} 
+
+print.2by2(FIRSTVISIT, PREPREG_PHYSCONDC3) %>%
+  kbl() %>%
+  kable_styling()
+
+```
+
+
+##### If not, why couldn’t have visit as early as wanted/NOPRENATAL
+######   Proposed exhibit: simple bar graph in descending order of reasons with Overall throughline 
+
+```{r echo = FALSE}
+# Need the NOPRENATALC1 - NOPRENATALC14
+# ggbarweight(subset(LTM_final, FIRSTVISIT == "No"), NOPRENATALC1, wght) +
+#   theme_classic()
+```
+
+##### Setting for prenatal care/CARESETTING/
+
+```{r}
+# CARESETTINGC1 - CARESETTINGC9
+```
+
+-  Proposed exhibit: simple bar graph in descending order with overall throughline
+#####   Individual and group prenatal care
+#####   Individual versus group care/CARETYPE
+
+```{r}
+# CARETYPEC1 - CARETYPEC3
+```
+
+#####   Whether had choice/CARETYPE1
+
+
+```{r echo = FALSE}
+LTM_final$CARETYPE1 <- refac.fun("CARETYPE1", vars = c("I don't know", "I'd prefer not to answer", "Missing"))
+
+print.cat(CARETYPE1) %>%
+  kbl() %>%
+  kable_styling()
+```
+-  Proposed exhibit: by race and ethnicity and type of insurance
+
+#####   Preference between individual and group care type (if experienced both)/CARETYPEPREF
+
+``` {r}
+print.cat(CARETYPEPREF) %>%
+  kbl() %>%
+  kable_styling()
+```
+
+-  Proposed exhibit: by race and ethnicity, private vs Medicaid
 insurance (bars, including overall, showing individual,
 group, mix of both)
+
+``` {r}
+print.2by2(CARETYPEPREF, RACE) %>%
+  kbl() %>%
+  kable_styling()
+
+print.2by2(CARETYPEPREF, INSURANCE) %>%
+  kbl() %>%
+  kable_styling()
+```
+
 -   Narrative could report by parity, education, age
--   Remote and in-person prenatal care/CAREMODE
--   Reason for televisits/WHYTELE
--   Proposed exhibit: simple bar graph in descending order with
-Overall throughline
--   Whether had equipment/supplies for 4 types of home
-monitoring/ATHOMECARE
--   Confidence about ability to do four types of home
-monitoring/BPCONFID + URINECONFID + WEIGHCONFID + BABYHRCONFID
+
+```{r}
+print.2by2(CARETYPEPREF, PARITY) %>%
+  kbl() %>%
+  kable_styling()
+
+print.2by2(CARETYPEPREF, EDUCATION) %>%
+  kbl() %>%
+  kable_styling()
+
+# print.2by2(CARETYPEPREF, AGE) %>%
+#   kbl() %>%
+#   kable_styling()
+```
+
+#####   Remote and in-person prenatal care/CAREMODE
+#####   Reason for televisits/WHYTELE
+-   Proposed exhibit: simple bar graph in descending order with Overall throughline
+-   Whether had equipment/supplies for 4 types of home monitoring/ATHOMECARE
+-   Confidence about ability to do four types of home monitoring/BPCONFID + URINECONFID + WEIGHCONFID + BABYHRCONFID
+
+```{r echo =F}
+#ATHOMECAREC1 = ATHOMECAREC6
+```
+
 -   Proposed exhibit: table with rows combining use of four
 types of home monitoring (percent with equipment/supplies
 among those with remote care?) and confidence of those with
 equipment/supplies
+
 -   Narrative could report whether greater confidence (fully or
 somewhat, or fully alone?) differed by parity (first time vs
 experienced), age (is there a meaningful cut point?),
 education level (high school or less vs more than high
 school?), and private vs Medicaid insurance
--   Preference between in-person and televisits (if experienced
-both)/CAREMODEPREF
--   Proposed exhibit: by race and ethnicity, metro vs non-metro
-residence (bars, including overall, showing in-person,
-televisit, mix) Narrative could report whether preference
-differed by parity, education, whether employed during
-pregnancy, private vs Medicaid insurance
+
+##### Preference between in-person and televisits (if experienced both)/CAREMODEPREF
+```{r}
+print.cat(CAREMODEPREF) %>% 
+  kbl() %>% 
+  kbl_styling()
+```
+
+-   Proposed exhibit: by race and ethnicity, metro vs non-metro residence (bars, including overall, showing in-person, televisit, mix) 
+- Narrative could report whether preference differed by parity, education, whether employed during pregnancy, private vs Medicaid insurance
 -   Childbirth education
 -   Whether had CBE classes/CURREDUC
 -   Narrative could report whether this differed by parity, by
@@ -425,13 +536,8 @@ CURREDUC differed by having taken classes in the past
 -   Sponsor of index pregnancy classes/independence/EDUCTYPE
 -   In-person vs remote/hospital vs community/EDUCMODE
 -   Impact of class/EDUCIMPACT
--   Proposed exhibit: simple bar graph in descending order with
-Overall throughline
--   Maybe: comment on cbe trends across LTM surveys (seemed to be
-greatly falling off in past; remote options and maternal health
-crisis publicity might be leading to greater use now)
+-   Proposed exhibit: simple bar graph in descending order with Overall throughline
 
-<!-- -->
 
 -   Pregnancy complications
 

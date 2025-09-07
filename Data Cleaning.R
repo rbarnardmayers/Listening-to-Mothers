@@ -12,7 +12,10 @@ ignores <- LTM1[str_ends(colnames(LTM1), "O")] %>%
 
 # Create dataset of just text responses and UID2
 LTM_ignore <- LTM1 %>% 
-  select(c(all_of(ignores), UID2)) 
+  select(c(all_of(ignores), UID2, DOULA3, INDUCE6, REPEATCSEC,
+           MEDINDUCE4, MEDINDUCE5, WENTWELL, DIDNTGOWELL, ANYTHINGELSE, AIAN,
+           DISABILITYCOND)) 
+ignores <- LTM_ignore %>% select(-c(UID2)) %>% colnames() 
 
 # Create dataset of just numeric responses
 LTM_keep <- LTM1 %>% 
@@ -28,80 +31,14 @@ for(i in tochange){
 }
 
 LTM1 <- full_join(LTM_ignore, LTM_keep)
-  
-test2 <- recode_vrs(data = LTM1, data_dictionary = data_dict, 
-                    vrs = c("PROVIDER", "PROVIDERCHOICE", "MODE", 
-                            "PREG_INT", "LANGHOMEC1", "BIRTHCOUNTRY", 
-                            "DISABLETECH", "LEARNED2", "FIRSTVISIT"))#, factor = TRUE)
 
-#
-# Convert numeric cols ----
-# births <- LTM1 %>% select(ends_with("BIRTHYEAR")) %>% names()
-# pren <- LTM1 %>% select(starts_with("NOPRENATALC")) %>% 
-#   select(-c("NOPRENATALC13O")) %>% names()
-# cares <- LTM1 %>% select(c(starts_with("CARESETTING"), starts_with("CARETYPE"), 
-#                            starts_with("CAREMODE"), starts_with("WHYTELEC"), 
-#                            starts_with("ATHOMECAREC"))) %>% 
-#   select(-c("CARESETTINGC8O", "WHYTELEC7O")) %>%  names()
-# educ <- LTM1 %>% select(starts_with("EDUCMODE"), starts_with("EDUCIMPACT")) %>% 
-#   select(-c('EDUCIMPACTC7O')) %>% names()
-# empl <- LTM1 %>% select(starts_with("EMPLOY")) %>% names()
-# douls <- LTM1 %>% select(starts_with("DOULA")) %>% 
-#   select(-c('DOULA1C6O', 'DOULA2C6O', 'DOULA3')) %>% names()
-# induc <- LTM1 %>% select(starts_with("INDUCE"), 
-#                          starts_with("SELFINDUCE"), starts_with("MEDINDUCE"), 
-#                          starts_with("MODE")) %>% 
-#   select(-c('INDUCE6', "SELFINDUCE2C8O","MEDINDUCE3C8O")) %>% names()
-# drugs <- LTM1 %>%select(c(starts_with("DRUGFREE"))) %>% 
-#   select(-c(DRUGFREEC10O)) %>% names()
-# fetal <- LTM1 %>%select(c(starts_with("FETALMON"))) %>% 
-#   select(-c(FETALMONC3O)) %>% names()
-# csec <- LTM1 %>%select(c(starts_with("CSECTIONINT"), starts_with("LABORINT"), 
-#                          starts_with("LABORPERMIT"))) %>% 
-#   select(-c('LABORPERMIT_D1', 'LABORPERMIT_D2')) %>% names()
-# post <- LTM1 %>%select(c(starts_with("POSITION2"))) %>% 
-#   select(-c("POSITION2C7O")) %>% names()
-# disc <- LTM1 %>%select(c(starts_with("DISCRIMINATION"))) %>% 
-#   select(-c(ends_with("O"))) %>% names()
-# topic <- LTM1 %>%select(c(starts_with("VISITTOPIC"))) %>% 
-#   select(-c(ends_with("O"))) %>% names()
-# hospf <- LTM1 %>%select(c(starts_with("HOSPFEED"))) %>% 
-#   select(-c(ends_with("O"))) %>% names()
-# sn <- LTM1 %>%select(c(starts_with("SN"))) %>% 
-#   select(-c(ends_with("O"))) %>% names()
-# 
-# allnames <- c(births, pren, cares, educ, empl, douls, induc, drugs, 
-#               fetal, csec, post, disc, topic, hospf, sn)
-
-# LTM2 <-  convert.fun(LTM1, c('MDID', allnames, 'PREPREG_WEIGHT_B1', 
-#                              'NUMB_BIRTH_OLD', 
-#                              'PREPREG_WEIGHT_A1', 'FIRSTVISIT', 'PROVIDER', 
-#                              'PROVIDERCHOICE', 'BPCONFID', 'URINECONFID', 'WEIGHCONFID', 
-#                              'BABYHRCONFID', 'CARETYPEPREF', 'CAREMODEPREF', 'PRIOREDUC', 
-#                              'CURREDUC', 'TRAP1', 'BIGBABY2','PREGWEIGHT_B1', 
-#                              'CURRWEIGHT_KG', 'CURRWEIGHT_LBS', 'CSECTIONTYPE', 
-#                              'LABCSEC', 'PLANNEDC','VBACCHOICE', 'VBACINTEREST', 
-#                              'VBACEFFORT', 'VBACACCESSC1', 'VBACACCESSC2', 
-#                              'VBACACCESSC3', 'VBACACCESSC4', 'VBACACCESSC5', 
-#                              'UNPLANNEDREASON', 'VAGASSIST', 'VAGEXAM', 'LABORWALK', 
-#                              'EPIST', 'EPISTCHOICE', 'POSITION', 'POSITIONCHOICE', 
-#                              'LABORLENGTH', 'BIRTHWEIGHT_LBS', 'BIRTHWEIGHT_OZ', 
-#                              'BIRTHWEIGHT_G', 'SUTURE', 'SKIN', 'TRAP2', 'VISITS', 
-#                              'PPVISIT', 
-#                              'PPVISITTIME1', 'PPVISITTIME2', 'EXCLUSIVEBF', 
-#                              'EXCLUSIVEBF', 'EXCLBFGOAL', 'WEAN', 'BFGOAL', 'TRAP3'))
-
-# Convert to yes/no ----
-# LTM3 <- convert.yn(LTM2, c('PREGCONDITIONC1', 'PREGCONDITIONC2', 'PREGCONDITIONC3', 'PREGCONDITIONC4', 
-#                            'PREPREG_MHCONDC1', 'PREPREG_MHCONDC2', 'PREPREG_MHCONDC3', 'PREPREG_MHCONDC4',
-#                            'PREPREG_MHCONDC5', 'PREPREG_MHCONDC6', "DOULAC1", "DOULAC2", "DOULAC3", 
-#                            'DOULAC4', 'DOULAC5'))
+rm(LTM_ignore)
+rm(LTM_keep)
 
 # Recode variables ----
 
-LTM_final <- test2 %>% 
-  mutate(wght = rnorm(1613, mean = 1, sd = .02), 
-         PARITY = case_when(NUMB_BIRTH == 1 ~ "Nulliparous", 
+LTM2 <- LTM1 %>% 
+  mutate(PARITY = case_when(NUMB_BIRTH == 1 ~ "Nulliparous", 
                             NUMB_BIRTH > 1 ~ "Multiparous", 
                             TRUE ~ "Missing"),
          HEIGHT = (HEIGHT_FEET*12) + HEIGHT_INCHES, 
@@ -117,30 +54,6 @@ LTM_final <- test2 %>%
                           RACEC1 == 1 | RACEC3 == 1 | RACEC4 == 1 | RACEC5 == 1 | RACEC6 == 1 | RACEC7 == 1 ~ "Multiracial", 
                           RACEC8 == 1 ~ "Missing", 
                           TRUE ~ "Missing"),
-         # PREG_INT = case_when(PREG_INT == 1 ~ "Yes, but I was hoping to become pregnant sooner",
-         #                      PREG_INT == 2 ~ "Yes, I wanted to become pregnant at that time",
-         #                      PREG_INT == 3 ~ "Yes, but I was hoping to be pregnant later on",
-         #                      PREG_INT == 4 ~ "No, I didn’t want to be pregnant then or at any time in the future",
-         #                      PREG_INT == 99 ~ "Missing", 
-         #                      is.na(PREG_INT) ~ "Missing"),
-         # PROVIDER = case_when(PROVIDER == 1 ~ "Obstetrician-gynecologist doctor",
-         #                      PROVIDER == 2 ~ "Family medicine doctor",
-         #                      PROVIDER == 3 ~ "Midwife",
-         #                      PROVIDER == 4 ~ "Nurse-practitioner/other nurse",
-         #                      PROVIDER == 5 ~ "Physician assistant",
-         #                      PROVIDER == 6 ~ "Missing",
-         #                      PROVIDER == 99 ~ "Missing",
-         #                      is.na(PROVIDER) ~ "Missing"),
-         # PROVIDER = factor(PROVIDER, levels = c("Obstetrician-gynecologist doctor", 
-         #                                        "Nurse-practitioner/other nurse",
-         #                                        "Physician assistant",
-         #                                        "Family medicine doctor",
-         #                                        "Midwife", "Missing")),
-         # PROVIDERCHOICE = case_when(PROVIDERCHOICE == 1 ~ "Yes, I had a choice and saw one person",
-         #                            PROVIDERCHOICE == 2 ~ "Yes, I had a choice and generally saw members of a small team",
-         #                            PROVIDERCHOICE == 3 ~ "No I had no choice",
-         #                            PROVIDERCHOICE == 99 ~ "Missing", 
-         #                            is.na(PROVIDERCHOICE) ~ "Missing"),
          INSURANCE = case_when(INSURC1 == 1 ~ "Private",
                                INSURC2 == 1 ~ "Medicaid/CHIP",
                                INSURC3 == 1 ~ "TRICARE or other military health care",
@@ -149,17 +62,9 @@ LTM_final <- test2 %>%
                                INSURC6 == 1 ~ "None",
                                INSURC7 == 1 ~ "Missing",
                                TRUE ~ "Missing"),
-         # LANGUAGE = case_when(LANGHOMEC1 == 1 ~ "English",
-         #                      LANGHOMEC1 == 0 ~ "Other",
-         #                      TRUE ~ "Missing"),
-         # BIRTHCOUNTRY = case_when(BIRTHCOUNTRY == 1 ~ "US", 
-         #                          BIRTHCOUNTRY == 2 ~ "Outside US", 
-         #                          BIRTHCOUNTRY == 99 ~ "Missing",
-         #                          is.na(BIRTHCOUNTRY) ~ "Missing"),
-         # DISABLETECH = case_when(DISABLETECH == 1 ~ "Yes", 
-         #                         DISABLETECH == 2 ~ "No", 
-         #                         DISABLETECH == 99 ~ "Missing", 
-         #                         is.na(DISABLETECH) ~ "Missing"),
+         LANGUAGE = case_when(LANGHOMEC1 == 1 ~ "English",
+                              LANGHOMEC1 == 0 ~ "Other",
+                              TRUE ~ "Missing"),
          BMI = PREPREG_WEIGHT *703 / HEIGHT^2, 
          DOULA = case_when(DOULAC1 == 1 ~ "Yes", 
                            DOULAC2 == 1 ~ "Yes", 
@@ -176,44 +81,34 @@ LTM_final <- test2 %>%
          DOULAC3 = case_when(DOULA == "Yes" & DOULAC3 == 1 ~ "Postpartum", 
                              DOULA == "Yes" & DOULAC3 == 0 ~ "Not Postpartum", 
                              DOULA == "No" | DOULA == "Missing" ~ NA), 
-         # LEARNED2 = case_when(LEARNED2 == 1 ~ "No Prenatal Care", 
-         #                      LEARNED2 == 99 ~ "Missing", 
-         #                      is.na(LEARNED2) ~ "Missing", 
-         #                      TRUE ~ as.character(LEARNED2)),
          LEARNED1 = case_when(LEARNED1 == 99 ~ "Missing", 
+                              is.na(LEARNED1) ~ "Missing",
                               TRUE ~ as.character(LEARNED1)), 
          PRENAT = case_when(LEARNED2 == "I did not have any prenatal visits " ~ "No Prenatal Care", 
                             LEARNED2 == "I’d prefer not to answer " ~ "Missing", 
                             is.na(LEARNED2) ~ "Missing",
-                            TRUE ~ "Had Prenatal Care")#, 
-         # FIRSTVISIT = case_when(FIRSTVISIT ==1 ~ "Yes", 
-         #                        FIRSTVISIT == 2 ~"No", 
-         #                        FIRSTVISIT == 99 ~ "Missing", 
-         #                        is.na(FIRSTVISIT) ~ "Missing")
-         )
-
-LTM_final[is.na(LTM_final)] <- "Missing"
-
-# Refactor ----
-# NOW HAVING AN ISSUE HERE
-# Error in `levels<-`(`*tmp*`, value = as.character(levels)) : 
-#   factor level [9] is duplicated
-col_list <- c('PROVIDER', 'PROVIDERCHOICE', 'BIRTHCOUNTRY', 'PARITY', 
-              'DISABLETECH', 'DOULA','LANGUAGE', 'INSURANCE', 'PREG_INT', 'RACE',
-              "PRENAT", "FIRSTVISIT")
-for(i in col_list){
-
-  LTM_final[[i]] <- refac.fun(i)
-
-}
-
-LTM_final$LEARNED1 <- refac.num('LEARNED1')
-LTM_final$LEARNED2 <- refac.num("LEARNED2", val = c("No Prenatal Care", "Missing"))
-  
+                            TRUE ~ "Had Prenatal Care"))
 
 
-# Remove previous versions ----
 rm(LTM1)
-rm(LTM2)
-rm(LTM)
 
+# Data dictionary prep ----
+include <- LTM2 %>% 
+  select(-c(NUMB_BIRTH, HEIGHT_FEET, HEIGHT_INCHES, LEARNED2,LEARNED1,
+            DUEDATE_D, DUEDATE_Y, BIRTHDATE_D,  VAGEXAM, LABORLENGTH, DAYSHOSP,
+            BABYHOSP, PPVISIT, PPVISITTIME1, PPVISITTIME2, EXCLUSIVEBF,PARITY, 
+            HEIGHT, PREPREG_WEIGHT, RACE, INSURANCE, LANGUAGE, BMI, DOULA, 
+            DOULAC1, DOULAC2, DOULAC3, LEARNED1, PRENAT,
+            WEAN, ZIP, FAMSIZE1, FAMSIZE2, INCOME, IMMIGRATION, all_of(ignores))) %>% 
+  select(-c(UID2)) %>% 
+  colnames()
+
+exclude <- LTM2 %>% 
+  select(c(NUMB_BIRTH, HEIGHT_FEET, HEIGHT_INCHES, LEARNED2,LEARNED1,
+           DUEDATE_D, DUEDATE_Y, BIRTHDATE_D,  VAGEXAM, LABORLENGTH, DAYSHOSP,
+           BABYHOSP, PPVISIT, PPVISITTIME1, PPVISITTIME2, EXCLUSIVEBF,
+           PARITY, HEIGHT, PREPREG_WEIGHT, RACE, INSURANCE, LANGUAGE, BMI, 
+           DOULA, DOULAC1, DOULAC2, DOULAC3, LEARNED1, PRENAT,
+           WEAN, ZIP, FAMSIZE1, FAMSIZE2, INCOME, IMMIGRATION, UID2, 
+           all_of(ignores))) %>% 
+  colnames()

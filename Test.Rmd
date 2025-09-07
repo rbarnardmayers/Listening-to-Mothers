@@ -1,0 +1,42 @@
+---
+title: "Test"
+author: "Ruby Barnard-Mayers"
+date: "2025-09-07"
+output: html_document
+---
+
+
+```{r include = F}
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/ApplyDictionary.R")
+library(survey)
+library(ggplot2)
+library(kableExtra)
+library(tidyr)
+library(ggsurvey)
+library(rlang)
+library(knitr)
+```
+Results 
+
+
+``` {r echo = F, results = 'asis'} 
+for(i in include){
+    lab = dict2[dict2$variable == i,]$variable_label
+  if(is_empty(lab)){
+  print(print.cat(get({{i}})) %>% 
+    kbl(caption = i) %>% 
+    kable_styling())} else {
+      print(print.cat(get({{i}})) %>% 
+    kbl(caption = lab) %>% 
+    kable_styling())
+    }
+    
+    
+}
+```
+
+
+
+
+
+

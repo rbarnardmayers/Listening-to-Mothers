@@ -44,7 +44,7 @@ print.cat <- function(var, data = LTM_final){
 }
 
 print.cont <- function(var, data = LTM_final){
-  tab1 <- LTM_final %>%
+  tab1 <- data %>%
     as_survey(weights = c(wght)) %>%
     summarize(mean = survey_mean({{var}}, na.rm = T, vartype = "ci"))%>% 
     mutate(ci = paste0(round(mean_low, 2), ", ", round(mean_upp, 2)), 
@@ -66,12 +66,12 @@ print.2by2 <- function(var1, var2){
 }
 
 # Refactor 
-refac.fun <- function(col){
+refac.fun <- function(col, vars = c("Missing")){
   LTM_final[[col]] <- factor(LTM_final[[col]])
   t <- data.frame(names = levels(LTM_final[[col]]))
   t_n <- t$names 
-  all <- t_n[t_n != "Missing"]
-  all <- c(all, "Missing")
+  all <- t_n[!(t_n %in% vars)]
+  all <- c(all, vars)
   LTM_final[[col]] <- factor(LTM_final[[col]], levels = all)
   return(LTM_final[[col]])
 }
@@ -107,11 +107,5 @@ dict <- dict %>%
 colnames(dict2) <- c("variable", "variable_label")
 data_dict <- merge(dict, dict2)
 
-
-
-
-
-
-
-
-
+# rm(dict)
+# rm(dict2)
