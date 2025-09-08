@@ -1,13 +1,9 @@
 ---
-title: "Test"
+title: "Output_Word"
 author: "Ruby Barnard-Mayers"
-date: "2025-09-07"
-output: html_document
+date: "2025-09-08"
+output: word_document
 ---
-### To do 
-- Print out the unweighted counts too
-- Abbreviations: AIAN/NHPI, Hispanic/Latino
-- Match categorization based on weighting methods 
 
 ```{r include = F}
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/ApplyDictionary.R")
@@ -23,19 +19,19 @@ library(knitr)
 ### Categorical Results 
 
 ``` {r echo = F, results = 'asis'} 
-for(i in include){
-    lab = dict2[dict2$variable == i,]$variable_label
-  if(is_empty(lab)){
-  print(print.cat(get({{i}})) %>% 
-    kbl(caption = i) %>% 
-    kable_styling())} else {
-      print(print.cat(get({{i}})) %>% 
-    kbl(caption = lab) %>% 
-    kable_styling())
-    }
-    
-    
-}
+# for(i in include){
+#     lab = dict2[dict2$variable == i,]$variable_label
+#   if(is_empty(lab)){
+#   print(print.cat(get({{i}})) %>% 
+#     kbl(caption = i) %>% 
+#     kable_styling())} else {
+#       print(print.cat(get({{i}})) %>% 
+#     kbl(caption = lab) %>% 
+#     kable_styling())
+#     }
+#     
+#     
+# }
 ```
 
 # Continuous results
@@ -46,7 +42,7 @@ for(i in continuous){
   print(print.cont(get({{i}})) %>% 
     kbl(caption = i) %>% 
     kable_styling())} else {
-      print(print.cat(get({{i}})) %>% 
+      print(print.cont(get({{i}})) %>% 
     kbl(caption = lab) %>% 
     kable_styling())
     }
@@ -60,6 +56,5 @@ for(i in continuous){
 
 ```
 
-
-
+### Including Plots
 

@@ -44,6 +44,8 @@ LTM2 <- LTM1 %>%
          HEIGHT = (HEIGHT_FEET*12) + HEIGHT_INCHES, 
          PREPREG_WEIGHT = case_when(is.na(PREPREG_WEIGHT_A1) ~ 2.20462 * PREPREG_WEIGHT_B1, 
                                     !is.na(PREPREG_WEIGHT_A1) ~ PREPREG_WEIGHT_A1), 
+         PREG_WEIGHT = case_when(is.na(PREGWEIGHT_A1) ~ 2.20462 * PREGWEIGHT_B1, 
+                                    !is.na(PREGWEIGHT_A1) ~ PREGWEIGHT_A1), 
          RACE = case_when(RACEC2 == 1 ~ "Hispanic", 
                           RACEC1 == 1 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NHW", 
                           RACEC1 == 0 & RACEC3 == 1 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NH Black or African American", 

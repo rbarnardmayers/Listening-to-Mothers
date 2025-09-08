@@ -3,7 +3,7 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Data Cleaning.R")
 
 LTM_include <- LTM2 %>% select(c(all_of(include)), UID2)
 LTM_include <- recode_vrs(data = LTM_include, data_dictionary = data_dict, 
-                   vrs = include)
+                          vrs = include)
 
 LTM_include[is.na(LTM_include)] <- "Missing"
 
@@ -14,9 +14,9 @@ LTM_final <- LTM2 %>%
 # Refactor ----
 col_list <- include
 for(i in col_list){
-
+  
   LTM_final[[i]] <- refac.fun(i)
-
+  
 }
 
 LTM_final <- LTM_final %>% 
@@ -52,12 +52,46 @@ include <- LTM_final %>%
             INTERNATIONAL_IP,AGEDIFF, ATTENTION_CHECK,BIRTHDATE,wght,
             DUEDATE,DAYSDIFFERENCE,GESTAGE,GESTAGE_WEEKS,
             GESTAGE_DAYS,HEIGHTFT_IN,COMBINEDHEIGHT,PREGWEIGHTCHECK, 
-            PREPREG_WEIGHT_A1,FIRSTVISIT,PREGCONDITIONC11,MODE12,MODE13, 
-            MODE14, MODE15,  DUEDATE_D, DUEDATE_Y, BIRTHDATE_D,  
+            PREPREG_WEIGHT_A1,FIRSTVISIT,PREGCONDITIONC11, 
+            DUEDATE_D, DUEDATE_Y, BIRTHDATE_D,  
             VAGEXAM, LABORLENGTH, DAYSHOSP, BABYHOSP, PPVISIT, 
-            PPVISITTIME1, PPVISITTIME2, EXCLUSIVEBF,PARITY,
+            PPVISITTIME1, PPVISITTIME2, EXCLUSIVEBF,
             HEIGHT, PREPREG_WEIGHT, RACE, INSURANCE, LANGUAGE, BMI, DOULA,
-            DOULAC1, DOULAC2, DOULAC3, LEARNED1, PRENAT,
+            DOULAC1, DOULAC2, DOULAC3, LEARNED1, PRENAT, PRENAT,
             WEAN, ZIP, FAMSIZE1, FAMSIZE2, INCOME, IMMIGRATION)) %>%
   select(-c(UID2)) %>%
   colnames()
+
+continuous <- LTM_final %>%  
+  select(c(HEIGHT, AGE,YEARBIRTH,
+           BABY_SURVEYAGE_MONTHS,PREG_INT,NUMB_BIRTH,LABORPERMIT_D1,
+           LABORPERMIT_D2,LABORPERMIT_E1,LABORPERMIT_E2,
+           BIRTHWEIGHT_LBS,BIRTHWEIGHT_OZ,BIRTHWEIGHT_G,AGEBIRTH,
+           DISABLEYRS,AGEDIFF,
+           DAYSDIFFERENCE,GESTAGE,
+           FIRSTVISIT, VAGEXAM, LABORLENGTH, DAYSHOSP, BABYHOSP, PPVISIT, 
+           PPVISITTIME1, PPVISITTIME2, EXCLUSIVEBF,
+           HEIGHT, PREPREG_WEIGHT, BMI,
+           LEARNED1, WEAN, FAMSIZE1, FAMSIZE2, INCOME, IMMIGRATION)) %>% 
+  colnames()
+
+
+for(i in continuous){
+  
+  LTM_final[[i]] <- as.numeric(LTM_final[[i]])
+  
+}
+
+
+# for(i in c('AGE', 'SCREEN', 'YEARBIRTH','BABY_SURVEYAGE_MONTHS','PREG_INT','LABORPERMIT_D1',
+#   'LABORPERMIT_D2','LABORPERMIT_E1','LABORPERMIT_E2','BIRTHWEIGHT_LBS','BIRTHWEIGHT_OZ',
+#   'BIRTHWEIGHT_G','AGEBIRTH','DISABLEYRS','AGEDIFF','DAYSDIFFERENCE','GESTAGE',
+#   'FIRSTVISIT')){
+#   
+#   LTM_final[[i]] <- as.numeric(LTM_final[[i]])
+#   
+# }
+# 
+
+
+
