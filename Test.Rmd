@@ -1,5 +1,5 @@
 ---
-title: "Test"
+title: "LTM Report Tables (Univariate)"
 author: "Ruby Barnard-Mayers"
 date: "2025-09-07"
 output: html_document
@@ -13,51 +13,77 @@ output: html_document
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/ApplyDictionary.R")
 library(survey)
 library(ggplot2)
+library(flextable)
 library(kableExtra)
 library(tidyr)
 library(ggsurvey)
 library(rlang)
 library(knitr)
+
+set_flextable_defaults(
+  font.size = 10, # theme_fun = theme_vanilla,
+  padding = 6,
+  background.color = "white")
 ```
 
 ### Categorical Results 
 
-``` {r echo = F, results = 'asis'} 
-for(i in include){
-    lab = dict2[dict2$variable == i,]$variable_label
+``` {r echo = F, results = 'asis', eval = F} 
+for(i in categorical){
+  lab = dict2[dict2$variable == i,]$variable_label
   if(is_empty(lab)){
-  print(print.cat(get({{i}})) %>% 
-    kbl(caption = i) %>% 
-    kable_styling())} else {
-      print(print.cat(get({{i}})) %>% 
-    kbl(caption = lab) %>% 
-    kable_styling())
-    }
-    
-    
+    print(print.cat(get({{i}})) %>% 
+            kbl(caption = i) %>% 
+            kable_styling())} else { 
+              print(print.cat(get({{i}})) %>% 
+                      kbl(caption = lab) %>% 
+                      kable_styling())
+            }
 }
+
+
 ```
 
 # Continuous results
-``` {r echo = F, results = 'asis'} 
+``` {r echo = F, eval = F, results = 'asis'} 
 for(i in continuous){
-    lab = dict2[dict2$variable == i,]$variable_label
+  lab = dict2[dict2$variable == i,]$variable_label
   if(is_empty(lab)){
-  print(print.cont(get({{i}})) %>% 
-    kbl(caption = i) %>% 
-    kable_styling())} else {
-      print(print.cat(get({{i}})) %>% 
-    kbl(caption = lab) %>% 
-    kable_styling())
-    }
-    
-    
+    print(print.cont(get({{i}})) %>%
+            kbl(caption = i) %>%
+            kable_styling())} else {
+              print(print.cont(get({{i}})) %>%
+                      kbl(caption = lab) %>%
+                      kable_styling())
+            }
+  
+  
 }
 ```
 
+### Plots 
 ```{r, echo = F}
-# LTM_final %>% ggplot(aes(x = LANGUAGE, group = RACE)) + geom_bar(aes(fill = RACE), position = "dodge") + coord_flip()
-
+LTM_final %>% 
+  as_survey(weights = c(wght)) %>%
+  group_by(RACE, PROVIDERCHOICE, INSURANCE) %>% 
+  summarize(pct = survey_prop(vartype = "ci")) %>% 
+  ggplot(aes(x = RACE, y = pct, fill = PROVIDERCHOICE)) +
+  geom_col(position = position_stack(reverse = FALSE)) +
+  facet_wrap(~ INSURANCE) +
+  coord_flip() +  # horizontal bars like in report
+  scale_fill_manual(values = c("No choice" = "grey70", "Choice" = "steelblue")) +
+  labs(
+    title = "Choice of Prenatal Care Provider, by Race/Ethnicity and Payer (California, 2016)",
+    x = "Race / Ethnicity",
+    y = "Percent of respondents",
+    fill = "Provider choice"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    strip.text = element_text(size = 12),  # facet labels
+    axis.text = element_text(size = 11),
+    legend.position = "bottom"
+  )
 ```
 
 
