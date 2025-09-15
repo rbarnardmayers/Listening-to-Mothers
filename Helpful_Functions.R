@@ -26,6 +26,11 @@ convert.yn <- function(dat, vars){
 }
 
 print.cat <- function(var, data = LTM_final){
+  counts <- LTM_final %>% 
+    group_by({{var}}) %>% 
+    summarise(n = n())
+  colnames(counts) <- c("delete1", "Unweighted Counts")
+  
   tab1 <- data %>%
     as_survey(weights = c(wght)) %>%
     group_by({{var}}) %>%
@@ -35,11 +40,13 @@ print.cat <- function(var, data = LTM_final){
            prop_upp = 100 * prop_upp) %>%
     as.data.frame() %>% 
     mutate(ci = paste0(round(prop_low, 1), "%, ", round(prop_upp, 1), "%"), 
-           prop = paste0(round(prop, 1), "%")) %>% 
-    select(-c(prop_low, prop_upp)) %>%
-    rename(Proportion = prop, 
-           CI = ci)
-  colnames(tab1) <- c("Values", "Proportion", "Confidence Interval")
+           prop = paste0(round(prop, 1), "%"),
+           results = paste0(prop, " (", ci, ")")) %>%
+    select(-c(prop_low, prop_upp, prop,ci))
+  colnames(tab1) <- c("Values", "Weighted Proportion")
+  
+  tab1 <- cbind(select(counts, -c(delete1)), tab1) %>% relocate(Values)
+  
   return(tab1)
 }
 

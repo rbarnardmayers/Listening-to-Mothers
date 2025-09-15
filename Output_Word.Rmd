@@ -19,35 +19,35 @@ library(knitr)
 ### Categorical Results 
 
 ``` {r echo = F, results = 'asis'} 
-# for(i in include){
-#     lab = dict2[dict2$variable == i,]$variable_label
-#   if(is_empty(lab)){
-#   print(print.cat(get({{i}})) %>% 
-#     kbl(caption = i) %>% 
-#     kable_styling())} else {
-#       print(print.cat(get({{i}})) %>% 
-#     kbl(caption = lab) %>% 
-#     kable_styling())
-#     }
-#     
-#     
-# }
+for(i in categorical){
+  lab = dict2[dict2$variable == i,]$variable_label
+  if(is_empty(lab)){
+    print(print.cat(get({{i}})) %>%
+            kbl(caption = i) %>%
+            kable_styling())} else {
+              print(print.cat(get({{i}})) %>%
+                      kbl(caption = lab) %>%
+                      kable_styling())
+            }
+  
+  
+}
 ```
 
 # Continuous results
 ``` {r echo = F, results = 'asis'} 
 for(i in continuous){
-    lab = dict2[dict2$variable == i,]$variable_label
+  lab = dict2[dict2$variable == i,]$variable_label
   if(is_empty(lab)){
-  print(print.cont(get({{i}})) %>% 
-    kbl(caption = i) %>% 
-    kable_styling())} else {
-      print(print.cont(get({{i}})) %>% 
-    kbl(caption = lab) %>% 
-    kable_styling())
-    }
-    
-    
+    print(print.cont(get({{i}})) %>% 
+            kbl(caption = i) %>% 
+            kable_styling())} else {
+              print(print.cont(get({{i}})) %>% 
+                      kbl(caption = lab) %>% 
+                      kable_styling())
+            }
+  
+  
 }
 ```
 
