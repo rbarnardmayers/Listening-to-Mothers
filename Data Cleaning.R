@@ -1,7 +1,7 @@
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Helpful_Functions.R")
 
 # Data Read in ----
-LTM <- read.csv("Data_7.25.25.csv")
+LTM <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Data_9.4.25.csv")
 
 # Get rid of identifying information 
 LTM1 <- LTM[,c(1,2,46,47,55,58,74:736)] %>% select(-c(CHILDNAME)) 
@@ -93,5 +93,5 @@ LTM2 <- LTM1 %>%
 
 
 rm(LTM1)
-
+# Midwife, physician, other for provider
 

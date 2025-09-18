@@ -1,0 +1,38 @@
+---
+title: "Categorical Results"
+author: "Ruby Barnard-Mayers"
+date: "2025-09-17"
+output:
+  word_document: default
+---
+
+```{r setup, include = F}
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/ApplyDictionary.R")
+library(survey)
+library(ggplot2)
+library(kableExtra)
+library(tidyr)
+library(ggsurvey)
+library(rlang)
+library(knitr)
+library(flextable)
+
+```
+
+### Categorical Results 
+
+``` {r results = "asis", echo = F}
+
+for(i in categorical){
+  lab = dict2[dict2$variable == i,]$variable_label
+  if(is_empty(lab)){
+    k <- print.cat(get({{i}}))} else {
+      k <- print.cat(get({{i}}))
+    }
+        print(k %>% 
+              kbl(caption = paste0("Results for: ", dict2[dict2$variable == i,]$variable_label)) %>%
+              kable_styling())
+  
+}
+
+```

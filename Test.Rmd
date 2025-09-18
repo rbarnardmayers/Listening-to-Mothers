@@ -19,71 +19,62 @@ library(tidyr)
 library(ggsurvey)
 library(rlang)
 library(knitr)
+library(officedown)
+library(officer)
 
-set_flextable_defaults(
-  font.size = 10, # theme_fun = theme_vanilla,
-  padding = 6,
-  background.color = "white")
+fp <- fp_par(
+  text.align = "center", 
+  padding.bottom = 20, padding.top = 120, 
+  border.bottom = fp_border())
+
+ft <- fp_text(shading.color='#EFEFEF', bold = TRUE)
+
+pinks <- c("#e89a96", "#f3cccb", "#ebaba9", "#f9f3f4", "#efb9b7")
+greys <- c("#616366","#c1c3c5", "#c0c3c4","#edeced", "#e5e6e7")
 ```
 
-### Categorical Results 
+#### PROVIDER 
 
-``` {r echo = F, results = 'asis', eval = F} 
+```{r message = F, echo = F, results = "asis"}
 for(i in categorical){
   lab = dict2[dict2$variable == i,]$variable_label
   if(is_empty(lab)){
-    print(print.cat(get({{i}})) %>% 
-            kbl(caption = i) %>% 
-            kable_styling())} else { 
-              print(print.cat(get({{i}})) %>% 
-                      kbl(caption = lab) %>% 
-                      kable_styling())
-            }
+    k <- print.cat(get({{i}}))} else {
+      k <- print.cat(get({{i}}))
+    }
+        print(k %>% 
+              kbl(caption = paste0("Results for: ", dict2[dict2$variable == i,]$variable_label)) %>%
+              kable_styling())
+  
+        
 }
 
 
-```
-
-# Continuous results
-``` {r echo = F, eval = F, results = 'asis'} 
-for(i in continuous){
-  lab = dict2[dict2$variable == i,]$variable_label
-  if(is_empty(lab)){
-    print(print.cont(get({{i}})) %>%
-            kbl(caption = i) %>%
-            kable_styling())} else {
-              print(print.cont(get({{i}})) %>%
-                      kbl(caption = lab) %>%
-                      kable_styling())
-            }
-  
-  
-}
 ```
 
 ### Plots 
 ```{r, echo = F}
-LTM_final %>% 
-  as_survey(weights = c(wght)) %>%
-  group_by(RACE, PROVIDERCHOICE, INSURANCE) %>% 
-  summarize(pct = survey_prop(vartype = "ci")) %>% 
-  ggplot(aes(x = RACE, y = pct, fill = PROVIDERCHOICE)) +
-  geom_col(position = position_stack(reverse = FALSE)) +
-  facet_wrap(~ INSURANCE) +
-  coord_flip() +  # horizontal bars like in report
-  scale_fill_manual(values = c("No choice" = "grey70", "Choice" = "steelblue")) +
-  labs(
-    title = "Choice of Prenatal Care Provider, by Race/Ethnicity and Payer (California, 2016)",
-    x = "Race / Ethnicity",
-    y = "Percent of respondents",
-    fill = "Provider choice"
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(
-    strip.text = element_text(size = 12),  # facet labels
-    axis.text = element_text(size = 11),
-    legend.position = "bottom"
-  )
+# LTM_final %>% 
+#   as_survey(weights = c(wght)) %>%
+#   group_by(RACE, PROVIDERCHOICE, INSURANCE) %>% 
+#   summarize(pct = survey_prop(vartype = "ci")) %>% 
+#   ggplot(aes(x = RACE, y = pct, fill = PROVIDERCHOICE)) +
+#   geom_col(position = position_stack(reverse = FALSE)) +
+#   facet_wrap(~ INSURANCE) +
+#   coord_flip() +  # horizontal bars like in report
+#   scale_fill_manual(values = c("No choice" = "grey70", "Choice" = "steelblue")) +
+#   labs(
+#     title = "Choice of Prenatal Care Provider, by Race/Ethnicity and Payer (California, 2016)",
+#     x = "Race / Ethnicity",
+#     y = "Percent of respondents",
+#     fill = "Provider choice"
+#   ) +
+#   theme_minimal(base_size = 14) +
+#   theme(
+#     strip.text = element_text(size = 12),  # facet labels
+#     axis.text = element_text(size = 11),
+#     legend.position = "bottom"
+#   )
 ```
 
 

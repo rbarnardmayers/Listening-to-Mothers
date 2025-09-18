@@ -40,7 +40,7 @@ LTM_final <- LTM_final %>%
 categorical <- LTM_final %>%
   select(-c(HEIGHT,CaseId,MDID,ST, INTRO, AGE,SCREEN,TIMES,YEARBIRTH, 
             all_of(ignores),BW_LBSANDOZ,SURVEYYEAR,SURVEYMONTHS,SURVEYDAYS,
-            SURVEYDATE,BABY_SURVEYAGE_MONTHS,FINAL_QC,FINAL_DETERMINATION,
+            SURVEYDATE,FINAL_QC,FINAL_DETERMINATION,
             ends_with("BIRTHYEAR"), starts_with("SCREEN"), starts_with("TRAP"),
             AGE_FLAG,CURRWEIGHT_LBS,PREGWEIGHT_B1,PREGWEIGHT_A1,
             starts_with("FOLLOWUP"),
@@ -70,10 +70,28 @@ for(i in categorical){
   LTM_final[[i]] <- refac.fun(i)
 }
 
+# Catgorical by Chapter ----
+
+cat_2 <- LTM_final %>% 
+  select(c("NUMB_BIRTH", 'PARITY', 'PREG_INT', starts_with("PREPREG_PH"), 
+           starts_with("PREPREG_MH"), 'PROVIDER', 'PROVIDERCHOICE', 
+           DOULA, DOULA1, LEARNED1, LEARNED2, starts_with("CARESETTING"), 
+           starts_with("CARETYPE"), starts_with("CAREMODE"), )) %>%
+  colnames()
+cont_2 <- LTM_final %>% 
+  select(c(PREG_WEIGHT, HEIGHT, BMI, PREPREG_WEIGHT)) %>%
+  colnames()
+
+cat_3 <- c()
+cat_4 <- c()
+cat_5 <- c()
+cat_6 <- c()
+
+
 # Convert continuous variables into numeric class ----
 continuous <- LTM_final %>%  
-  select(c(HEIGHT, AGE,YEARBIRTH,
-           BABY_SURVEYAGE_MONTH,NUMB_BIRTH,
+  select(c(AGE,YEARBIRTH,BABY_SURVEYAGE_MONTHS,
+           NUMB_BIRTH,
            BIRTHWEIGHT_LBS,BIRTHWEIGHT_OZ,BIRTHWEIGHT_G,AGEBIRTH,
            DISABLEYRS,PREG_WEIGHT, GESTAGE,
            FIRSTVISIT, VAGEXAM, LABORLENGTH, DAYSHOSP, BABYHOSP, PPVISIT, 
