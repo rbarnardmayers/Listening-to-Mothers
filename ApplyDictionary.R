@@ -34,15 +34,15 @@ LTM_final <- LTM2 %>%
 
 # Create a weight variable while waiting for final version of dataset ----
 LTM_final <- LTM_final %>% 
-  mutate(wght = rnorm(1613, mean = 1, sd = .02))
+  mutate(wght = rnorm(nrow(LTM_final), mean = 1, sd = .02))
 
 # Create list of categorical variables by excluding numeric ----
 categorical <- LTM_final %>%
   select(-c(HEIGHT,CaseId,MDID,ST, INTRO, AGE,SCREEN,TIMES,YEARBIRTH, 
             all_of(ignores),BW_LBSANDOZ,SURVEYYEAR,SURVEYMONTHS,SURVEYDAYS,
-            SURVEYDATE,FINAL_QC,FINAL_DETERMINATION,
+            SURVEYDATE,
             ends_with("BIRTHYEAR"), starts_with("SCREEN"), starts_with("TRAP"),
-            AGE_FLAG,CURRWEIGHT_LBS,PREGWEIGHT_B1,PREGWEIGHT_A1,
+            CURRWEIGHT_LBS,PREGWEIGHT_B1,PREGWEIGHT_A1,
             starts_with("FOLLOWUP"),
             starts_with("x"),contains("FLAG"), starts_with("F2_"),ends_with("O"),
             starts_with("F3_"),  starts_with("F1_"),starts_with("X"),
@@ -50,15 +50,15 @@ categorical <- LTM_final %>%
             TRAP_AREA_SELECTOR,NUMB_BIRTH,HEIGHT_FEET,HEIGHT_INCHES,CURRWEIGHT_KG,
             LABORPERMIT_D1,LABORPERMIT_D2,LABORPERMIT_E1,LABORPERMIT_E2,
             BIRTHWEIGHT_LBS,BIRTHWEIGHT_OZ,BIRTHWEIGHT_G,AGEBIRTH,AGECHECK,
-            DISABLEYRS,SPANISHFLAG,DKREF_COUNT,DKREF_PERCENT,K,
+            DISABLEYRS,DKREF_COUNT,DKREF_PERCENT,
             INTERNATIONAL_IP,AGEDIFF, ATTENTION_CHECK,BIRTHDATE,wght,
             DUEDATE,DAYSDIFFERENCE,GESTAGE,GESTAGE_WEEKS,LABORPERMIT_D1,
             LABORPERMIT_D2,LABORPERMIT_E1,LABORPERMIT_E2,PREG_INT,
             GESTAGE_DAYS,HEIGHTFT_IN,COMBINEDHEIGHT,PREGWEIGHTCHECK, 
             PREPREG_WEIGHT_A1,FIRSTVISIT,PREGCONDITIONC11, PREPREGWEIGHTCHECK,
-            DUEDATE_D, DUEDATE_Y, BIRTHDATE_D,  NRACE,Q2_FLAG,LEARNED1,
+            DUEDATE_D, DUEDATE_Y, BIRTHDATE_D,LEARNED1,
             VAGEXAM, LABORLENGTH, DAYSHOSP, BABYHOSP, PPVISIT, PREG_WEIGHT,
-            PPVISITTIME1, PPVISITTIME2, EXCLUSIVEBF,ZIPSTATE,racecount,
+            PPVISITTIME1, PPVISITTIME2, EXCLUSIVEBF,ZIPSTATE,
             HEIGHT, PREPREG_WEIGHT, RACE, INSURANCE, LANGUAGE, BMI, DOULA,
             DOULAC1, DOULAC2, DOULAC3, LEARNED1, PRENAT, PRENAT,IMMIGRATION,
             WEAN, ZIP, FAMSIZE1, FAMSIZE2, INCOME, IMMIGRATION)) %>%
@@ -72,20 +72,20 @@ for(i in categorical){
 
 # Catgorical by Chapter ----
 
-cat_2 <- LTM_final %>% 
-  select(c("NUMB_BIRTH", 'PARITY', 'PREG_INT', starts_with("PREPREG_PH"), 
-           starts_with("PREPREG_MH"), 'PROVIDER', 'PROVIDERCHOICE', 
-           DOULA, DOULA1, LEARNED1, LEARNED2, starts_with("CARESETTING"), 
-           starts_with("CARETYPE"), starts_with("CAREMODE"), )) %>%
-  colnames()
-cont_2 <- LTM_final %>% 
-  select(c(PREG_WEIGHT, HEIGHT, BMI, PREPREG_WEIGHT)) %>%
-  colnames()
-
-cat_3 <- c()
-cat_4 <- c()
-cat_5 <- c()
-cat_6 <- c()
+# cat_2 <- LTM_final %>% 
+#   select(c("NUMB_BIRTH", 'PARITY', 'PREG_INT', starts_with("PREPREG_PH"), 
+#            starts_with("PREPREG_MH"), 'PROVIDER', 'PROVIDERCHOICE', 
+#            DOULA, DOULA1, LEARNED1, LEARNED2, starts_with("CARESETTING"), 
+#            starts_with("CARETYPE"), starts_with("CAREMODE"), )) %>%
+#   colnames()
+# cont_2 <- LTM_final %>% 
+#   select(c(PREG_WEIGHT, HEIGHT, BMI, PREPREG_WEIGHT)) %>%
+#   colnames()
+# 
+# cat_3 <- c()
+# cat_4 <- c()
+# cat_5 <- c()
+# cat_6 <- c()
 
 
 # Convert continuous variables into numeric class ----
@@ -104,6 +104,8 @@ for(i in continuous){
   LTM_final[[i]] <- as.numeric(LTM_final[[i]])
 }
 
-
+rm(LTM_include)
+rm(LTM2)
+gc()
 
 

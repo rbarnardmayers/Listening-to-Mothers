@@ -1,5 +1,3 @@
-# MAKE A HELPFUL FUNCTION SHEET
-
 # Libraries ----
 library(dplyr)
 library(stringr)
@@ -8,8 +6,9 @@ library(srvyr)
 library(readxl)
 library(tidyr)
 library(phdcocktail)
+library(openxlsx)
 
-# Functions ---- 
+# Convert to numeric ----
 convert.fun <- function(dat, vars){
   for(i in vars){
     dat[[i]] <- as.numeric(dat[[i]])
@@ -17,6 +16,7 @@ convert.fun <- function(dat, vars){
   return(dat)
 }
 
+# Make yes/no from 1/0 ----
 convert.yn <- function(dat, vars){
   for(i in vars){
     dat[[i]] <- ifelse(dat[[i]] == 1, "Yes", 
@@ -25,6 +25,7 @@ convert.yn <- function(dat, vars){
   return(dat)
 }
 
+# Print out categorical frequencies ----
 print.cat <- function(var, data = LTM_final){
   counts <- LTM_final %>% 
     group_by({{var}}) %>% 
@@ -50,6 +51,7 @@ print.cat <- function(var, data = LTM_final){
   return(tab1)
 }
 
+# Print continuous info ----
 print.cont <- function(var, data = LTM_final){
   tab1 <- data %>%
     as_survey(weights = c(wght)) %>%
@@ -61,6 +63,7 @@ print.cont <- function(var, data = LTM_final){
   return(tab1)
 }
 
+# Look at 2 by 2 tables ----
 print.2by2 <- function(var1, var2){
   tab1 <- LTM_final %>%
     as_survey(weights = c(wght)) %>%
@@ -72,7 +75,7 @@ print.2by2 <- function(var1, var2){
   return(tab1)
 }
 
-# Refactor 
+# Refactor categorical ----
 refac.fun <- function(col, vars = c("Missing")){
   LTM_final[[col]] <- factor(LTM_final[[col]])
   t <- data.frame(names = levels(LTM_final[[col]]))
@@ -83,7 +86,7 @@ refac.fun <- function(col, vars = c("Missing")){
   return(LTM_final[[col]])
 }
 
-# Refactor numeric 
+# Refactor numeric ----
 refac.num <- function(col, val = c("Missing")){
   LTM_final[[col]] <- factor(LTM_final[[col]])
   t <- data.frame(names = levels(LTM_final[[col]]))
@@ -96,7 +99,6 @@ refac.num <- function(col, val = c("Missing")){
   return(LTM_final[[col]])
   
 }
-
 
 # Data Dictionary ----
 dict <- read_excel("Data_Dictionary.xlsx", 
@@ -114,5 +116,5 @@ dict <- dict %>%
 colnames(dict2) <- c("variable", "variable_label")
 data_dict <- merge(dict, dict2)
 
-# rm(dict)
-# rm(dict2)
+rm(dict)
+rm(dict2)
