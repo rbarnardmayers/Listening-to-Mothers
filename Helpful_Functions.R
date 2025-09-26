@@ -100,6 +100,35 @@ refac.num <- function(col, val = c("Missing")){
   
 }
 
+# Collapsing into one ----
+collapse.fun <- function(cols, data = LTM_final){ 
+  dat <- data.frame(Object = cols, 
+                    pct = NA, 
+                    lower = NA, 
+                    upper = NA)
+  
+  for(i in cols) {
+    tab <- data %>% 
+      as_survey(weights = c(wght)) %>% 
+      group_by(get(i)) %>% 
+      summarize(pct = survey_prop(vartype = "ci")) %>% 
+      as.data.frame()
+    tab <- tab[2,]
+    dat[dat$Object == i, 2:4] <- tab[,2:4]
+  }
+  return(dat)
+}
+
+# Likert function ----
+likert <- function(col){
+  LTM_final[,col] <- ifelse(LTM_final[,col] == "No, never", 0,
+                            ifelse(LTM_final[,col] == "Yes, a few times", 1, 
+                                   ifelse(LTM_final[,col] == "Yes, most of the time", 2,
+                                          ifelse(LTM_final[,col] == "Yes, all the time", 3, NA))))
+  
+  return(LTM_final[,col])
+}
+
 # Data Dictionary ----
 dict <- read_excel("Data_Dictionary.xlsx", 
                    sheet = "Variable Values") 
@@ -111,7 +140,7 @@ colnames(dict) <- c("variable", "value", "value_label")
 
 dict <- dict %>% 
   fill(variable) #%>% 
-  # mutate(value = as.numeric(value))
+# mutate(value = as.numeric(value))
 
 colnames(dict2) <- c("variable", "variable_label")
 data_dict <- merge(dict, dict2)

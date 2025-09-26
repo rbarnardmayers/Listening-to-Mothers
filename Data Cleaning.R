@@ -4,12 +4,20 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Helpful_Functions.R")
 LTM <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Data_9.4.25.csv")
 LTM <- LTM %>% subset(FINAL_DETERMINATION == "Keep")
 
-# Get rid of identifying information 
-
-LTM1 <- LTM[,c(1,2,46,47,55,58,74:730)] %>% 
-  select(-c(CHILDNAME, FINAL_DETERMINATION, FINAL_QC, contains("FLAG"),
-            starts_with("F1"), starts_with("F2"), starts_with("F3"), 
-            starts_with("x"), starts_with("X")))
+# Get rid of identifying information ----
+LTM1 <- LTM %>% select(-c(ResEmail, ResPhone, DialingMode,ManualDialing,resTimeZone,
+                          ResPIN,SurveyName,ResLanguage, PanelistId, CallBackDate,
+                          LastConnectionDate,LastConnectionWeek,LastConnectionStartTime,
+                          ConnectionDurationInSeconds,ConnectionDurationInMinutes,
+                          LastQuestionFilled,NumberOfConnections,resDisposition,
+                          ResCaseResult,TotalDurationSec,Device,DeviceOS,DeviceVersion,
+                          DeviceBrowser,DeviceBrowserVersion,GeoLocation,OfflineUser,
+                          AppointmentDate,SurveyLink,AccessExpiration,CustomResult,
+                          AgentId,AgentUserName,Priority,CallNote,ResCompleted,
+                          ResBlocked,IsAnonymized,ResActive,Modified,DNC,Callback,
+                          PIN,RID,PID,PID1,REFID1,NAME,ADDRESS,CITY,ST,ZIPCODE,BATCHCHILDNAME, FINAL_DETERMINATION, FINAL_QC, contains("FLAG"),
+                          starts_with("F1"), starts_with("F2"), starts_with("F3"), 
+                          starts_with("x"), starts_with("X")))
 
 # Identify text response columns ending for other ----
 ends_o <- LTM1[str_ends(colnames(LTM1), "O")] %>% 
@@ -38,7 +46,7 @@ tochange <- LTM_keep %>%
 for(i in tochange){
   LTM_keep[[i]] <- as.numeric(LTM_keep[[i]])
 }
- 
+
 # for(i in colnames(LTM_ignore)){
 #   if(i %in% colnames(LTM_keep)){
 #     print(i)
