@@ -5,6 +5,7 @@ library(ggplot2)
 library(srvyr)
 library(readxl)
 library(tidyr)
+library(rlang)
 library(phdcocktail)
 library(openxlsx)
 
@@ -51,6 +52,19 @@ print.cat <- function(var, data = LTM_final){
   return(tab1)
 }
 
+# Print out categorical frequencies for figures----
+print.fig <- function(var, data = LTM_final){
+  
+  tab1 <- data %>%
+    as_survey(weights = c(wght)) %>%
+    group_by({{var}}) %>%
+    summarize(prop = survey_prop(vartype = "ci")) %>% 
+    as.data.frame()
+  
+  return(tab1)
+}
+
+
 # Print continuous info ----
 print.cont <- function(var, data = LTM_final){
   tab1 <- data %>%
@@ -74,6 +88,18 @@ print.2by2 <- function(var1, var2){
     spread(key = {{var2}}, value = Value)
   return(tab1)
 }
+
+# Print 2 by 2 tables for figures ----
+fig.2by2 <- function(var1, var2){
+  tab1 <- LTM_final %>%
+    as_survey(weights = c(wght)) %>%
+    group_by({{var1}}, {{var2}}) %>%
+    summarize(prop = survey_prop(vartype = "ci")) %>% 
+    select(-c(prop_low, prop_upp)) %>% 
+    spread(key = {{var2}}, value = prop)
+  return(tab1)
+}
+
 
 # Refactor categorical ----
 refac.fun <- function(col, vars = c("Missing")){
@@ -100,7 +126,7 @@ refac.num <- function(col, val = c("Missing")){
   
 }
 
-# Collapsing into one ----
+# Collapsing into one dataset across multiple columns ----
 collapse.fun <- function(cols, data = LTM_final){ 
   dat <- data.frame(Object = cols, 
                     pct = NA, 
@@ -113,9 +139,35 @@ collapse.fun <- function(cols, data = LTM_final){
       group_by(get(i)) %>% 
       summarize(pct = survey_prop(vartype = "ci")) %>% 
       as.data.frame()
-    tab <- tab[2,]
+    colnames(tab) <- c("Var", "pct", "pct_low", "pct_upp")
+    tab <- tab %>% subset(Var == "Yes")
     dat[dat$Object == i, 2:4] <- tab[,2:4]
   }
+  return(dat)
+}
+
+# 2 by 2 for multiple categories ----
+collapse.2by2 <- function(cols, var, data = LTM_final){
+
+  dat <- data.frame(Variable = levels(factor(LTM_final[[var]])))
+  
+  for(i in cols){
+    var_sym <- sym(i)
+    
+    tab1 <- LTM_final %>%
+      as_survey(weights = c(wght)) %>%
+      group_by(!!sym(var), !!var_sym) %>%
+      summarize(prop = survey_prop(vartype = "ci")) %>% 
+      as.data.frame()
+    colnames(tab1) <- c("Variable", "yn", "prop", "lower", "upper")
+    tab1 <- tab1 %>% 
+      filter(yn == "Yes") %>%
+      select(-c(lower, upper)) %>%
+      spread(key = yn, value = prop) 
+    colnames(tab1) <- c("Variable", i)
+    dat <- merge(dat, tab1)
+  }
+  
   return(dat)
 }
 
@@ -127,6 +179,17 @@ likert <- function(col){
                                           ifelse(LTM_final[,col] == "Yes, all the time", 3, NA))))
   
   return(LTM_final[,col])
+}
+
+# PHQ amd GAD
+recode.phq <- function(col){
+  LTM_final[,col] <- ifelse(LTM_final[,col] == "Never", 0,
+                            ifelse(LTM_final[,col] == "Sometimes", 1,
+                                   ifelse(LTM_final[,col] == "Usually", 2, 
+                                          ifelse(LTM_final[,col] == "Always", 3, NA))))
+  
+  return(LTM_final[,col])
+  
 }
 
 # Data Dictionary ----
