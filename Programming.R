@@ -1,3 +1,4 @@
+setwd("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Listening-to-Mothers")
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/ApplyDictionary.R")
 
 # Data manip for figures ----
@@ -197,7 +198,7 @@ fig_1_23 <- print.fig(CAREMODEPREF)
 
 fig_1_24 <- fig.2by2(CAREMODEPREF, RACE)
 
-fig_1_25 <- fig.2by2(CAREMODEPREF, RURALURBAN)
+# fig_1_25 <- fig.2by2(CAREMODEPREF, RURALURBAN)
 
 # EDUIMPACT ----
 # EDUCIMPACTC1 1 = Helped me understand what would happen at the hospital
@@ -240,7 +241,7 @@ fig_1_30 <- print.fig(PREPREG_MHCONDC1)
 
 fig_1_31 <- fig.2by2(PREPREG_MHCONDC1, RACE)
 
-fig_1_32 <- fig.2by2(PREPREG_MHCONDC1, RURALURBAN)
+# fig_1_32 <- fig.2by2(PREPREG_MHCONDC1, RURALURBAN)
 
 # Anxiety ----
 # PREPREG_MHCONDC2
@@ -249,7 +250,7 @@ fig_1_33 <- print.fig(PREPREG_MHCONDC1)
 
 fig_1_34 <- fig.2by2(PREPREG_MHCONDC1, RACE)
 
-fig_1_35 <- fig.2by2(PREPREG_MHCONDC1, RURALURBAN)
+# fig_1_35 <- fig.2by2(PREPREG_MHCONDC1, RURALURBAN)
 
 # MENTALSUPPORT ----
 # MENTALSUPPORT
@@ -258,7 +259,7 @@ fig_1_36 <- print.fig(MENTALSUPPORT)
 
 fig_1_37 <- fig.2by2(MENTALSUPPORT, RACE)
 
-fig_1_38 <- fig.2by2(MENTALSUPPORT, RURALURBAN)
+# fig_1_38 <- fig.2by2(MENTALSUPPORT, RURALURBAN)
 
 # Social needs ----
 # SOCIALNEEDC1 1 = You or others you lived with ate smaller meals or skipped meals because you didn’t have enough money for food
@@ -293,7 +294,7 @@ fig_1_42 <- print.fig(EMPLOYBEN)
 
 fig_1_43 <- fig.2by2(EMPLOYBEN, RACE)
 
-fig_1_44 <- fig.2by2(EMPLOYBEN, RURALURBAN)
+# fig_1_44 <- fig.2by2(EMPLOYBEN, RURALURBAN)
 
 # BIGBABY1 == 1 ----
 # BIGBABY1
@@ -301,9 +302,9 @@ fig_1_45 <- print.fig(BIGBABY1)
 
 fig_1_46 <- fig.2by2(BIGBABY1, MODE2023)
 
-fig_1_47 <- fig.2by2(BIGBABY1, INDUCTION)
+fig_1_47 <- fig.2by2(BIGBABY1, MEDINDUCE)
 
-fig_1_48 <- fig.2by2(BIGBABY1, BIRTHWEIGHT)
+# fig_1_48 <- fig.2by2(BIGBABY1, BIRTHWEIGHT)
 
 # PLANNEDFEED ----
 # PLANNEDFEEDC1	 1 = Breast milk
@@ -457,7 +458,7 @@ fig_2_26 <- collapse.2by2(c("DRUGFREEC1","DRUGFREEC2","DRUGFREEC3",
                             "DRUGFREEC4","DRUGFREEC5","DRUGFREEC6",
                             "DRUGFREEC7","DRUGFREEC8","DRUGFREEC9",
                             "DRUGFREEC10","DRUGFREEC11","DRUGFREEC12"), "PARITY")
-fig_2_27 <- collapse.2by2.(c("DRUGFREEC1","DRUGFREEC2","DRUGFREEC3",
+fig_2_27 <- collapse.2by2(c("DRUGFREEC1","DRUGFREEC2","DRUGFREEC3",
                              "DRUGFREEC4","DRUGFREEC5","DRUGFREEC6",
                              "DRUGFREEC7","DRUGFREEC8","DRUGFREEC9",
                              "DRUGFREEC10","DRUGFREEC11","DRUGFREEC12"), "BIRTHATTEND")
@@ -652,7 +653,7 @@ fig_4_11 <- collapse.2by2(c("HOSPFEEDC1","HOSPFEEDC2","HOSPFEEDC3",
                             "HOSPFEEDC4","HOSPFEEDC5","HOSPFEEDC6",
                             "HOSPFEEDC7","HOSPFEEDC8","HOSPFEEDC9",
                             "HOSPFEEDC10","HOSPFEEDC11","HOSPFEEDC12"), 
-                          "BFGOALS") # BF GOALS
+                          "BFGOAL") # BF GOALS
 
 # EXCLBFGOAL ----
 # EXCLBFGOAL
@@ -709,12 +710,12 @@ fig_4_26 <- fig.2by2(PHQ4_cat, INSURANCE)
 # PPMEDSC4O 95 = Yes, for something else, please specify
 # PPMEDSC5 97 = No
 # PPMEDSC6 99 = I’d prefer not to answer
-fig_4_18 <- collapse.fun(c('PPMEDSC1', 'PPMEDSC2', 'PPMEDSC3',
+fig_4_27 <- collapse.fun(c('PPMEDSC1', 'PPMEDSC2', 'PPMEDSC3',
                            'PPMEDSC4','PPMEDSC5','PPMEDSC6'))
-fig_4_19 <- collapse.2by2(c('PPMEDSC1', 'PPMEDSC2', 'PPMEDSC3',
-                            'PPMEDSC4','PPMEDSC5','PPMEDSC6') ,RACE)
-fig_4_20 <- collapse.2by2(c('PPMEDSC1', 'PPMEDSC2', 'PPMEDSC3',
-                            'PPMEDSC4','PPMEDSC5','PPMEDSC6') ,INSURANCE)
+fig_4_28 <- collapse.2by2(c('PPMEDSC1', 'PPMEDSC2', 'PPMEDSC3',
+                            'PPMEDSC4','PPMEDSC5','PPMEDSC6') ,"RACE")
+fig_4_29 <- collapse.2by2(c('PPMEDSC1', 'PPMEDSC2', 'PPMEDSC3',
+                            'PPMEDSC4','PPMEDSC5','PPMEDSC6') ,"INSURANCE")
 
 # Social needs resolved & unresolved ----
 # SOCIALNEEDC1 & SNMEAL	Is having enough money for food a concern now?
@@ -726,16 +727,104 @@ fig_4_20 <- collapse.2by2(c('PPMEDSC1', 'PPMEDSC2', 'PPMEDSC3',
 # SOCIALNEEDC7 & SNDRUGS	Are you concerned now about someone in your home using drugs or alcohol?
 # SOCIALNEEDC8 & SNUNSAFE	Do you feel unsafe in your daily life now?
 # SOCIALNEEDC9 & SNABUSE	Is someone in your home threatening or abusing you now?
-fig_4_21 <- print.fig(SNMEAL, data = subset(LTM_final, SOCIALNEEDC1 == "Yes"))
-fig_4_22 <- print.fig(SNLIVE, data = subset(LTM_final, SOCIALNEEDC2 == "Yes"))
-fig_4_23 <- print.fig(SNUTILITIES, data = subset(LTM_final, SOCIALNEEDC3 == "Yes"))
-fig_4_24 <- print.fig(SNTRANSPORT, data = subset(LTM_final, SOCIALNEEDC4 == "Yes"))
-fig_4_25 <- print.fig(SNCHILDCARE, data = subset(LTM_final, SOCIALNEEDC5 == "Yes"))
-fig_4_25 <- print.fig(SNINCOME, data = subset(LTM_final, SOCIALNEEDC6 == "Yes"))
-fig_4_25 <- print.fig(SNDRUGS, data = subset(LTM_final, SOCIALNEEDC7 == "Yes"))
-fig_4_25 <- print.fig(SNUNSAFE, data = subset(LTM_final, SOCIALNEEDC8 == "Yes"))
-fig_4_25 <- print.fig(SNABUSE, data = subset(LTM_final, SOCIALNEEDC9 == "Yes"))
+fig_4_30 <- print.fig(SNMEAL, data = subset(LTM_final, SOCIALNEEDC1 == "Yes"))
+fig_4_31 <- print.fig(SNLIVE, data = subset(LTM_final, SOCIALNEEDC2 == "Yes"))
+fig_4_32 <- print.fig(SNUTILITIES, data = subset(LTM_final, SOCIALNEEDC3 == "Yes"))
+fig_4_33 <- print.fig(SNTRANSPORT, data = subset(LTM_final, SOCIALNEEDC4 == "Yes"))
+fig_4_34 <- print.fig(SNCHILDCARE, data = subset(LTM_final, SOCIALNEEDC5 == "Yes"))
+fig_4_35 <- print.fig(SNINCOME, data = subset(LTM_final, SOCIALNEEDC6 == "Yes"))
+fig_4_36 <- print.fig(SNDRUGS, data = subset(LTM_final, SOCIALNEEDC7 == "Yes"))
+fig_4_37 <- print.fig(SNUNSAFE, data = subset(LTM_final, SOCIALNEEDC8 == "Yes"))
+fig_4_38 <- print.fig(SNABUSE, data = subset(LTM_final, SOCIALNEEDC9 == "Yes"))
 
-# Exporting ----
-#list_of_datasets <- list("Name of DataSheet1" = dataframe1, "Name of Datasheet2" = dataframe2)
-#write.xlsx(list_of_datasets, file = "writeXLSX2.xlsx")
+# Gathering names of figures for each chaper for export ----
+# names_1 <- data.frame(COLS = objects()) %>%
+#   subset(startsWith(as.character(COLS), 'fig_1_'))
+# names_2 <- data.frame(COLS = objects()) %>%
+#   subset(startsWith(as.character(COLS), 'fig_2_'))
+# names_3 <- data.frame(COLS = objects()) %>%
+#   subset(startsWith(as.character(COLS), 'fig_3_'))
+# names_4 <- data.frame(COLS = objects()) %>%
+#   subset(startsWith(as.character(COLS), 'fig_4_'))
+# 
+# datasets_1 <- paste0("list(")
+# for(i in names_1$COLS){
+#   add <- paste0(i, " = ",sym(i), ", ")
+#   datasets_1 <- paste0(datasets_1, add)
+# }
+# datasets_1 <- paste0(datasets_1, ")")
+# datasets_1 <- gsub(", )", "\\)", datasets_1)
+# 
+# datasets_2 <- paste0("list(")
+# for(i in names_2$COLS){
+#   add <- paste0(i, " = ",sym(i), ", ")
+#   datasets_2 <- paste0(datasets_2, add)
+# }
+# datasets_2 <- paste0(datasets_2, ")")
+# datasets_2 <- gsub(", )", "\\)", datasets_2)
+# 
+# datasets_3 <- paste0("list(")
+# for(i in names_3$COLS){
+#   add <- paste0(i, " = ",sym(i), ", ")
+#   datasets_3 <- paste0(datasets_3, add)
+# }
+# datasets_3 <- paste0(datasets_3, ")")
+# datasets_3 <- gsub(", )", "\\)", datasets_3)
+# 
+# datasets_4 <- paste0("list(")
+# for(i in names_4$COLS){
+#   add <- paste0(i, " = ",sym(i), ", ")
+#   datasets_4 <- paste0(datasets_4, add)
+# }
+# datasets_4 <- paste0(datasets_4, ")")
+# datasets_4 <- gsub(", )", "\\)", datasets_4)
+
+# List of datasets ----
+list_1 <- list('fig_1_1' = fig_1_1, 'fig_1_10' = fig_1_10, 'fig_1_11' = fig_1_11, 
+               'fig_1_12' = fig_1_12, 'fig_1_13' = fig_1_13, 
+               'fig_1_14' = fig_1_14, 'fig_1_15' = fig_1_15, 'fig_1_16' = fig_1_16,
+               'fig_1_17' = fig_1_17, 'fig_1_18' = fig_1_18, 'fig_1_19' = fig_1_19, 
+               'fig_1_2' = fig_1_2, 'fig_1_20' = fig_1_20, 'fig_1_21' = fig_1_21, 
+               'fig_1_22' = fig_1_22, 'fig_1_23' = fig_1_23, 'fig_1_24' = fig_1_24, 
+               'fig_1_26' = fig_1_26, 'fig_1_27' = fig_1_27, 'fig_1_3' = fig_1_3, 
+               'fig_1_30' = fig_1_30, 'fig_1_31' = fig_1_31, 'fig_1_33' = fig_1_33, 
+               'fig_1_34' = fig_1_34, 'fig_1_36' = fig_1_36, 'fig_1_37' = fig_1_37, 
+               'fig_1_39' = fig_1_39, 'fig_1_4' = fig_1_4, 'fig_1_40' = fig_1_40, 
+               'fig_1_41' = fig_1_41, 'fig_1_42' = fig_1_42, 'fig_1_43' = fig_1_43, 
+               'fig_1_45' = fig_1_45, 'fig_1_46' = fig_1_46, 'fig_1_47' = fig_1_47, 
+               'fig_1_49' = fig_1_49, 'fig_1_5' = fig_1_5, 'fig_1_50' = fig_1_50, 
+               'fig_1_51' = fig_1_51, 'fig_1_6' = fig_1_6, 'fig_1_7' = fig_1_7, 
+               'fig_1_8' = fig_1_8, 'fig_1_9' = fig_1_9)
+
+list_2 <- list(fig_2_1 = fig_2_1, 'fig_2_10' = fig_2_10, 'fig_2_11' = fig_2_11, 
+               'fig_2_12' = fig_2_12, 'fig_2_13' = fig_2_13, 'fig_2_14' = fig_2_14, 
+               'fig_2_15' = fig_2_15, 'fig_2_2' = fig_2_2, 'fig_2_20' = fig_2_20, 
+               'fig_2_21' = fig_2_21, 'fig_2_22' = fig_2_22, 'fig_2_25' = fig_2_25, 
+               'fig_2_26' = fig_2_26, 'fig_2_27' = fig_2_27, 'fig_2_28' = fig_2_28, 
+               'fig_2_29' = fig_2_29, 'fig_2_3' = fig_2_3, 'fig_2_30' = fig_2_30, 
+               'fig_2_31' = fig_2_31, 'fig_2_32' = fig_2_32, 'fig_2_33' = fig_2_33, 
+               'fig_2_34' = fig_2_34, 'fig_2_39' = fig_2_39, 'fig_2_4' = fig_2_4, 
+               'fig_2_5' = fig_2_5, 'fig_2_6' = fig_2_6, 'fig_2_7' = fig_2_7, 
+               'fig_2_8' = fig_2_8, 'fig_2_9' = fig_2_9)
+
+list_3 <- list('fig_3_1' = fig_3_1, 'fig_3_2' = fig_3_2, 'fig_3_3' = fig_3_3, 
+               'fig_3_4' = fig_3_4, 'fig_3_5' = fig_3_5, 'fig_3_6' = fig_3_6, 
+               'fig_3_7' = fig_3_7, 'fig_3_8' = fig_3_8, 'fig_3_9' = fig_3_9)
+
+list_4 <- list('fig_4_1' = fig_4_1, 'fig_4_10' = fig_4_10, 'fig_4_11' = fig_4_11, 
+               'fig_4_12' = fig_4_12, 'fig_4_13' = fig_4_13, 'fig_4_14' = fig_4_14, 
+               'fig_4_15' = fig_4_15, 'fig_4_16' = fig_4_16, 'fig_4_17' = fig_4_17, 
+               'fig_4_18' = fig_4_18, 'fig_4_19' = fig_4_19, 'fig_4_2' = fig_4_2, 
+               'fig_4_20' = fig_4_20, 'fig_4_21' = fig_4_21, 'fig_4_22' = fig_4_22, 
+               'fig_4_23' = fig_4_23, 'fig_4_24' = fig_4_24, 'fig_4_25' = fig_4_25, 
+               'fig_4_26' = fig_4_26, 'fig_4_27' = fig_4_27, 'fig_4_28' = fig_4_28, 
+               'fig_4_29' = fig_4_29, 'fig_4_3' = fig_4_3, 'fig_4_30' = fig_4_30, 
+               'fig_4_31' = fig_4_31, 'fig_4_32' = fig_4_32, 'fig_4_33' = fig_4_33, 
+               'fig_4_34' = fig_4_34, 'fig_4_35' = fig_4_35, 'fig_4_36' = fig_4_36, 
+               'fig_4_37' = fig_4_37, 'fig_4_38' = fig_4_38, 'fig_4_4' = fig_4_4, 
+               'fig_4_5' = fig_4_5, 'fig_4_6' = fig_4_6)
+# Final Export ----
+write.xlsx(list_1, file = "Chapter_1_Figures.xlsx")
+write.xlsx(list_2, file = "Chapter_2_Figures.xlsx")
+write.xlsx(list_3, file = "Chapter_3_Figures.xlsx")
+write.xlsx(list_4, file = "Chapter_4_Figures.xlsx")

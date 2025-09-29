@@ -123,7 +123,12 @@ LTM2 <- LTM1 %>%
          PRENAT = case_when(LEARNED2 == 1 ~ "No Prenatal Care", 
                             LEARNED2 == 99 ~ "Missing", 
                             is.na(LEARNED2) ~ "Missing",
-                            TRUE ~ "Had Prenatal Care"))
+                            TRUE ~ "Had Prenatal Care"), 
+         BIRTHWEIGHT_OZ = case_when(is.na(BIRTHWEIGHT_OZ) ~ 0, 
+                                    TRUE ~ BIRTHWEIGHT_OZ),
+         BIRTHWEIGHT = case_when(!is.na(BIRTHWEIGHT_LBS) ~ BIRTHWEIGHT_LBS*453.592 + BIRTHWEIGHT_OZ*28.3495,
+                                 !is.na(BIRTHWEIGHT_G) ~ BIRTHWEIGHT_G), 
+         BIRTHWEIGHT = as.numeric(BIRTHWEIGHT))
 
 
 rm(LTM1)

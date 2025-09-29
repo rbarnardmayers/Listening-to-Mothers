@@ -91,7 +91,7 @@ for(i in categorical){
 # Convert continuous variables into numeric class ----
 continuous <- LTM_final %>%  
   select(c(AGE,YEARBIRTH,BABY_SURVEYAGE_MONTHS,
-           NUMB_BIRTH,
+           NUMB_BIRTH,BIRTHWEIGHT,
            BIRTHWEIGHT_LBS,BIRTHWEIGHT_OZ,BIRTHWEIGHT_G,AGEBIRTH,
            DISABLEYRS,PREG_WEIGHT, GESTAGE,
            FIRSTVISIT, VAGEXAM, LABORLENGTH, DAYSHOSP, BABYHOSP, PPVISIT, 
