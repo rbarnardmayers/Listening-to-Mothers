@@ -54,6 +54,22 @@ LTM_final <- LTM_final %>%
   mutate(RACE2 = case_when(RACE == "NH Asian" ~ "NH_Asian",
                            RACE == "NH Black or African American" ~ "NHB", 
                            TRUE ~ RACE))
+# Subscale respectful care ----
+LTM_final$RESPECT <- likert('RESPECT')
+LTM_final$KNOWLEDGE <- likert('KNOWLEDGE')
+LTM_final$HEARD <- likert('HEARD')
+LTM_final$DECISIONS <- likert('DECISIONS')
+LTM_final$CONSENT <- likert('CONSENT')
+LTM_final$INFORMED <- likert('INFORMED')
+LTM_final$TIMELINESS <- likert('TIMELINESS')
+LTM_final$NEGLECT <- likert('NEGLECT')
+LTM_final$TRUST <- likert('TRUST')
+LTM_final$FEEDING <- likert('FEEDING')
+LTM_final$SAFE <- likert('SAFE')
+LTM_final$DISCRIMINATION <- likert('DISCRIMINATION')
+ 
+# Create survey design ----
+LTM_dsn <- LTM_final %>% as_survey(weight = wght, id = 1)
 
 # Tables as excel sheets
 
@@ -420,7 +436,7 @@ fig_2_21 <- collapse.fun(c('MEDINDUCE1C1','MEDINDUCE1C2','MEDINDUCE1C3',
 fig_2_22 <- collapse.fun(c('MEDINDUCE3C1','MEDINDUCE3C2','MEDINDUCE3C3',
                            'MEDINDUCE3C4','MEDINDUCE3C5','MEDINDUCE3C6',
                            'MEDINDUCE3C7','MEDINDUCE3C8'),#'MEDINDUCE3C9'), 
-                         data = subset(LTM_final, MEDINDUCE1C1 == "Yes"))
+                         data = subset(LTM_dsn, MEDINDUCE1C1 == "Yes"))
 
 # Position | Mode = 1 ----
 # What was the main position you used while pushing before the birth of your baby?
@@ -434,8 +450,8 @@ fig_2_22 <- collapse.fun(c('MEDINDUCE3C1','MEDINDUCE3C2','MEDINDUCE3C3',
 
 
 # POSITIONCHOICE
-# fig_2_23 <- fig.print(POSITION, data = subset(LTM_final, MODE == 1))
-# fig_2_24 <- fig.2by2(POSITION, POSITIONCHOICE, data = subset(LTM_final, MODE == 1))
+# fig_2_23 <- fig.print(POSITION, data = subset(LTM_dsn, MODE == 1))
+# fig_2_24 <- fig.2by2(POSITION, POSITIONCHOICE, data = subset(LTM_dsn, MODE == 1))
 
 # Drugfree ----
 # DRUGFREEC1	 1 = Sitting or soaking in a tub or pool
@@ -533,19 +549,6 @@ fig_2_39 <- collapse.fun(c('HOSPFEEDC1','HOSPFEEDC2','HOSPFEEDC3','HOSPFEEDC4',
                            'HOSPFEEDC9','HOSPFEEDC10'))
 
 # Subscale respectful care ----
-LTM_final$RESPECT <- likert('RESPECT')
-LTM_final$KNOWLEDGE <- likert('KNOWLEDGE')
-LTM_final$HEARD <- likert('HEARD')
-LTM_final$DECISIONS <- likert('DECISIONS')
-LTM_final$CONSENT <- likert('CONSENT')
-LTM_final$INFORMED <- likert('INFORMED')
-LTM_final$TIMELINESS <- likert('TIMELINESS')
-LTM_final$NEGLECT <- likert('NEGLECT')
-LTM_final$TRUST <- likert('TRUST')
-LTM_final$FEEDING <- likert('FEEDING')
-LTM_final$SAFE <- likert('SAFE')
-LTM_final$DISCRIMINATION <- likert('DISCRIMINATION')
-
 # Respect care: developer’s 0-100 scoring guidance
 # fig_2_40 <- scores overall
 # fig_2_41 <- race/ethnicity
@@ -565,7 +568,7 @@ fig_3_3 <- fig.2by2(MODE2023, INSURANCE)
 
 # Unplanned Reason | CSECTIONTYPE = 2 ----
 # CSECTIONTYPE == 2 
-fig_3_4 <- print.fig(UNPLANNEDREASON, data = subset(LTM_final, CSECTIONTYPE == "Unplanned"))
+fig_3_4 <- print.fig(UNPLANNEDREASON, data = subset(LTM_dsn, CSECTIONTYPE == "Unplanned"))
 
 # UNPLANNEDREASON
 # 1	Labor was taking too long
@@ -578,7 +581,7 @@ fig_3_4 <- print.fig(UNPLANNEDREASON, data = subset(LTM_final, CSECTIONTYPE == "
 # Planned C reason ----
 # PLANNEDC
 fig_3_5 <- print.fig(PLANNEDC, 
-                     data = subset(LTM_final, 
+                     data = subset(LTM_dsn, 
                                    CSECTIONTYPE == "Planned ahead of time and scheduled before you went into labor"))
 
 # 1	I had a prior cesarean birth
@@ -727,15 +730,15 @@ fig_4_29 <- collapse.2by2(c('PPMEDSC1', 'PPMEDSC2', 'PPMEDSC3',
 # SOCIALNEEDC7 & SNDRUGS	Are you concerned now about someone in your home using drugs or alcohol?
 # SOCIALNEEDC8 & SNUNSAFE	Do you feel unsafe in your daily life now?
 # SOCIALNEEDC9 & SNABUSE	Is someone in your home threatening or abusing you now?
-fig_4_30 <- print.fig(SNMEAL, data = subset(LTM_final, SOCIALNEEDC1 == "Yes"))
-fig_4_31 <- print.fig(SNLIVE, data = subset(LTM_final, SOCIALNEEDC2 == "Yes"))
-fig_4_32 <- print.fig(SNUTILITIES, data = subset(LTM_final, SOCIALNEEDC3 == "Yes"))
-fig_4_33 <- print.fig(SNTRANSPORT, data = subset(LTM_final, SOCIALNEEDC4 == "Yes"))
-fig_4_34 <- print.fig(SNCHILDCARE, data = subset(LTM_final, SOCIALNEEDC5 == "Yes"))
-fig_4_35 <- print.fig(SNINCOME, data = subset(LTM_final, SOCIALNEEDC6 == "Yes"))
-fig_4_36 <- print.fig(SNDRUGS, data = subset(LTM_final, SOCIALNEEDC7 == "Yes"))
-fig_4_37 <- print.fig(SNUNSAFE, data = subset(LTM_final, SOCIALNEEDC8 == "Yes"))
-fig_4_38 <- print.fig(SNABUSE, data = subset(LTM_final, SOCIALNEEDC9 == "Yes"))
+fig_4_30 <- print.fig(SNMEAL, data = subset(LTM_dsn, SOCIALNEEDC1 == "Yes"))
+fig_4_31 <- print.fig(SNLIVE, data = subset(LTM_dsn, SOCIALNEEDC2 == "Yes"))
+fig_4_32 <- print.fig(SNUTILITIES, data = subset(LTM_dsn, SOCIALNEEDC3 == "Yes"))
+fig_4_33 <- print.fig(SNTRANSPORT, data = subset(LTM_dsn, SOCIALNEEDC4 == "Yes"))
+fig_4_34 <- print.fig(SNCHILDCARE, data = subset(LTM_dsn, SOCIALNEEDC5 == "Yes"))
+fig_4_35 <- print.fig(SNINCOME, data = subset(LTM_dsn, SOCIALNEEDC6 == "Yes"))
+fig_4_36 <- print.fig(SNDRUGS, data = subset(LTM_dsn, SOCIALNEEDC7 == "Yes"))
+fig_4_37 <- print.fig(SNUNSAFE, data = subset(LTM_dsn, SOCIALNEEDC8 == "Yes"))
+fig_4_38 <- print.fig(SNABUSE, data = subset(LTM_dsn, SOCIALNEEDC9 == "Yes"))
 
 # Gathering names of figures for each chaper for export ----
 # names_1 <- data.frame(COLS = objects()) %>%

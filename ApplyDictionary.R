@@ -108,3 +108,5 @@ rm(LTM_include)
 rm(LTM2)
 gc()
 
+LTM_dsn <- LTM_final %>% 
+  as_survey_design(weight = wght, id = 1)
