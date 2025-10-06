@@ -31,10 +31,22 @@ likert <- function(col){
   LTM_final[,col] <- ifelse(LTM_final[,col] == "No, never", 0,
                             ifelse(LTM_final[,col] == "Yes, a few times", 1, 
                                    ifelse(LTM_final[,col] == "Yes, most of the time", 2,
-                                          ifelse(LTM_final[,col] == "Yes, all the time", 3, NA))))
+                                          ifelse(LTM_final[,col] == "Yes, all the time", 3, 
+                                                 ifelse(is.na(LTM_final[,col]), NA, 2)))))
   
   return(LTM_final[,col])
 }
+
+# Reverse Likert Function ----
+rev.likert <- function(col){
+  LTM_final[,col] <- ifelse(LTM_final[,col] == "No, never", 3,
+                            ifelse(LTM_final[,col] == "Yes, a few times", 2, 
+                                   ifelse(LTM_final[,col] == "Yes, most of the time", 1,
+                                          ifelse(LTM_final[,col] == "Yes, all the time", 0,NA))))
+  
+  return(LTM_final[,col])
+}
+
 
 # Refactor categorical ----
 refac.fun <- function(col, vars = c("Missing")){
@@ -107,12 +119,11 @@ print.fig <- function(var, data = LTM_dsn){
 # Print continuous info ----
 print.cont <- function(var, data = LTM_dsn){
   tab1 <- data %>%
-    summarize(unweighted = unweighted(n()), 
-              mean = survey_mean({{var}}, na.rm = T, vartype = "ci"))%>% 
+    summarize(mean = survey_mean({{var}}, na.rm = T, vartype = "ci"))%>% 
     mutate(ci = paste0(round(mean_low, 2), ", ", round(mean_upp, 2)), 
            mean = round(mean,2)) %>%
     select(-c(mean_low, mean_upp))
-  colnames(tab1) <- c("Unweighted N","Mean", "Confidence Interval")
+  colnames(tab1) <- c("Mean", "Confidence Interval")
   return(tab1)
 }
 
@@ -205,5 +216,3 @@ dict <- dict %>%
 colnames(dict2) <- c("variable", "variable_label")
 data_dict <- merge(dict, dict2)
 
-rm(dict)
-rm(dict2)

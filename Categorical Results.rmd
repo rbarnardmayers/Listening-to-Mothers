@@ -3,6 +3,8 @@ title: "Categorical Results"
 author: "Ruby Barnard-Mayers"
 date: "2025-09-17"
 output:
+  html_document:
+    df_print: paged
   word_document: default
 ---
 
@@ -29,8 +31,10 @@ for(i in categorical){
     k <- print.cat(get({{i}}))} else {
       k <- print.cat(get({{i}}))
     }
+  
+  j = if(is_empty(lab)){paste(i)} else{lab}
         print(k %>% 
-              kbl(caption = paste0("Results for: ", dict2[dict2$variable == i,]$variable_label)) %>%
+              kbl(caption = paste0("Results for: ", j)) %>%
               kable_styling())
   
 }

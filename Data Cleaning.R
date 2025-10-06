@@ -15,9 +15,10 @@ LTM1 <- LTM %>% select(-c(ResEmail, ResPhone, DialingMode,ManualDialing,resTimeZ
                           AppointmentDate,SurveyLink,AccessExpiration,CustomResult,
                           AgentId,AgentUserName,Priority,CallNote,ResCompleted,
                           ResBlocked,IsAnonymized,ResActive,Modified,DNC,Callback,
-                          PIN,RID,PID,PID1,REFID1,NAME,ADDRESS,CITY,ZIPCODE,BATCH,CHILDNAME, FINAL_DETERMINATION, FINAL_QC, contains("FLAG"),
+                          PIN,RID,PID,PID1,REFID1,NAME,ADDRESS,CITY,ZIPCODE,BATCH,
+                          CHILDNAME, FINAL_DETERMINATION, FINAL_QC, contains("FLAG"),
                           starts_with("F1"), starts_with("F2"), starts_with("F3"), 
-                          starts_with("x"), starts_with("X")))
+                          starts_with("x"), starts_with("X"))) 
 
 # Identify text response columns ending for other ----
 ends_o <- LTM1[str_ends(colnames(LTM1), "O")] %>% 
