@@ -27,60 +27,61 @@ convert.yn <- function(dat, vars){
 }
 
 # Likert function ----
-likert <- function(col){
-  LTM_final[,col] <- ifelse(LTM_final[,col] == "No, never", 0,
-                            ifelse(LTM_final[,col] == "Yes, a few times", 1, 
-                                   ifelse(LTM_final[,col] == "Yes, most of the time", 2,
-                                          ifelse(LTM_final[,col] == "Yes, all the time", 3, 
-                                                 ifelse(is.na(LTM_final[,col]), NA, 2)))))
+likert <- function(col, dat = LTM2){
+  dat[,col] <- ifelse(dat[,col] == "No, never", 0,
+                            ifelse(dat[,col] == "Yes, a few times", 1, 
+                                   ifelse(dat[,col] == "Yes, most of the time", 2,
+                                          ifelse(dat[,col] == "Yes, all the time", 3, 
+                                                 ifelse(is.na(dat[,col]), NA, 2)))))
   
-  return(LTM_final[,col])
+  return(dat[,col])
 }
 
 # Reverse Likert Function ----
-rev.likert <- function(col){
-  LTM_final[,col] <- ifelse(LTM_final[,col] == "No, never", 3,
-                            ifelse(LTM_final[,col] == "Yes, a few times", 2, 
-                                   ifelse(LTM_final[,col] == "Yes, most of the time", 1,
-                                          ifelse(LTM_final[,col] == "Yes, all the time", 0,NA))))
+rev.likert <- function(col, dat = LTM2){
+  dat[,col] <- ifelse(dat[,col] == "No, never", 3,
+                            ifelse(dat[,col] == "Yes, a few times", 2, 
+                                   ifelse(dat[,col] == "Yes, most of the time", 1,
+                                          ifelse(dat[,col] == "Yes, all the time", 0,NA))))
   
-  return(LTM_final[,col])
+  return(dat[,col])
 }
 
 
 # Refactor categorical ----
-refac.fun <- function(col, vars = c("Missing")){
-  LTM_final[[col]] <- factor(LTM_final[[col]])
-  t <- data.frame(names = levels(LTM_final[[col]]))
+refac.fun <- function(col, vars = c("Missing"), dat = LTM_final){
+  dat[[col]] <- ifelse(is.na(dat[[col]]), "Missing", dat[[col]])
+  dat[[col]] <- factor(dat[[col]])
+  t <- data.frame(names = levels(dat[[col]]))
   t_n <- t$names 
   all <- t_n[!(t_n %in% vars)]
   all <- c(all, vars)
-  LTM_final[[col]] <- factor(LTM_final[[col]], levels = all)
-  return(LTM_final[[col]])
+  dat[[col]] <- factor(dat[[col]], levels = all)
+  return(dat[[col]])
 }
 
 # Refactor numeric ----
-refac.num <- function(col, val = c("Missing")){
-  LTM_final[[col]] <- factor(LTM_final[[col]])
-  t <- data.frame(names = levels(LTM_final[[col]]))
+refac.num <- function(col, val = c("Missing"), dat = LTM_final){
+  dat[[col]] <- factor(dat[[col]])
+  t <- data.frame(names = levels(dat[[col]]))
   t_n <- t$names 
   all <- t_n[!(t_n %in% val)]
   all <- as.numeric(all)
   all <- sort(all)
   all <- c(all, val)  
-  LTM_final[[col]] <- factor(LTM_final[[col]], levels = all)
-  return(LTM_final[[col]])
+  dat[[col]] <- factor(dat[[col]], levels = all)
+  return(dat[[col]])
   
 }
 
 # PHQ amd GAD
-recode.phq <- function(col){
-  LTM_final[,col] <- ifelse(LTM_final[,col] == "Never", 0,
-                            ifelse(LTM_final[,col] == "Sometimes", 1,
-                                   ifelse(LTM_final[,col] == "Usually", 2, 
-                                          ifelse(LTM_final[,col] == "Always", 3, NA))))
+recode.phq <- function(col, dat = LTM2){
+  dat[,col] <- ifelse(dat[,col] == "Never", 0,
+                            ifelse(dat[,col] == "Sometimes", 1,
+                                   ifelse(dat[,col] == "Usually", 2, 
+                                          ifelse(dat[,col] == "Always", 3, NA))))
   
-  return(LTM_final[,col])
+  return(dat[,col])
   
 }
 

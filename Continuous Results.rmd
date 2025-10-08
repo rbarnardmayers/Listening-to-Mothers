@@ -2,10 +2,12 @@
 title: "Continuous Results"
 author: "Ruby Barnard-Mayers"
 date: "2025-09-17"
-output: word_document
+output:
+  html_document:
+    df_print: paged
 ---
 
-```{r include = F}
+```{r setup, include = F}
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/ApplyDictionary.R")
 library(survey)
 library(ggplot2)
@@ -16,20 +18,19 @@ library(rlang)
 library(knitr)
 ```
 
+
 ### Continuous results
 ``` {r echo = F, results = 'asis'} 
 for(i in continuous){
-  lab = dict2[dict2$variable == i,]$variable_label
-  if(is_empty(lab)){
-    print(print.cont(get({{i}})) %>% 
-            kbl(caption = i) %>% 
-            kable_styling())} else {
-              print(print.cont(get({{i}})) %>% 
-                      kbl(caption = lab) %>% 
-                      kable_styling())
-            }
-  
-  
+  lab = data_dict[data_dict$variable == i,]$variable_label %>% unique()
+  k <- print.cont(get({{i}}))
+  j = if(is_empty(lab)){paste(i)} else{lab}
+
+  print(k %>% kbl(caption = paste0("Results for: ", j)) %>% kable_styling())
+  # %>%
+  #         kbl(caption = paste0("Results for: ", j)) %>%
+  #         kable_styling()
 }
 ```
+
 

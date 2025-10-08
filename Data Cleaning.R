@@ -81,15 +81,15 @@ LTM2 <- LTM1 %>%
                                     !is.na(PREPREG_WEIGHT_A1) ~ PREPREG_WEIGHT_A1), 
          PREG_WEIGHT = case_when(is.na(PREGWEIGHT_A1) ~ 2.20462 * PREGWEIGHT_B1, 
                                  !is.na(PREGWEIGHT_A1) ~ PREGWEIGHT_A1), 
-         RACE = case_when(RACEC2 == 1 ~ "Hispanic", 
-                          RACEC1 == 1 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NHW", 
-                          RACEC1 == 0 & RACEC3 == 1 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NH Black or African American", 
-                          RACEC1 == 0 & RACEC3 == 0 & RACEC4 == 1 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NH Asian", 
-                          RACEC1 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 1 & RACEC6 == 0 & RACEC7 == 0 ~ "AIAN", 
-                          RACEC1 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 1 & RACEC7 == 0 ~ "MENA", 
-                          RACEC1 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 1 ~ "NHPI", 
-                          RACEC1 == 1 | RACEC3 == 1 | RACEC4 == 1 | RACEC5 == 1 | RACEC6 == 1 | RACEC7 == 1 ~ "Multiracial", 
-                          RACEC8 == 1 ~ "Missing", 
+         RACE = case_when(RACEC1 == 1 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NHW", 
+                          RACEC1 == 0 & RACEC2 == 1 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "Hispanic", 
+                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 1 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NH Black or African American", 
+                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 1 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NH Asian", 
+                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 1 & RACEC6 == 0 & RACEC7 == 0 ~ "AIAN", 
+                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 1 & RACEC7 == 0 ~ "MENA", 
+                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 1 ~ "NHPI", 
+                          RACEC1 == 1 | RACEC2 == 1 | RACEC3 == 1 | RACEC4 == 1 | RACEC5 == 1 | RACEC6 == 1 | RACEC7 == 1 ~ "Multiracial", 
+                          RACEC8 == 1 ~ "Prefer not to answer", 
                           TRUE ~ "Missing"),
          INSURANCE = case_when(INSURC1 == 1 ~ "Private",
                                INSURC2 == 1 ~ "Medicaid/CHIP",
@@ -135,3 +135,137 @@ LTM2 <- LTM1 %>%
 rm(LTM1)
 # Midwife, physician, other for provider
 
+# Subscale respectful care ----
+LTM2$RESPECT <- likert('RESPECT')
+LTM2$KNOWLEDGE <- likert('KNOWLEDGE')
+LTM2$HEARD <- likert('HEARD')
+LTM2$DECISIONS <- likert('DECISIONS')
+LTM2$CONSENT <- likert('CONSENT')
+LTM2$INFORMED <- likert('INFORMED')
+LTM2$TIMELINESS <- likert('TIMELINESS')
+LTM2$TRUST <- likert('TRUST')
+LTM2$FEEDING <- likert('FEEDING')
+LTM2$SAFE <- likert('SAFE')
+
+LTM2$DISCRIMINATION <- rev.likert('DISCRIMINATION')
+LTM2$NEGLECT <- rev.likert('NEGLECT')
+
+
+LTM2$PPBOTHER_A1 <- recode.phq("PPBOTHER_A1")
+LTM2$PPBOTHER_A2 <- recode.phq("PPBOTHER_A2")
+LTM2$PPBOTHER_A3 <- recode.phq("PPBOTHER_A3")
+LTM2$PPBOTHER_A4 <- recode.phq("PPBOTHER_A4")
+
+LTM2 <- LTM2 %>% 
+  mutate(PPBOTHER_A1 = as.numeric(PPBOTHER_A1), 
+         PPBOTHER_A2 = as.numeric(PPBOTHER_A2),
+         PPBOTHER_A3 = as.numeric(PPBOTHER_A3),
+         PPBOTHER_A4 = as.numeric(PPBOTHER_A4))
+LTM2$PHQ2 = LTM2$PPBOTHER_A3 + LTM2$PPBOTHER_A4
+LTM2$GAD2 = LTM2$PPBOTHER_A1 + LTM2$PPBOTHER_A2
+LTM2$PHQ4 = LTM2$PPBOTHER_A1 + LTM2$PPBOTHER_A2 + LTM2$PPBOTHER_A3 + LTM2$PPBOTHER_A4
+
+LTM2 <- LTM2 %>% 
+  mutate(PHQ2_cat = case_when(PHQ2 < 3 ~ "No", 
+                              PHQ2 >= 3 ~ "Yes"), 
+         GAD2_cat = case_when(GAD2 < 3 ~ "No", 
+                              GAD2 >= 3 ~ "Yes"), 
+         PHQ4_cat = case_when(PHQ4 >= 0 & PHQ4 <= 2 ~ "None",
+                              PHQ4 > 2 & PHQ4 <= 5 ~ "Mild",
+                              PHQ4 > 5 & PHQ4 <= 8 ~ "Moderate", 
+                              PHQ4 > 8 ~ "Severe"),
+         FEED_CONCORDANT = case_when(PLANNEDFEEDC1 == 1 & FEED1WEEKC1 == 1 ~ 1, 
+                                     PLANNEDFEEDC2 == 1 & FEED1WEEKC2 == 1 ~ 1, 
+                                     PLANNEDFEEDC1 == 1 &  FEED1WEEKC2 == 1 ~ 0,
+                                     PLANNEDFEEDC2 == 1 &  FEED1WEEKC1 == 1 ~ 0),
+         MODE = case_when(MODE == 1 ~ 0, 
+                          MODE == 2 ~ 1),
+         # MODE1 = case_when(MODE1 == 1 ~ 0, 
+         #                   MODE1 == 2 ~ 1),
+         MODE2 = case_when(MODE2 == 1 ~ 0, 
+                           MODE2 == 2 ~ 1),
+         MODE3 = case_when(MODE3 == 1 ~ 0, 
+                           MODE3 == 2 ~ 1),
+         MODE4 = case_when(MODE4 == 1 ~ 0, 
+                           MODE4 == 2 ~ 1),
+         MODE5 = case_when(MODE5 == 1 ~ 0, 
+                           MODE5 == 2 ~ 1),
+         MODE6 = case_when(MODE6 == 1 ~ 0, 
+                           MODE6 == 2 ~ 1),
+         MODE7 = case_when(MODE7 == 1 ~ 0, 
+                           MODE7 == 2 ~ 1),
+         MODE8 = case_when(MODE8 == 1 ~ 0, 
+                           MODE8 == 2 ~ 1),
+         MODE9 = case_when(MODE9 == 1 ~ 0, 
+                           MODE9 == 2 ~ 1),
+         MODE10 = case_when(MODE10 == 1 ~ 0, 
+                            MODE10 == 2 ~ 1),
+         MODE11 = case_when(MODE11 == 1 ~ 0, 
+                            MODE11 == 2 ~ 1),
+         MODE12 = case_when(MODE12 == 1 ~ 0, 
+                            MODE12 == 2 ~ 1),
+         MODE13 = case_when(MODE13 == 1 ~ 0, 
+                            MODE13 == 2 ~ 1),
+         MODE14 = case_when(MODE14 == 1 ~ 0, 
+                            MODE14 == 2 ~ 1),
+         MODE15 = case_when(MODE15 == 1 ~ 0, 
+                            MODE15 == 2 ~ 1),
+         phys_cb = case_when(PAINMEDSC1 == 1 ~ 1, 
+                             PAINMEDSC2 == 1 ~ 1, 
+                             PAINMEDSC3 == 1 ~ 1, 
+                             PAINMEDSC4 == 1 ~ 1, 
+                             PAINMEDSC5 == 1 ~ 1, 
+                             EPIST == 1 ~ 1, 
+                             TRUE ~ 0),
+         SDM_1 = case_when(INDUCE1 == 1 ~ 1, 
+                           INDUCE1 == 2 ~ 1, 
+                           INDUCE1 == 3 ~ 0, 
+                           INDUCE1 == 4 ~ 0),
+         SDM_2 = case_when(INDUCE2 == 1 ~ 1, 
+                           INDUCE2 == 2 ~ 1, 
+                           INDUCE2 == 3 ~ 0, 
+                           INDUCE2 == 4 ~ 0),
+         SDM_3 = case_when(INDUCE3 == 1 ~ 1, 
+                           INDUCE3 == 2 ~ 0),
+         SDM_4 = case_when(INDUCE4 == 1 ~ 1, 
+                           INDUCE4 == 2 ~ 0),
+         WEIGHTGAIN = PREG_WEIGHT - PREPREG_WEIGHT,
+         BIRTHWEIGHT_CAT = case_when(BIRTHWEIGHT < 1500 ~ "VLBW",
+                                     BIRTHWEIGHT < 2500 ~ "LBW",
+                                     BIRTHWEIGHT > 4000 ~ "LBW",
+                                     is.na(BIRTHWEIGHT) ~ NA,
+                                     TRUE ~ "Normal BW"),
+         BPCONFID = case_when(BPCONFID == 99 ~ NA), 
+         URINECONFID = case_when(URINECONFID == 99 ~ NA),
+         WEIGHCONFID = case_when(WEIGHCONFID == 99 ~ NA),
+         BABYHRCONFID = case_when(BABYHRCONFID == 99 ~ NA), 
+         
+         CONFIDENCE_ANY = case_when(BPCONFID < 3  | URINECONFID < 3 | 
+                                      WEIGHCONFID < 3 | BABYHRCONFID < 3 ~ "Yes",
+                                    TRUE ~ "No"), 
+         ATHOMECARE_ANY = case_when( ATHOMECAREC1 == 1 ~ 1, 
+                                     ATHOMECAREC2 == 1 ~ 1, 
+                                     ATHOMECAREC3 == 1 ~ 1,
+                                     ATHOMECAREC4 == 1 ~ 1, 
+                                     TRUE ~ 0)) %>% 
+  rename(MDE2023 = MODE2023) %>%
+  rowwise() %>% 
+  mutate(MODE_ALL = sum(across(starts_with("MODE")), na.rm = T),
+         SUM_RESPECT = sum(RESPECT, KNOWLEDGE, HEARD, 
+                           DECISIONS, CONSENT, INFORMED,
+                           TIMELINESS, TRUST, FEEDING,
+                           SAFE, DISCRIMINATION, NEGLECT, na.rm = T),
+         SDM = sum(SDM_1,SDM_2,SDM_3,SDM_4, na.rm = T)) 
+
+LTM2 <- LTM2 %>% 
+  mutate(VBAC = case_when(MODE_ALL > 0 & MDE2023 == 1 ~ 1,
+                          MODE_ALL > 0 & MDE2023 == 2 ~ 0,
+                          MODE_ALL == 0 ~ 0),
+         SDM = case_when(is.na(SDM_1)~NA,
+                         is.na(SDM_2)~NA,
+                         is.na(SDM_3)~NA,
+                         is.na(SDM_4)~NA, 
+                         TRUE ~ SDM), 
+         MDID = as.numeric(MDID)) %>%
+  rename(MODE2023 = MDE2023)
+  
