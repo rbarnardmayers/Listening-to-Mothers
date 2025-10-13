@@ -6,6 +6,7 @@ library(srvyr)
 library(readxl)
 library(tidyr)
 library(rlang)
+library(purrr)
 library(phdcocktail)
 library(openxlsx)
 
@@ -76,10 +77,10 @@ refac.num <- function(col, val = c("Missing"), dat = LTM_final){
 
 # PHQ amd GAD
 recode.phq <- function(col, dat = LTM2){
-  dat[,col] <- ifelse(dat[,col] == "Never", 0,
-                            ifelse(dat[,col] == "Sometimes", 1,
-                                   ifelse(dat[,col] == "Usually", 2, 
-                                          ifelse(dat[,col] == "Always", 3, NA))))
+  dat[,col] <- ifelse(dat[,col] == 4, 0,
+                            ifelse(dat[,col] == 3, 1,
+                                   ifelse(dat[,col] == 2, 2, 
+                                          ifelse(dat[,col] == 1, 3, NA))))
   
   return(dat[,col])
   
@@ -87,9 +88,11 @@ recode.phq <- function(col, dat = LTM2){
 
 # Print out categorical frequencies ----
 print.cat <- function(var, data = LTM_dsn){
+
   tab1 <- data %>%
     # as_survey(weights = c(wght)) %>%
-    group_by({{var}}) %>%
+    # group_by({{var}}) %>%
+    group_by(across(all_of(var))) %>%
     summarize(unweighted_n = unweighted(n()), 
               prop = survey_prop(vartype = "ci")) %>% #n = survey_total(vartype = "ci"),
     mutate(prop = 100 * prop, 
@@ -104,6 +107,30 @@ print.cat <- function(var, data = LTM_dsn){
   
   return(tab1)
 }
+
+# With bases included ----
+print.cat.from.bases <- function(var_name, data = LTM_dsn, bases_lookup = bases) {
+  # Get the condition from the bases table
+  condition_string <- bases_lookup %>%
+    filter(variable == var_name) %>%
+    pull(Base)
+  
+  if (length(condition_string) == 0 || is.na(condition_string)) {
+    stop("No base condition found for variable: ", var_name)
+  }
+  
+  # Parse the condition into an expression
+  filter_expr <- parse_expr(condition_string)
+  
+  # Subset the data
+  filtered_data <- data %>%
+    filter(!!filter_expr)
+  
+  # Use the original print.cat with the filtered data and variable
+  result <- print.cat(var = var_name, data = filtered_data)
+  return(result)
+}
+
 
 # Print out categorical frequencies for figures----
 print.fig <- function(var, data = LTM_dsn){
@@ -217,3 +244,8 @@ dict <- dict %>%
 colnames(dict2) <- c("variable", "variable_label")
 data_dict <- merge(dict, dict2)
 
+# Bases ----
+bases <- read.csv("Bases.csv")
+bases <- bases %>% 
+  rename(variable = Variable.Name) %>%
+  full_join(dict2)

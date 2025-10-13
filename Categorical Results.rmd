@@ -10,6 +10,7 @@ output:
 
 ```{r setup, include = F}
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/ApplyDictionary.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/ChapterVariables.R")
 library(survey)
 library(ggplot2)
 library(kableExtra)
@@ -24,15 +25,35 @@ library(flextable)
 ### Categorical Results 
 
 ``` {r results = "asis", echo = F}
+# 
+# for(i in categorical){
+#   lab = dict2[dict2$variable == i,]$variable_label
+#   if(is_empty(lab)){
+#     k <- print.cat(get({{i}}))} else {
+#       k <- print.cat(get({{i}}))
+#     }
+#   
+#   j = if(is_empty(lab)){paste(i)} else{lab}
+#         print(k %>% 
+#               kbl(caption = paste0("Results for: ", j)) %>%
+#               kable_styling())
+#   
+# }
 
-for(i in categorical){
+```
+
+#### Chapter 1 
+``` {r results = "asis", echo = F}
+cols = bases %>% subset(!is.na(Base)) %>% pull(variable)
+ 
+for(i in cat_1){
   lab = dict2[dict2$variable == i,]$variable_label
-  if(is_empty(lab)){
-    k <- print.cat(get({{i}}))} else {
-      k <- print.cat(get({{i}}))
-    }
+  if(i %in% cols){
+    k <- print.cat.from.bases(i)} else {
+      k <- print.cat(i)
+    } 
   
-  j = if(is_empty(lab)){paste(i)} else{lab}
+  j = if(is_empty(lab)){i} else{lab}
         print(k %>% 
               kbl(caption = paste0("Results for: ", j)) %>%
               kable_styling())

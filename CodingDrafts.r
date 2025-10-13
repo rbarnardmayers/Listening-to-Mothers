@@ -1,3 +1,28 @@
+
+cat_1 <- LTM_final %>% select(c(starts_with("DOULA1"))) %>% 
+  select(-c(DOULA1C6O, DOULA1C6, DOULA1C7)) %>%
+  colnames()
+
+cols = bases %>% subset(!is.na(Base)) %>% pull(variable)
+
+for(i in c("DOULA1C1", "DOULA1C2", "DOULA1C3", "DOULA1C4", 
+           "DOULA1C5")){
+  lab = dict2[dict2$variable == i,]$variable_label
+  if(i %in% cols){
+    k <- print.cat.from.bases(i)} else {
+      k <- print.cat(i)
+    } 
+  
+  print(k) 
+  
+}
+
+
+for(i in c("DOULA1C1", "DOULA1C2", "DOULA1C3", "DOULA1C4", 
+           "DOULA1C5")){ 
+  print(print.cat.from.bases(i))
+  }
+
 # Figure out concordance bewteen PLANNEDFEED and FEEDWEEK1
 # PLANNEDFEEDC1 - breast milk
 # PLANNEDFEEDC2 - formula 

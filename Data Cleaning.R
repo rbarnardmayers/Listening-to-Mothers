@@ -151,19 +151,19 @@ LTM2$DISCRIMINATION <- rev.likert('DISCRIMINATION')
 LTM2$NEGLECT <- rev.likert('NEGLECT')
 
 
-LTM2$PPBOTHER_A1 <- recode.phq("PPBOTHER_A1")
-LTM2$PPBOTHER_A2 <- recode.phq("PPBOTHER_A2")
-LTM2$PPBOTHER_A3 <- recode.phq("PPBOTHER_A3")
-LTM2$PPBOTHER_A4 <- recode.phq("PPBOTHER_A4")
+LTM2$PPBOTHER_1 <- recode.phq("PPBOTHER_A1")
+LTM2$PPBOTHER_2 <- recode.phq("PPBOTHER_A2")
+LTM2$PPBOTHER_3 <- recode.phq("PPBOTHER_A3")
+LTM2$PPBOTHER_4 <- recode.phq("PPBOTHER_A4")
 
 LTM2 <- LTM2 %>% 
-  mutate(PPBOTHER_A1 = as.numeric(PPBOTHER_A1), 
-         PPBOTHER_A2 = as.numeric(PPBOTHER_A2),
-         PPBOTHER_A3 = as.numeric(PPBOTHER_A3),
-         PPBOTHER_A4 = as.numeric(PPBOTHER_A4))
-LTM2$PHQ2 = LTM2$PPBOTHER_A3 + LTM2$PPBOTHER_A4
-LTM2$GAD2 = LTM2$PPBOTHER_A1 + LTM2$PPBOTHER_A2
-LTM2$PHQ4 = LTM2$PPBOTHER_A1 + LTM2$PPBOTHER_A2 + LTM2$PPBOTHER_A3 + LTM2$PPBOTHER_A4
+  mutate(PPBOTHER_1 = as.numeric(PPBOTHER_1), 
+         PPBOTHER_2 = as.numeric(PPBOTHER_2),
+         PPBOTHER_3 = as.numeric(PPBOTHER_3),
+         PPBOTHER_4 = as.numeric(PPBOTHER_4))
+LTM2$PHQ2 = LTM2$PPBOTHER_3 + LTM2$PPBOTHER_4
+LTM2$GAD2 = LTM2$PPBOTHER_1 + LTM2$PPBOTHER_2
+LTM2$PHQ4 = LTM2$PPBOTHER_1 + LTM2$PPBOTHER_2 + LTM2$PPBOTHER_3 + LTM2$PPBOTHER_4
 
 LTM2 <- LTM2 %>% 
   mutate(PHQ2_cat = case_when(PHQ2 < 3 ~ "No", 
@@ -235,11 +235,14 @@ LTM2 <- LTM2 %>%
                                      BIRTHWEIGHT > 4000 ~ "LBW",
                                      is.na(BIRTHWEIGHT) ~ NA,
                                      TRUE ~ "Normal BW"),
-         BPCONFID = case_when(BPCONFID == 99 ~ NA), 
-         URINECONFID = case_when(URINECONFID == 99 ~ NA),
-         WEIGHCONFID = case_when(WEIGHCONFID == 99 ~ NA),
-         BABYHRCONFID = case_when(BABYHRCONFID == 99 ~ NA), 
-         
+         BPCONFID = case_when(BPCONFID == 99 ~ NA,
+                              TRUE ~ BPCONFID), 
+         URINECONFID = case_when(URINECONFID == 99 ~ NA,
+                                 TRUE ~ URINECONFID),
+         WEIGHCONFID = case_when(WEIGHCONFID == 99 ~ NA,
+                                 TRUE ~ WEIGHCONFID),
+         BABYHRCONFID = case_when(BABYHRCONFID == 99 ~ NA,
+                                  TRUE ~ BABYHRCONFID), 
          CONFIDENCE_ANY = case_when(BPCONFID < 3  | URINECONFID < 3 | 
                                       WEIGHCONFID < 3 | BABYHRCONFID < 3 ~ "Yes",
                                     TRUE ~ "No"), 
