@@ -9,6 +9,7 @@ output:
 
 ```{r setup, include = F}
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/ApplyDictionary.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/ChapterVariables.R")
 library(survey)
 library(ggplot2)
 library(kableExtra)
@@ -18,19 +19,52 @@ library(rlang)
 library(knitr)
 ```
 
+### Univariate results for continuous variables by chapter 
 
-### Continuous results
+#### Chapter 1
 ``` {r echo = F, results = 'asis'} 
-for(i in continuous){
+for(i in cont_1){
   lab = data_dict[data_dict$variable == i,]$variable_label %>% unique()
   k <- print.cont(get({{i}}))
   j = if(is_empty(lab)){paste(i)} else{lab}
 
   print(k %>% kbl(caption = paste0("Results for: ", j)) %>% kable_styling())
-  # %>%
-  #         kbl(caption = paste0("Results for: ", j)) %>%
-  #         kable_styling()
+
 }
 ```
 
+#### Chapter 2
+``` {r echo = F, results = 'asis'} 
+for(i in cont_2){
+  lab = data_dict[data_dict$variable == i,]$variable_label %>% unique()
+  k <- print.cont(get({{i}}))
+  j = if(is_empty(lab)){paste(i)} else{lab}
 
+  print(k %>% kbl(caption = paste0("Results for: ", j)) %>% kable_styling())
+
+}
+```
+
+#### Chapter 3
+``` {r echo = F, results = 'asis'} 
+for(i in cont_3){
+  lab = data_dict[data_dict$variable == i,]$variable_label %>% unique()
+  k <- print.cont(get({{i}}))
+  j = if(is_empty(lab)){paste(i)} else{lab}
+
+  print(k %>% kbl(caption = paste0("Results for: ", j)) %>% kable_styling())
+
+}
+```
+
+#### Chapter 4
+``` {r echo = F, results = 'asis'} 
+for(i in cont_4){
+  lab = data_dict[data_dict$variable == i,]$variable_label %>% unique()
+  k <- print.cont(get({{i}}))
+  j = if(is_empty(lab)){paste(i)} else{lab}
+
+  print(k %>% kbl(caption = paste0("Results for: ", j)) %>% kable_styling())
+
+}
+```
