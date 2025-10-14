@@ -25,15 +25,15 @@ library(flextable)
 
 #### Chapter 1 
 ``` {r results = "asis", echo = F}
-cols = bases %>% subset(!is.na(Base)) %>% pull(variable)
  
 for(i in cat_1){
   lab = dict2[dict2$variable == i,]$variable_label
-  if(i %in% cols){
-    k <- print.cat.from.bases(i)} else {
-      k <- print.cat(i)
-    } 
-  
+  # if(i %in% base_cols){
+  #   k <- print.cat.from.bases(i)} else {
+  #     k <- print.cat(i)
+  #   } 
+    k <- print.cat.from.bases(i)
+
   j = if(is_empty(lab)){i} else{lab}
         print(k %>% 
               kbl(caption = paste0("Results for: ", j)) %>%
@@ -46,15 +46,15 @@ for(i in cat_1){
 
 #### Chapter 2 
 ``` {r results = "asis", echo = F}
-cols = bases %>% subset(!is.na(Base)) %>% pull(variable)
- 
+
 for(i in cat_2){
   lab = dict2[dict2$variable == i,]$variable_label
-  if(i %in% cols){
-    k <- print.cat.from.bases(i)} else {
-      k <- print.cat(i)
-    } 
-  
+  # if(i %in% base_cols){
+  #   k <- print.cat.from.bases(i)} else {
+  #     k <- print.cat(i)
+  #   } 
+  # 
+  k <- print.cat.from.bases(i)
   j = if(is_empty(lab)){i} else{lab}
         print(k %>% 
               kbl(caption = paste0("Results for: ", j)) %>%
@@ -66,14 +66,15 @@ for(i in cat_2){
 
 #### Chapter 3 
 ``` {r results = "asis", echo = F}
-cols = bases %>% subset(!is.na(Base)) %>% pull(variable)
- 
+
 for(i in cat_3){
   lab = dict2[dict2$variable == i,]$variable_label
-  if(i %in% cols){
-    k <- print.cat.from.bases(i)} else {
-      k <- print.cat(i)
-    } 
+  # if(i %in% base_cols){
+  #   k <- print.cat.from.bases(i)} else {
+  #     k <- print.cat(i)
+  #   } 
+    k <- print.cat.from.bases(i)
+
   
   j = if(is_empty(lab)){i} else{lab}
         print(k %>% 
@@ -86,14 +87,16 @@ for(i in cat_3){
 
 #### Chapter 4
 ``` {r results = "asis", echo = F}
-cols = bases %>% subset(!is.na(Base)) %>% pull(variable)
- 
+
 for(i in cat_4){
   lab = dict2[dict2$variable == i,]$variable_label
-  if(i %in% cols){
-    k <- print.cat.from.bases(i)} else {
-      k <- print.cat(i)
-    } 
+  # if(i %in% base_cols){
+  #   k <- print.cat.from.bases(i)} else {
+  #     k <- print.cat(i)
+  #   } 
+  # 
+    k <- print.cat.from.bases(i)
+
   
   j = if(is_empty(lab)){i} else{lab}
         print(k %>% 

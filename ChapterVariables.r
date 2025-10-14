@@ -1,5 +1,9 @@
 # Chapter Variables
 
+group_vars <- LTM_final %>% 
+  select(c(RACE, PROVIDER, INSURANCE, MODE2023)) %>% 
+  colnames()
+
 # SELFINDUCE2C8, PPMEDSC4, POSITION2C7, NOPRENATALC13
 # Chapter 1 ----
 

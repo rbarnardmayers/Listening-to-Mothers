@@ -25,7 +25,12 @@ library(knitr)
 ``` {r echo = F, results = 'asis'} 
 for(i in cont_1){
   lab = data_dict[data_dict$variable == i,]$variable_label %>% unique()
-  k <- print.cont(get({{i}}))
+  if(i %in% base_cols){
+    k <- print.cont.from.bases(i)} else {
+      k <- print.cont(i)
+    } 
+  
+  # k <- print.cont(get({{i}}))
   j = if(is_empty(lab)){paste(i)} else{lab}
 
   print(k %>% kbl(caption = paste0("Results for: ", j)) %>% kable_styling())
@@ -37,7 +42,11 @@ for(i in cont_1){
 ``` {r echo = F, results = 'asis'} 
 for(i in cont_2){
   lab = data_dict[data_dict$variable == i,]$variable_label %>% unique()
-  k <- print.cont(get({{i}}))
+  if(i %in% base_cols){
+    k <- print.cont.from.bases(i)} else {
+      k <- print.cont(i)
+    } 
+  
   j = if(is_empty(lab)){paste(i)} else{lab}
 
   print(k %>% kbl(caption = paste0("Results for: ", j)) %>% kable_styling())
@@ -49,7 +58,10 @@ for(i in cont_2){
 ``` {r echo = F, results = 'asis'} 
 for(i in cont_3){
   lab = data_dict[data_dict$variable == i,]$variable_label %>% unique()
-  k <- print.cont(get({{i}}))
+if(i %in% base_cols){
+    k <- print.cont.from.bases(i)} else {
+      k <- print.cont(i)
+    } 
   j = if(is_empty(lab)){paste(i)} else{lab}
 
   print(k %>% kbl(caption = paste0("Results for: ", j)) %>% kable_styling())
@@ -61,7 +73,11 @@ for(i in cont_3){
 ``` {r echo = F, results = 'asis'} 
 for(i in cont_4){
   lab = data_dict[data_dict$variable == i,]$variable_label %>% unique()
-  k <- print.cont(get({{i}}))
+ if(i %in% base_cols){
+    k <- print.cont.from.bases(i)} else {
+      k <- print.cont(i)
+    } 
+  
   j = if(is_empty(lab)){paste(i)} else{lab}
 
   print(k %>% kbl(caption = paste0("Results for: ", j)) %>% kable_styling())
