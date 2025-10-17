@@ -1,24 +1,52 @@
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Helpful_Functions.R")
 
-# Data Read in ----
-LTM <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Data_9.4.25.csv")
-LTM <- LTM %>% subset(FINAL_DETERMINATION == "Keep")
+# Data Read in &  Get rid of identifying information ----
+LTM <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Data_9.4.25.csv") %>% 
+  mutate(MDID = as.character(MDID)) %>% 
+  select(-c(ResEmail, ResPhone, DialingMode,ManualDialing,resTimeZone,
+            ResPIN,SurveyName,ResLanguage, PanelistId, CallBackDate,
+            LastConnectionDate,LastConnectionWeek,LastConnectionStartTime,
+            ConnectionDurationInSeconds,ConnectionDurationInMinutes,
+            LastQuestionFilled,NumberOfConnections,resDisposition,
+            ResCaseResult,TotalDurationSec,Device,DeviceOS,DeviceVersion,
+            DeviceBrowser,DeviceBrowserVersion,GeoLocation,OfflineUser,
+            AppointmentDate,SurveyLink,AccessExpiration,CustomResult,
+            AgentId,AgentUserName,Priority,CallNote,ResCompleted,
+            ResBlocked,IsAnonymized,ResActive,Modified,DNC,Callback,
+            PIN,RID,PID,PID1,REFID1,NAME,ADDRESS,CITY,ZIPCODE,BATCH,
+            CHILDNAME, FINAL_QC, contains("FLAG"),
+            starts_with("F1"), starts_with("F2"), starts_with("F3"), 
+            starts_with("x"), starts_with("X"), starts_with("SCREEN"))) %>% 
+  subset(FINAL_DETERMINATION == "Keep")
 
-# Get rid of identifying information ----
-LTM1 <- LTM %>% select(-c(ResEmail, ResPhone, DialingMode,ManualDialing,resTimeZone,
-                          ResPIN,SurveyName,ResLanguage, PanelistId, CallBackDate,
-                          LastConnectionDate,LastConnectionWeek,LastConnectionStartTime,
-                          ConnectionDurationInSeconds,ConnectionDurationInMinutes,
-                          LastQuestionFilled,NumberOfConnections,resDisposition,
-                          ResCaseResult,TotalDurationSec,Device,DeviceOS,DeviceVersion,
-                          DeviceBrowser,DeviceBrowserVersion,GeoLocation,OfflineUser,
-                          AppointmentDate,SurveyLink,AccessExpiration,CustomResult,
-                          AgentId,AgentUserName,Priority,CallNote,ResCompleted,
-                          ResBlocked,IsAnonymized,ResActive,Modified,DNC,Callback,
-                          PIN,RID,PID,PID1,REFID1,NAME,ADDRESS,CITY,ZIPCODE,BATCH,
-                          CHILDNAME, FINAL_DETERMINATION, FINAL_QC, contains("FLAG"),
-                          starts_with("F1"), starts_with("F2"), starts_with("F3"), 
-                          starts_with("x"), starts_with("X"))) 
+
+Data_FirstField <- read.csv("~/Documents/2025-2026/LTM/Data_FirstField.csv") %>% 
+  mutate(MDID = as.character(MDID))%>% 
+  select(-c(ResLanguage,
+            LastConnectionDate,
+            LastQuestionFilled,resDisposition,
+            TotalDurationSec,Device,
+            PIN,BATCH,
+            contains("FLAG"),
+            starts_with("F1"), starts_with("F2"), starts_with("F3"), 
+            starts_with("x"), starts_with("X"))) 
+
+# Merging ----
+dat1 <- sapply(Data_FirstField, class) %>% as.data.frame()
+dat2 <- sapply(LTM, class) %>% as.data.frame()
+
+Merging <- read.csv("Merging.csv") 
+
+First <- Merging %>% select(c(starts_with("First"))) %>% 
+  rename(var = First_Var)
+Second <- Merging %>% select(c(starts_with("Second")))%>% 
+  rename(var = Second_Var)
+
+ALL <- Second %>% full_join(First)
+ALL %>% subset(First_Class != Second_Class) %>% View()
+
+LTM1 <- Data_FirstField %>% 
+  full_join(LTM)
 
 # Identify text response columns ending for other ----
 ends_o <- LTM1[str_ends(colnames(LTM1), "O")] %>% 
@@ -271,4 +299,4 @@ LTM2 <- LTM2 %>%
                          TRUE ~ SDM), 
          MDID = as.numeric(MDID)) %>%
   rename(MODE2023 = MDE2023)
-  
+
