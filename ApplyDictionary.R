@@ -46,7 +46,7 @@ LTM_final$wght = rnorm(n=nrow(LTM_final), mean = 1, sd = .02)
 
 # Create list of categorical variables by excluding numeric ----
 categorical <- LTM_final %>%
-  select(-c(HEIGHT,CaseId,MDID,ST, INTRO, AGE,SCREEN,TIMES,YEARBIRTH, 
+  select(-c(HEIGHT,CaseId,MDID,ST, INTRO, AGE,TIMES,YEARBIRTH, 
             all_of(ignores),BW_LBSANDOZ,SURVEYYEAR,SURVEYMONTHS,SURVEYDAYS,
             SURVEYDATE,
             ends_with("BIRTHYEAR"), starts_with("SCREEN"), starts_with("TRAP"),
@@ -54,7 +54,7 @@ categorical <- LTM_final %>%
             starts_with("FOLLOWUP"),
             starts_with("x"),contains("FLAG"), starts_with("F2_"),ends_with("O"),
             starts_with("F3_"),  starts_with("F1_"),starts_with("X"),
-            SCREEN3,NUMB_BIRTH_OLD, PREG_INT,PREPREG_WEIGHT_B1,LEARNED2,
+            NUMB_BIRTH_OLD, PREG_INT,PREPREG_WEIGHT_B1,LEARNED2,
             TRAP_AREA_SELECTOR,NUMB_BIRTH,HEIGHT_FEET,HEIGHT_INCHES,CURRWEIGHT_KG,
             LABORPERMIT_D1,LABORPERMIT_D2,LABORPERMIT_E1,LABORPERMIT_E2,
             BIRTHWEIGHT_LBS,BIRTHWEIGHT_OZ,BIRTHWEIGHT_G,AGEBIRTH,AGECHECK,
