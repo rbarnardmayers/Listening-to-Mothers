@@ -10,7 +10,7 @@ group_vars <- LTM_final %>%
 cat_1 <- LTM_final %>%
   select(c(PARITY, 'PREG_INT', starts_with("PREPREG_PH"),
            starts_with("PREPREG_MH"), 'PROVIDER', 'PROVIDERCHOICE',
-           DOULA, DOULAC1, starts_with("DOULA1"), LEARNED1, LEARNED2, starts_with("CARESETTING"),
+           DOULA, DOULAC1, starts_with("DOULA1"), starts_with("CARESETTING"),
           starts_with("CARETYPE"), starts_with("CAREMODE"), starts_with("WHYTELE"),
           starts_with("ATHOMECARE"), CONFIDENCE_ANY, BPCONFID, URINECONFID,
           WEIGHCONFID, BABYHRCONFID, CURREDUC, PRIOREDUC, EDUCTYPE, starts_with("EDUCMODE"),
@@ -20,11 +20,14 @@ cat_1 <- LTM_final %>%
           starts_with("PLANNEDFEED")
           )) %>%
   select(-c(PREGCONDITIONC11, PREPREG_MHCONDC5, PREPREG_PHYSCONDC3,
-            DOULA1C6, DOULA1C7, PREGCONDITIONC9)) %>%
+            CARESETTINGC8O,WHYTELEC7O,EDUCIMPACTC7O,PREGCONDITIONC9O,
+            DOULA1C6, DOULA1C7, PREGCONDITIONC9, PREPREG_PHYSCONDC3O,
+            PREPREG_MHCONDC5O, ends_with("O"))) %>%
   colnames()
 
 cont_1 <- LTM_final %>%
-  select(c(PREPREG_WEIGHT, HEIGHT, BMI, PREG_WEIGHT, WEIGHTGAIN, NUMB_BIRTH)) %>%
+  select(c(PREPREG_WEIGHT, HEIGHT, BMI, PREG_WEIGHT, WEIGHTGAIN, 
+           NUMB_BIRTH, LEARNED1, LEARNED2)) %>%
   colnames()
 
 # Chapter 2 ----
@@ -41,7 +44,7 @@ cat_2 <- LTM_final %>%
 
 cont_2 <-  LTM_final %>%
   select(c(AGEBIRTH, NUMB_BIRTH, LABORLENGTH, DAYSHOSP,GESTAGE,
-           BIRTHWEIGHT, BABYHOSP, MEDINDUCE5, MEDINDUCE4)) %>%
+           BIRTHWEIGHT, BABYHOSP, MEDINDUCE5, MEDINDUCE4, ends_with("O"))) %>%
   colnames()
 
 # # Chapter 3 ----
@@ -51,7 +54,7 @@ cont_2 <-  LTM_final %>%
 cat_3 <- LTM_final %>%
   select(c(MODE2023, VAGASSIST, CSECTIONTYPE, UNPLANNEDREASON,
            # REPEATCSEC,
-           VBACCHOICE, VBACINTEREST)) %>%
+           VBACCHOICE, VBACINTEREST, ends_with("O"))) %>%
   colnames()
 
 cont_3 <- LTM_final %>% 
@@ -68,7 +71,7 @@ cat_4 <- LTM_final %>%
            starts_with("PREPREG_MHCOND"),starts_with("SOCIALNEEDC"),
            SNMEAL, SNLIVE, SNUTILITIES, SNTRANSPORT,
            SNCHILDCARE, SNINCOME, SNDRUGS, SNUNSAFE, SNABUSE)) %>%
-  select(-c(PPMEDSC4, PREPREG_MHCONDC5)) %>%
+  select(-c(PPMEDSC4, PREPREG_MHCONDC5, ends_with("O"))) %>%
   colnames()
 
 cont_4 <- LTM_final %>%
@@ -80,3 +83,19 @@ cont_4 <- LTM_final %>%
 # 
 # cont_5 <- LTM_final %>% 
 #   select(c()) %>% colnames()
+
+
+# TESTING ----
+# tab1 <- LTM_dsn %>% 
+#   tbl_svysummary(
+#     by = RACE,
+#     # Use include to select variables
+#     include = c(PARITY, PREG_INT),
+#     statistic =  list(all_categorical() ~ "{p}%") # ,all_continuous()  ~ "{mean} ({sd})",
+#     ) %>%
+#   modify_header(label = "**Variable**",
+#                 all_stat_cols() ~ "**{level}**<br>{style_percent(p, digits=0)}%") %>%
+#   modify_caption("Weighted descriptive statistics, by race") %>%
+#   bold_labels() 
+
+
