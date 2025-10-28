@@ -1,0 +1,114 @@
+---
+title: "Categorical Results"
+author: "Ruby Barnard-Mayers"
+date: "2025-09-17"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+```{r setup, include = F}
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/ApplyDictionary.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/ChapterVariables.R")
+library(survey)
+library(ggplot2)
+library(kableExtra)
+library(tidyr)
+library(ggsurvey)
+library(rlang)
+library(knitr)
+library(flextable)
+library(dplyr)
+library(stringr)
+library(srvyr)
+library(readxl)
+library(purrr)
+library(phdcocktail)
+library(openxlsx)
+```
+### Univariate tables for categorical variables
+
+#### Chapter 1 
+``` {r results = "asis", echo = F, warning = F}
+ 
+for(i in cat_1){
+  lab = dict2[dict2$variable == i,]$variable_label
+  # if(i %in% base_cols){
+  #   k <- print.cat.from.bases(i)} else {
+  #     k <- print.cat(i)
+  #   } 
+    k <- print.cat.from.bases(i)
+
+  j = if(is_empty(lab)){i} else{lab}
+        print(k %>% 
+              kbl(caption = paste0("Results for: ", j)) %>%
+              kable_styling())
+  
+}
+
+```
+
+
+#### Chapter 2 
+``` {r results = "asis", echo = F, warning = F}
+
+for(i in cat_2){
+  lab = dict2[dict2$variable == i,]$variable_label
+  # if(i %in% base_cols){
+  #   k <- print.cat.from.bases(i)} else {
+  #     k <- print.cat(i)
+  #   } 
+  # 
+  k <- print.cat.from.bases(i)
+  j = if(is_empty(lab)){i} else{lab}
+        print(k %>% 
+              kbl(caption = paste0("Results for: ", j)) %>%
+              kable_styling())
+  
+}
+
+```
+
+#### Chapter 3 
+``` {r results = "asis", echo = F, warning = F}
+
+for(i in cat_3){
+  lab = dict2[dict2$variable == i,]$variable_label
+  # if(i %in% base_cols){
+  #   k <- print.cat.from.bases(i)} else {
+  #     k <- print.cat(i)
+  #   } 
+    k <- print.cat.from.bases(i)
+
+  
+  j = if(is_empty(lab)){i} else{lab}
+        print(k %>% 
+              kbl(caption = paste0("Results for: ", j)) %>%
+              kable_styling())
+  
+}
+
+```
+
+#### Chapter 4
+``` {r results = "asis", echo = F, warning = F}
+
+for(i in cat_4){
+  lab = dict2[dict2$variable == i,]$variable_label
+  # if(i %in% base_cols){
+  #   k <- print.cat.from.bases(i)} else {
+  #     k <- print.cat(i)
+  #   } 
+  # 
+    k <- print.cat.from.bases(i)
+
+  
+  j = if(is_empty(lab)){i} else{lab}
+        print(k %>% 
+              kbl(caption = paste0("Results for: ", j)) %>%
+              kable_styling())
+  
+}
+
+```

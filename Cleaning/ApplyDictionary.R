@@ -1,5 +1,7 @@
 # Data Dictionary Application
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Data Cleaning.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Helpful_Functions.R")
+setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")
+LTM2 <- read.csv("LTM_clean.csv")
 
 # Data dictionary prep ----
 # Getting rid of columns with no conversion in dict
@@ -10,7 +12,10 @@ LTM_include <- LTM2 %>%
             BABYHOSP, PPVISIT, PPVISITTIME1, PPVISITTIME2, EXCLUSIVEBF,PARITY, 
             HEIGHT, PREPREG_WEIGHT, RACE, INSURANCE, LANGUAGE, BMI, DOULA, 
             DOULAC1, DOULAC2, DOULAC3, LEARNED1, PRENAT, WEAN, ZIP, FAMSIZE1, 
-            FAMSIZE2, INCOME, IMMIGRATION, all_of(ignores), 
+            FAMSIZE2, INCOME, IMMIGRATION,
+            DOULA3, INDUCE6, REPEATCSEC,
+            MEDINDUCE4, MEDINDUCE5, WENTWELL, DIDNTGOWELL, ANYTHINGELSE, AIAN,
+            DISABILITYCOND, Source,ends_with("O"),
             FEED_CONCORDANT, phys_cb, SDM_1, SDM_2, SDM_3, SDM_4, WEIGHTGAIN, 
             BIRTHWEIGHT_CAT, BIRTHWEIGHT,CONFIDENCE_ANY, ATHOMECARE_ANY, 
             MODE_ALL, SUM_RESPECT, SDM, VBAC, MODE_ALL))
@@ -23,7 +28,9 @@ LTM2 <- LTM2 %>%
            PARITY, HEIGHT, PREPREG_WEIGHT, RACE, INSURANCE, LANGUAGE, BMI, 
            DOULA, DOULAC1, DOULAC2, DOULAC3, LEARNED1, PRENAT,
            WEAN, ZIP, FAMSIZE1, FAMSIZE2, INCOME, IMMIGRATION, UID2, 
-           all_of(ignores), 
+           DOULA3, INDUCE6, REPEATCSEC,
+           MEDINDUCE4, MEDINDUCE5, WENTWELL, DIDNTGOWELL, ANYTHINGELSE, AIAN,
+           DISABILITYCOND, Source,ends_with("O"),
            FEED_CONCORDANT, phys_cb, SDM_1, SDM_2, SDM_3, SDM_4, WEIGHTGAIN, 
            BIRTHWEIGHT_CAT, BIRTHWEIGHT,CONFIDENCE_ANY, ATHOMECARE_ANY, 
            MODE_ALL, SUM_RESPECT, SDM, VBAC, MODE_ALL))
@@ -47,7 +54,10 @@ LTM_final$wght = rnorm(n=nrow(LTM_final), mean = 1, sd = .02)
 # Create list of categorical variables by excluding numeric ----
 categorical <- LTM_final %>%
   select(-c(HEIGHT,CaseId,MDID,ST, INTRO, AGE,TIMES,YEARBIRTH, 
-            all_of(ignores),BW_LBSANDOZ,SURVEYYEAR,SURVEYMONTHS,SURVEYDAYS,
+            DOULA3, INDUCE6, REPEATCSEC,
+            MEDINDUCE4, MEDINDUCE5, WENTWELL, DIDNTGOWELL, ANYTHINGELSE, AIAN,
+            DISABILITYCOND, Source,ends_with("O"),
+            BW_LBSANDOZ,SURVEYYEAR,SURVEYMONTHS,SURVEYDAYS,
             SURVEYDATE,
             ends_with("BIRTHYEAR"), starts_with("SCREEN"), starts_with("TRAP"),
             CURRWEIGHT_LBS,PREGWEIGHT_B1,PREGWEIGHT_A1,
@@ -98,6 +108,14 @@ rm(LTM_include)
 rm(LTM2)
 gc()
 
+for (i in seq_len(nrow(dict2))) {
+  var_name <- dict2$variable[i]
+  var_label <- dict2$variable_label[i]
+  
+  if (var_name %in% names(LTM_final)) {
+    var_label(LTM_final[[var_name]]) <- var_label
+  }
+}
 
 LTM_dsn <- LTM_final %>% 
   as_survey_design(weight = wght, id = 1)

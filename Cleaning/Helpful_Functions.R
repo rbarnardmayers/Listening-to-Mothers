@@ -9,6 +9,7 @@ library(rlang)
 library(purrr)
 library(phdcocktail)
 library(openxlsx)
+library(labelled)
 
 # Convert to numeric ----
 convert.fun <- function(dat, vars){
@@ -349,6 +350,7 @@ collapse.2by2 <- function(cols, var, data = LTM_dsn){
 
 
 # Data Dictionary ----
+setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")
 dict <- read_excel("Data_Dictionary.xlsx", 
                    sheet = "Variable Values") 
 dict2 <-  read_excel("Data_Dictionary.xlsx", 
@@ -370,4 +372,8 @@ bases <- bases %>%
   rename(variable = Variable.Name) %>%
   full_join(dict2)
 base_cols = bases %>% subset(!is.na(Base)) %>% pull(variable)
+
+# labelling 
+# Apply variable labels based on the data dictionary
+
 

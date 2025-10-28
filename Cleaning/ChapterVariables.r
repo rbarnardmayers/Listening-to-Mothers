@@ -39,12 +39,13 @@ cat_2 <- LTM_final %>%
            starts_with("LABORPERMIT"), LABORWALK, POSITION, POSITIONCHOICE,
            HOSPFEEDC8)) %>%
   select(-c(INDUCE6, MEDINDUCE3C8, MEDINDUCE4, MEDINDUCE5, SELFINDUCE2C8, 
-            LABORPERMIT_D1, LABORPERMIT_D2, LABORPERMIT_E1, LABORPERMIT_E2)) %>%
+            LABORPERMIT_D1, LABORPERMIT_D2, LABORPERMIT_E1, LABORPERMIT_E2, 
+            ends_with("O"))) %>%
   colnames()
 
 cont_2 <-  LTM_final %>%
   select(c(AGEBIRTH, NUMB_BIRTH, LABORLENGTH, DAYSHOSP,GESTAGE,
-           BIRTHWEIGHT, BABYHOSP, MEDINDUCE5, MEDINDUCE4, ends_with("O"))) %>%
+           BIRTHWEIGHT, BABYHOSP, MEDINDUCE5, MEDINDUCE4)) %>%
   colnames()
 
 # # Chapter 3 ----
@@ -54,7 +55,7 @@ cont_2 <-  LTM_final %>%
 cat_3 <- LTM_final %>%
   select(c(MODE2023, VAGASSIST, CSECTIONTYPE, UNPLANNEDREASON,
            # REPEATCSEC,
-           VBACCHOICE, VBACINTEREST, ends_with("O"))) %>%
+           VBACCHOICE, VBACINTEREST)) %>%
   colnames()
 
 cont_3 <- LTM_final %>% 
@@ -84,18 +85,22 @@ cont_4 <- LTM_final %>%
 # cont_5 <- LTM_final %>% 
 #   select(c()) %>% colnames()
 
+# Checking ----
 
-# TESTING ----
-# tab1 <- LTM_dsn %>% 
-#   tbl_svysummary(
-#     by = RACE,
-#     # Use include to select variables
-#     include = c(PARITY, PREG_INT),
-#     statistic =  list(all_categorical() ~ "{p}%") # ,all_continuous()  ~ "{mean} ({sd})",
-#     ) %>%
-#   modify_header(label = "**Variable**",
-#                 all_stat_cols() ~ "**{level}**<br>{style_percent(p, digits=0)}%") %>%
-#   modify_caption("Weighted descriptive statistics, by race") %>%
-#   bold_labels() 
+for(i in cat_3){
+  lab = dict2[dict2$variable == i,]$variable_label
+  # if(i %in% base_cols){
+  #   k <- print.cat.from.bases(i)} else {
+  #     k <- print.cat(i)
+  #   } 
+  k <- print.cat.from.bases(i)
+  print(k)
+  
+}
+
+
+test_3 <- LTM_final %>%
+  select(c(ends_with("O"))) %>%
+  colnames()
 
 

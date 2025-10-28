@@ -1,7 +1,7 @@
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Helpful_Functions.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Helpful_Functions.R")
 
 # Data Read in &  Get rid of identifying information ----
-LTM <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Data_9.4.25.csv") 
+LTM <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Data_TEMP.csv") 
 
 LTM1 <- LTM %>% 
   mutate(MDID = as.character(MDID)) %>% 
@@ -274,3 +274,5 @@ LTM2 <- LTM2 %>%
          MDID = as.numeric(MDID)) %>%
   rename(MODE2023 = MDE2023)
 
+setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")
+write.csv(LTM2, "LTM_clean.csv")
