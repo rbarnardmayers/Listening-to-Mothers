@@ -78,29 +78,22 @@ cat_4 <- LTM_final %>%
 cont_4 <- LTM_final %>%
   select(c(PPVISITTIME1, PPVISITTIME2, PPVISIT, EXCLUSIVEBF)) %>% colnames()
 
-# # Chapter 5 ----
-# cat_5 <- LTM_final %>% 
-#   select(c()) %>% colnames()
-# 
-# cont_5 <- LTM_final %>% 
-#   select(c()) %>% colnames()
-
 # Checking ----
-
-for(i in cat_3){
-  lab = dict2[dict2$variable == i,]$variable_label
-  # if(i %in% base_cols){
-  #   k <- print.cat.from.bases(i)} else {
-  #     k <- print.cat(i)
-  #   } 
-  k <- print.cat.from.bases(i)
-  print(k)
-  
-}
-
-
-test_3 <- LTM_final %>%
-  select(c(ends_with("O"))) %>%
-  colnames()
+# 
+# for(i in cat_3){
+#   lab = dict2[dict2$variable == i,]$variable_label
+#   # if(i %in% base_cols){
+#   #   k <- print.cat.from.bases(i)} else {
+#   #     k <- print.cat(i)
+#   #   } 
+#   k <- print.cat.from.bases(i)
+#   print(k)
+#   
+# }
+# 
+# 
+# test_3 <- LTM_final %>%
+#   select(c(ends_with("O"))) %>%
+#   colnames()
 
 
