@@ -360,3 +360,47 @@ all_results <- cbind(t_0, t_1, t_2, t_3_5,t_3_4,
                      t_4_4_5, t_4_5_4, t_4_4_4)
 all_results$Source <- rownames(all_results)
 all_results <- all_results %>% relocate(Source)
+
+
+LTM %>% 
+  summarise(F1_USKG_ANY = sum(F1_USKG_ANY == 1, na.rm = T), 
+            F1_SPEED = sum(F1_SPEED == 1, na.rm = T),
+            F1_DUP = sum(F1_DUP == 1, na.rm = T),
+            
+            F2_PNCB4LEARN= sum(F2_PNCB4LEARN == 1, na.rm = T),
+            F2_WT_EXT= sum(F2_WT_EXT == 1, na.rm = T),
+            F2_HT_EXT= sum(F2_HT_EXT == 1, na.rm = T),
+            F2_GA_EXT= sum(F2_GA_EXT == 1, na.rm = T),
+            F2_BW_EXT= sum(F2_BW_EXT == 1, na.rm = T),
+            F2_VLBNICU= sum(F2_VLBNICU == 1, na.rm = T),
+            F2_VLBHOSP= sum(F2_VLBHOSP == 1, na.rm = T),
+            F2_MCAID_INC_EXT= sum(F2_MCAID_INC_EXT == 1, na.rm = T),
+            F2_ZIPCHECK= sum(F2_ZIPCHECK == 1, na.rm = T),
+            
+            F3_EARLYPNC= sum(F3_EARLYPNC == 1, na.rm = T), 
+            F3_PREGWT= sum(F3_PREGWT == 1, na.rm = T), 
+            F3_WTDIFF= sum(F3_WTDIFF == 1, na.rm = T),
+            F3_HT= sum(F3_HT == 1, na.rm = T),
+            F3_LBW_NICU= sum(F3_LBW_NICU == 1, na.rm = T),
+            F3_LBW_DAYS= sum(F3_LBW_DAYS == 1, na.rm = T),
+            F3_VAGASSIST= sum(F3_VAGASSIST == 1, na.rm = T),
+            F3_GAFOOD= sum(F3_GAFOOD == 1, na.rm = T),
+            F3_INC_MCAID= sum(F3_INC_MCAID == 1, na.rm = T),
+            F3_INC_PAN= sum(F3_INC_PAN == 1, na.rm = T),
+            F3_INC_NEEDS= sum(F3_INC_NEEDS == 1, na.rm = T),
+            
+            F4_PRE_HYPER= sum(F4_PRE_HYPER == 1, na.rm = T),
+            F4_PRE_DIABETES= sum(F4_PRE_DIABETES == 1, na.rm = T),
+            F4_NO_PNC= sum(F4_NO_PNC == 1, na.rm = T),
+            F4_CS_LABOR= sum(F4_CS_LABOR == 1, na.rm = T),
+            F4_VAGEXAM= sum(F4_VAGEXAM == 1, na.rm = T),
+            F4_TERM_NICU= sum(F4_TERM_NICU == 1, na.rm = T),
+            F4_PPTVISITS= sum(F4_PPTVISITS == 1, na.rm = T),
+            F4_MISSING_BW= sum(F4_MISSING_BW == 1, na.rm = T),
+            F4_MISSING_LABORHRS= sum(F4_MISSING_LABORHRS == 1, na.rm = T),
+            F4_MISSING_MOMDAYS= sum(F4_MISSING_MOMDAYS == 1, na.rm = T),
+            F4_MISSING_BABYDAYS= sum(F4_MISSING_BABYDAYS == 1, na.rm = T)) %>%
+  t() %>% 
+  View()
+
+
