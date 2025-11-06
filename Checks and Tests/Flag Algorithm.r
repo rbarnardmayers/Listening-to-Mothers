@@ -58,18 +58,21 @@ LTM <- LTM %>%
                            TotalDurationSec >= 19*60 ~ 0),
          USKGANY = case_when(BIRTHCOUNTRY == 1 & KG_any == 1 ~ 1, 
                              TRUE ~ 0),
-         NOTRIBALAFF = case_when(RACE == "AIAN" & AIAN == "99" ~ 1,
+         NOTRIBALAFF = case_when(RACE == "AIAN" & "99" %in% AIAN  ~ 1,
                                  RACE == "AIAN" & AIAN == "99 " ~ 1,
                                  RACE == "AIAN" & AIAN == " 99" ~ 1,
                                  RACE == "AIAN" & AIAN == "11" ~ 1,
                                  RACE == "AIAN" & AIAN == "Na" ~ 1,
                                  RACE == "AIAN" & AIAN == "None" ~ 1,
                                  RACE == "AIAN" & AIAN == "N/A" ~ 1,
+                                 RACE == "AIAN" & AIAN == "None Officially" ~ 1,
                                  RACE == "AIAN" & AIAN == "Don't Have One" ~ 1,
                                  RACE == "AIAN" & AIAN == "American Indian /African American/white" ~ 1,
                                  RACE == "AIAN" & AIAN == " " ~ 1,
                                  RACE == "AIAN" & AIAN == "African American" ~ 1,
                                  RACE == "AIAN" & AIAN == "" ~ 1,
+                                 RACE == "AIAN" & AIAN == "American" ~ 1,
+                                 RACE == "AIAN" & AIAN == "American Indian" ~ 1,
                                  TRUE ~ 0),
          
          # Flag 2s
@@ -85,12 +88,12 @@ LTM <- LTM %>%
                             PREPREG_WEIGHT >= 317 ~ 1, 
                             TRUE ~ 0),
          BW_EXT = case_when(BIRTHWEIGHT <= 970 ~ 1, 
-                            BIRTHWEIGHT >= 4620 & PREPREG_PHYSCONDC2 == 1 ~ 1,
-                            BIRTHWEIGHT >= 4620 & PREGCONDITIONC1 == 1 ~ 1,
-                            BIRTHWEIGHT >= 4800 & PREPREG_PHYSCONDC2 == 0 ~ 1,
-                            BIRTHWEIGHT >= 4800 & PREGCONDITIONC1 == 0 ~ 1,
+                            BIRTHWEIGHT >= 4620 & PREPREG_PHYSCONDC2 == 0 & 
+                              PREGCONDITIONC1 == 0 ~ 1,
+                            BIRTHWEIGHT >= 4800 & PREPREG_PHYSCONDC2 == 1 ~ 1,
+                            BIRTHWEIGHT >= 4800 & PREGCONDITIONC1 == 1 ~ 1,
                             TRUE ~ 0),
-         MCAID_INC_EXT = case_when(INCOME >= 150000 & INSURC2 == 1 ~ 1, 
+         MCAID_INC_EXT = case_when(INCOME > 150000 & INSURC2 == 1 ~ 1, 
                                    TRUE ~ 0), 
          VLBNICU = case_when(BIRTHWEIGHT < 1500 & NICU == 3 ~ 1, 
                              TRUE ~ 0), 
@@ -124,15 +127,14 @@ LTM <- LTM %>%
          INC_MCAID = case_when(INCOME < 150000 & INCOME >= 100000 & 
                                  INSURC2 == 1 ~ 1, 
                                TRUE ~ 0),
-         INC_PAN = case_when(INCOME >= 100000 & INCOME < 150000 & 
-                               Source %in% c(4,6,8) ~ 1, 
+         INC_PAN = case_when(INCOME >= 150000 & Source %in% c(4,5,6,7) ~ 1, 
                              TRUE ~ 0),
          NEED_F = case_when(SOCIALNEEDC1 == 1 ~ 1, 
                             SOCIALNEEDC2 == 1 ~ 1,
                             SOCIALNEEDC3 == 1 ~ 1,
                             SOCIALNEEDC4 == 1 ~ 1,
                             TRUE ~ 0),
-         INC_NEEDS = case_when(INCOME>= 100000 & INCOME < 150000 & NEED_F == 1 ~ 1,
+         INC_NEEDS = case_when(INCOME >= 150000 & NEED_F == 1 ~ 1,
                                TRUE ~ 0),
          PRE_HYPER = case_when(PREPREG_PHYSCONDC1 == 1 ~ 1, 
                                TRUE ~ 0),
@@ -314,7 +316,7 @@ LTM %>%
   subset(F1_SPEED == 0) %>% 
   subset(SPEED == 1) %>% 
   # summarise(n = n())
-  relocate(ConnectionDurationInMinutes, TotalDurationSec) %>%
+  relocate(TotalDurationSec) %>%
   # View()
   nrow()
 
@@ -328,7 +330,7 @@ check.flags(F1_NOTRIBALAFF, NOTRIBALAFF)
 # "F2_VLBNICU", "F2_VLBHOSP", "F2_DKREFCHECK"
 
 # PROBLEMS: "F2_BW_EXT", "F2_MCAID_INC_EXT",
-check.flags(F2_VLBHOSP, VLBHOSP)
+check.flags(F2_BW_EXT, BW_EXT)
 
 # "F3_EARLYPNC","F3_NO_PNC","F3_PREGWT",
 #  F3_HT","F3_VAGASSIST","F3_GAFOOD",
@@ -338,13 +340,18 @@ check.flags(F2_VLBHOSP, VLBHOSP)
 # "F3_MISSING_BW","F3_MISSING_LABORHRS","F3_MISSING_MOMDAYS",
 # "F3_MISSING_BABYDAYS"
 
-# PROBLEMS:# F3_WTDIFF, F3_LBW_NICU, F3_LBW_DAYS, F3_INC_NEEDS
-# F3_TERM_NICU
+# PROBLEMS: # F3_WTDIFF, F3_LBW_NICU, F3_LBW_DAYS, F3_INC_NEEDS, F3_TERM_NICU
 
-check.flags(F3_MISSING_BABYDAYS, MISSING_BABYDAYS)
+check.flags(F3_TERM_NICU, TERM_NICU)
 
 # Checking MDR flagging ----
 options(scipen = 999)
+
+#  F1_NOTRIBALAFF
+ LTM %>% 
+  subset(F1_NOTRIBALAFF == 0) %>% 
+  select(c(UID2, )) %>% 
+  mutate(mismatch = "F2_BW_EXT") 
 
 # 37 F2_BW_EXT
 F2_1 <- LTM %>% 
@@ -408,5 +415,6 @@ issues <- F2_1 %>%
 
 setwd("/Users/rubybarnard-mayers/Documents/2025-2026/LTM")
 write.csv(issues, "Algorithm_Issues.csv")
+
 
  
