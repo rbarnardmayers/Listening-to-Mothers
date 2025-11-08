@@ -48,10 +48,25 @@ LTM <- LTM %>%
          LABCSEC = as.numeric(LABCSEC),
          CSECTIONTYPE = as.numeric(CSECTIONTYPE),
          VAGASSIST= as.numeric(VAGASSIST),
+         CARESETTINGC1 = as.numeric(CARESETTINGC1),
+         CARESETTINGC2 = as.numeric(CARESETTINGC2),
+         CARESETTINGC3 = as.numeric(CARESETTINGC3),
+         CARESETTINGC4 = as.numeric(CARESETTINGC4),
+         CARESETTINGC5 = as.numeric(CARESETTINGC5),
+         CARESETTINGC6 = as.numeric(CARESETTINGC6),
+         CARESETTINGC7 = as.numeric(CARESETTINGC7),
+         
+         CS_MIDWIFE = case_when(BIRTHATTEND == 4 & MODE2023 == 2 ~ 1, 
+                                BIRTHATTEND == 5 & MODE2023 == 2 ~ 1,
+                                TRUE ~ 0),
+         PROVIDER = as.numeric(PROVIDER),
+         PPVISITTIME1=as.numeric(PPVISITTIME1),
+         PPVISITTIME2=as.numeric(PPVISITTIME2),
+         
+         PPVISITTIME = case_when(!is.na(PPVISITTIME1) ~ PPVISITTIME1,
+                                 !is.na(PPVISITTIME2) ~ PPVISITTIME2),
          
          # Flag 1s
-         # SPEED = case_when(ConnectionDurationInMinutes < 19 ~ 1, 
-         #                   ConnectionDurationInMinutes >= 19 ~ 0),
          F1_DUP = DUP_FLAG,
          F1_SPEED = case_when(TotalDurationSec < 19*60 ~ 1, 
                               TotalDurationSec >= 19*60 ~ 0),
@@ -207,11 +222,13 @@ t_0 <- LTM %>%
             EARLYPNC=round(sum(F3_EARLYPNC == 1)/n, 5),
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
-            NOPNC=round(sum(LEARNED2 == 1)/n, 5)) %>% 
+            NOPNC=round(sum(LEARNED2 == 1)/n, 5),
+            OBGYN = round(sum(PROVIDER == 1, na.rm = T)/n, 5), 
+            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
   t() %>% as.data.frame()
 rownames(t_0) <- c("n", "CESAREAN","MARRIED","NULLIPAROUS","SOLIDFOOD" ,
                    "VAGASSIST","EARLYPNC","HYPERTENSION",
-                   "DIABETES", "NOPNC")
+                   "DIABETES", "NOPNC", "OBGYN", "CS_MIDWIFE")
 colnames(t_0) <- c("Full Dataset")
 
 # First Step 
@@ -226,13 +243,15 @@ t_1 <- LTM %>%
             EARLYPNC=round(sum(F3_EARLYPNC == 1)/n, 5),
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
-            NOPNC=round(sum(LEARNED2 == 1)/n, 5)) %>% 
+            NOPNC=round(sum(LEARNED2 == 1)/n, 5),
+            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
+            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
   subset(FLAG1 == 0) %>%
   t() %>% as.data.frame()
 t_1 <- t_1[-1,] %>% as.data.frame()
 rownames(t_1) <- c("n","CESAREAN","MARRIED","NULLIPAROUS","SOLIDFOOD" ,
                    "VAGASSIST","EARLYPNC","HYPERTENSION",
-                   "DIABETES", "NOPNC")
+                   "DIABETES", "NOPNC", "OBGYN", "CS_MIDWIFE")
 colnames(t_1) <- c("Deletes removed")
 
 # Second Step 
@@ -250,13 +269,15 @@ t_2 <- LTM %>%
             EARLYPNC=round(sum(F3_EARLYPNC == 1)/n, 5),
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
-            NOPNC=round(sum(LEARNED2 == 1)/n, 5)) %>% 
+            NOPNC=round(sum(LEARNED2 == 1)/n, 5),
+            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
+            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
   subset(FLAG2 == 0) %>%
   t() %>% as.data.frame()
 t_2 <- t_2[-1,] %>% as.data.frame()
 rownames(t_2) <- c("n","CESAREAN","MARRIED","NULLIPAROUS","SOLIDFOOD" ,
                    "VAGASSIST","EARLYPNC","HYPERTENSION",
-                   "DIABETES", "NOPNC")
+                   "DIABETES", "NOPNC", "OBGYN", "CS_MIDWIFE")
 colnames(t_2) <- c("Three Strikes and Out")
 
 # Third Step (< 4)
@@ -275,13 +296,15 @@ t_3_4 <- LTM %>%
             EARLYPNC=round(sum(F3_EARLYPNC == 1)/n, 5),
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
-            NOPNC=round(sum(LEARNED2 == 1)/n, 5)) %>% 
+            NOPNC=round(sum(LEARNED2 == 1)/n, 5),
+            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
+            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
   subset(FLAG23 == 0) %>%
   t() %>% as.data.frame()
 t_3_4 <- t_3_4[-1,] %>% as.data.frame()
 rownames(t_3_4) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
-                   "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                   "F3_PRE_DIABETES", "NO_PNC")
+                     "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
+                     "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
 colnames(t_3_4) <- c("Step 3a < 4 Total Flags")
 
 # Third Step (< 5)
@@ -299,20 +322,22 @@ t_3_5 <- LTM %>%
             EARLYPNC=round(sum(F3_EARLYPNC == 1)/n, 5),
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
-            NOPNC=round(sum(LEARNED2 == 1)/n, 5)) %>% 
+            NOPNC=round(sum(LEARNED2 == 1)/n, 5),
+            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
+            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
   subset(FLAG23 == 0) %>%
   t() %>% as.data.frame()
 t_3_5 <- t_3_5[-1,] %>% as.data.frame()
 rownames(t_3_5) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                      "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                     "F3_PRE_DIABETES", "NO_PNC")
+                     "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
 colnames(t_3_5) <- c("Step 3b < 5 Total Flags")
 
 # Fourth Step (< 4 & < 4)
 t_4_4_4 <- LTM %>% 
   subset(FLAG1 == 0 & FLAG2 < 3 & FLAG23 < 4) %>% 
   mutate(FLAG234 = case_when(FLAG234 < 4 ~ 0, 
-                            FLAG234 >= 4 ~ 1)) %>%
+                             FLAG234 >= 4 ~ 1)) %>%
   group_by(FLAG234) %>% 
   summarise(n = n(),
             CESAREAN=round(sum(MODE2023 == 2)/n, 5),
@@ -323,13 +348,15 @@ t_4_4_4 <- LTM %>%
             EARLYPNC=round(sum(F3_EARLYPNC == 1)/n, 5),
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
-            NOPNC=round(sum(LEARNED2 == 1)/n, 5)) %>% 
+            NOPNC=round(sum(LEARNED2 == 1)/n, 5),
+            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
+            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
   subset(FLAG234 == 0) %>%
   t() %>% as.data.frame()
 t_4_4_4 <- t_4_4_4[-1,] %>% as.data.frame()
 rownames(t_4_4_4) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
-                     "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                     "F3_PRE_DIABETES", "NO_PNC")
+                       "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
+                       "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
 colnames(t_4_4_4) <- c("Step 4aa < 4 Total Flags")
 
 # Fourth Step (< 4 & < 5)
@@ -347,13 +374,15 @@ t_4_4_5 <- LTM %>%
             EARLYPNC=round(sum(F3_EARLYPNC == 1)/n, 5),
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
-            NOPNC=round(sum(LEARNED2 == 1)/n, 5)) %>% 
+            NOPNC=round(sum(LEARNED2 == 1)/n, 5),
+            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
+            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
   subset(FLAG234 == 0) %>%
   t() %>% as.data.frame()
 t_4_4_5 <- t_4_4_5[-1,] %>% as.data.frame()
 rownames(t_4_4_5) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                       "F3_PRE_DIABETES", "NO_PNC")
+                       "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
 colnames(t_4_4_5) <- c("Step 4ab < 5 Total Flags")
 
 # Fourth Step (< 4 & < 6)
@@ -371,13 +400,15 @@ t_4_4_6 <- LTM %>%
             EARLYPNC=round(sum(F3_EARLYPNC == 1)/n, 5),
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
-            NOPNC=round(sum(LEARNED2 == 1)/n, 5)) %>% 
+            NOPNC=round(sum(LEARNED2 == 1)/n, 5),
+            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
+            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
   subset(FLAG234 == 0) %>%
   t() %>% as.data.frame()
 t_4_4_6 <- t_4_4_6[-1,] %>% as.data.frame()
 rownames(t_4_4_6) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
-                     "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                     "F3_PRE_DIABETES", "NO_PNC")
+                       "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
+                       "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
 colnames(t_4_4_6) <- c("Step 4ac < 6 Total Flags")
 
 # Fourth Step (< 5 & < 4)
@@ -395,13 +426,15 @@ t_4_5_4 <- LTM %>%
             EARLYPNC=round(sum(F3_EARLYPNC == 1)/n, 5),
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
-            NOPNC=round(sum(LEARNED2 == 1)/n, 5)) %>% 
+            NOPNC=round(sum(LEARNED2 == 1)/n, 5),
+            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
+            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
   subset(FLAG234 == 0) %>%
   t() %>% as.data.frame()
 t_4_5_4 <- t_4_5_4[-1,] %>% as.data.frame()
 rownames(t_4_5_4) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                       "F3_PRE_DIABETES", "NO_PNC")
+                       "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
 colnames(t_4_5_4) <- c("Step 4ba < 4 Total Flags")
 
 # Fourth Step (< 5 & < 5)
@@ -419,13 +452,15 @@ t_4_5_5 <- LTM %>%
             EARLYPNC=round(sum(F3_EARLYPNC == 1)/n, 5),
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
-            NOPNC=round(sum(LEARNED2 == 1)/n, 5)) %>% 
+            NOPNC=round(sum(LEARNED2 == 1)/n, 5),
+            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
+            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
   subset(FLAG234 == 0) %>%
   t() %>% as.data.frame()
 t_4_5_5 <- t_4_5_5[-1,] %>% as.data.frame()
 rownames(t_4_5_5) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                       "F3_PRE_DIABETES", "NO_PNC")
+                       "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
 colnames(t_4_5_5) <- c("Step 4bb < 5 Total Flags")
 
 # Fourth Step (< 5 & < 6)
@@ -443,19 +478,25 @@ t_4_5_6 <- LTM %>%
             EARLYPNC=round(sum(F3_EARLYPNC == 1)/n, 5),
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
-            NOPNC=round(sum(LEARNED2 == 1)/n, 5)) %>% 
+            NOPNC=round(sum(LEARNED2 == 1)/n, 5),
+            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
+            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
   subset(FLAG234 == 0) %>%
   t() %>% as.data.frame()
 t_4_5_6 <- t_4_5_6[-1,] %>% as.data.frame()
 rownames(t_4_5_6) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                       "F3_PRE_DIABETES", "NO_PNC")
+                       "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
 colnames(t_4_5_6) <- c("Step 4bc < 6 Total Flags")
 
 # MERGING TOGETHER ----
-all_results <- cbind(t_0, t_1, t_2, t_3_4, t_3_5,
+all_results <- cbind(t_0, t_1, t_2, t_3_5, t_3_4, 
                      t_4_5_6,t_4_4_6,t_4_5_5, 
                      t_4_4_5, t_4_5_4, t_4_4_4)
-all_results$NatDat <- c(NA, .32, .53, .40, .08, .03, .04, .03, .01, .02)
+all_results$NatDat <- c(NA, .32, .53, .40, .08, .03, .04, .03, .01, .02, NA, NA)
 all_results$measure <- rownames(all_results)
 all_results <- all_results %>% relocate(measure)
+
+all_results %>% View()
+
+

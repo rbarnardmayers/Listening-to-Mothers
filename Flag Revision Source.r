@@ -400,7 +400,36 @@ LTM %>%
             F4_MISSING_LABORHRS= sum(F4_MISSING_LABORHRS == 1, na.rm = T),
             F4_MISSING_MOMDAYS= sum(F4_MISSING_MOMDAYS == 1, na.rm = T),
             F4_MISSING_BABYDAYS= sum(F4_MISSING_BABYDAYS == 1, na.rm = T)) %>%
-  t() %>% 
+  t() %>% as.data.frame() %>%
+  mutate(prop = as.numeric(V1)/3681) %>%
   View()
+
+LTM %>% 
+  group_by(CARESETTINGC3) %>% 
+  summarise(n = n()) %>% 
+  mutate(prop = n / sum(n))
+
+
+LTM %>% 
+  mutate(CURREDUC = as.numeric(CURREDUC)) %>%
+  group_by(CURREDUC) %>% 
+  summarise(n = n()) %>% 
+  mutate(prop = n / sum(n))
+
+
+conds <- LTM %>% select(starts_with("PREGCONDITION")) %>% colnames()
+conds <- LTM %>% select(starts_with("MEDINDUCE1")) %>% colnames()
+
+for (i in conds){
+  t <- LTM %>% 
+    mutate(var = as.numeric(get(i))) %>%
+    subset(!is.na(var)) %>%
+     group_by(var) %>% 
+    summarise(n = n()) %>% 
+    mutate(prop = round(n / 3681, 3))
+  print(i)
+  print(t)
+}
+
 
 
