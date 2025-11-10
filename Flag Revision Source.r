@@ -1,3 +1,15 @@
+# CHECK FLAG CODING FROM MDR DATA DICTIONARY AND OURS
+# Check gestational age calculations from DUEDATE and BIRTHDATE
+
+
+LTM %>% 
+  relocate(FLAG1, RFLAG1, F1_SPEED, R_F1_SPEED, TotalDurationSec,
+           F1_USKG_ANY,R_F1_USKG_ANY, 
+           DUP_FLAG, R_F1_DUP, F1_NOTRIBALAFF) %>% 
+  # subset(FLAG1 == 0) %>% 
+  View()
+
+num1 %>% full_join(num2) %>% View()
 
 # Full Dataset 
 t_0 <- LTM %>% 
@@ -432,4 +444,15 @@ for (i in conds){
 }
 
 
+LTM %>% 
+  mutate(FINAL = case_when(FLAG1 > 0 ~ 0, 
+                           FLAG1 == 0 & FLAG2 > 2 ~ 0, 
+                           FLAG1 == 0 & FLAG2 <= 3 & FLAG234 > 5 ~ 0, 
+                           TRUE ~ 1)) %>% 
+  select(c( FINAL, EXCL_REASON, ANYTHINGELSE, ends_with("O"), DOULA3)) %>%
+  # select(c(FINAL, starts_with("DOULA3"))) %>%
+  View()
 
+
+       
+       

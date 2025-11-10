@@ -55,7 +55,11 @@ LTM <- LTM %>%
          CARESETTINGC5 = as.numeric(CARESETTINGC5),
          CARESETTINGC6 = as.numeric(CARESETTINGC6),
          CARESETTINGC7 = as.numeric(CARESETTINGC7),
-         
+         ANY_DOULA = case_when(DOULAC1 == 1 ~ 1, 
+                               DOULAC2 == 1 ~ 1, 
+                               DOULAC3 == 1 ~ 1, 
+                               DOULAC4 == 1 ~ 0, 
+                               TRUE ~ 0),
          CS_MIDWIFE = case_when(BIRTHATTEND == 4 & MODE2023 == 2 ~ 1, 
                                 BIRTHATTEND == 5 & MODE2023 == 2 ~ 1,
                                 TRUE ~ 0),
@@ -67,27 +71,27 @@ LTM <- LTM %>%
                                  !is.na(PPVISITTIME2) ~ PPVISITTIME2),
          
          # Flag 1s
-         F1_DUP = DUP_FLAG,
-         F1_SPEED = case_when(TotalDurationSec < 19*60 ~ 1, 
-                              TotalDurationSec >= 19*60 ~ 0),
-         F1_USKG_ANY = case_when(BIRTHCOUNTRY == 1 & KG_any == 1 ~ 1, 
-                                 TRUE ~ 0),
-         F1_NOTRIBALAFF = case_when(RACE == "AIAN" & "99" %in% AIAN  ~ 1,
-                                    RACE == "AIAN" & AIAN == "99 " ~ 1,
-                                    RACE == "AIAN" & AIAN == " 99" ~ 1,
-                                    RACE == "AIAN" & AIAN == "11" ~ 1,
-                                    RACE == "AIAN" & AIAN == "Na" ~ 1,
-                                    RACE == "AIAN" & AIAN == "None" ~ 1,
-                                    RACE == "AIAN" & AIAN == "N/A" ~ 1,
-                                    RACE == "AIAN" & AIAN == "None Officially" ~ 1,
-                                    RACE == "AIAN" & AIAN == "Don't Have One" ~ 1,
-                                    RACE == "AIAN" & AIAN == "American Indian /African American/white" ~ 1,
-                                    RACE == "AIAN" & AIAN == " " ~ 1,
-                                    RACE == "AIAN" & AIAN == "African American" ~ 1,
-                                    RACE == "AIAN" & AIAN == "" ~ 1,
-                                    RACE == "AIAN" & AIAN == "American" ~ 1,
-                                    RACE == "AIAN" & AIAN == "American Indian" ~ 1,
-                                    TRUE ~ 0),
+         R_F1_DUP = DUP_FLAG,
+         R_F1_SPEED = case_when(TotalDurationSec < 19*60 ~ 1, 
+                                TotalDurationSec >= 19*60 ~ 0),
+         R_F1_USKG_ANY = case_when(BIRTHCOUNTRY == 1 & KG_any == 1 ~ 1, 
+                                   TRUE ~ 0),
+         R_F1_NOTRIBALAFF = case_when(RACE == "AIAN" & "99" %in% AIAN  ~ 1,
+                                      RACE == "AIAN" & AIAN == "99 " ~ 1,
+                                      RACE == "AIAN" & AIAN == " 99" ~ 1,
+                                      RACE == "AIAN" & AIAN == "11" ~ 1,
+                                      RACE == "AIAN" & AIAN == "Na" ~ 1,
+                                      RACE == "AIAN" & AIAN == "None" ~ 1,
+                                      RACE == "AIAN" & AIAN == "N/A" ~ 1,
+                                      RACE == "AIAN" & AIAN == "None Officially" ~ 1,
+                                      RACE == "AIAN" & AIAN == "Don't Have One" ~ 1,
+                                      RACE == "AIAN" & AIAN == "American Indian /African American/white" ~ 1,
+                                      RACE == "AIAN" & AIAN == " " ~ 1,
+                                      RACE == "AIAN" & AIAN == "African American" ~ 1,
+                                      RACE == "AIAN" & AIAN == "" ~ 1,
+                                      RACE == "AIAN" & AIAN == "American" ~ 1,
+                                      RACE == "AIAN" & AIAN == "American Indian" ~ 1,
+                                      TRUE ~ 0),
          
          # Flag 2s
          F2_GA_EXT = case_when(GESTAGE_WEEKS < 27 ~ 1, 
@@ -172,13 +176,41 @@ LTM <- LTM %>%
                                         TRUE ~ 0),
          F3_MISSING_BABYDAYS = case_when(is.na(BABYHOSP) ~ 1, 
                                          BABYHOSP == 99 ~ 1,
-                                         TRUE ~ 0)) %>% 
+                                         TRUE ~ 0)) %>%
+  mutate(F_WELL = case_when(str_detect(WENTWELL, "todo|Todo") ~ 1, 
+                            str_detect(WENTWELL, "everything|Everything") ~ 1, 
+                            str_detect(WENTWELL, "99") ~ 1, 
+                            str_detect(WENTWELL, "very well|Very Well| Very well") ~ 1, 
+                            str_detect(WENTWELL, "went well|Went Well| Went well") ~ 1, 
+                            TRUE ~ 0),
+         
+         F_DIDNT = case_when(str_detect(DIDNTGOWELL, "nothing|Nothing") ~ 1,
+                             str_detect(DIDNTGOWELL, "nada|Nada") ~ 1,
+                             str_detect(DIDNTGOWELL, "everything|Everything") ~ 1,
+                             str_detect(DIDNTGOWELL, "todo|Todo") ~ 1,
+                             str_detect(DIDNTGOWELL, "none|None") ~ 1,
+                             str_detect(DIDNTGOWELL, "ningun|Ningun") ~ 1,
+                             str_detect(DIDNTGOWELL, "99") ~ 1,
+                             TRUE ~ 0), 
+         F_ANYTHINGELSE = case_when(str_detect(ANYTHINGELSE, "nothing|Nothing") ~ 1,
+                                    str_detect(ANYTHINGELSE, "nada|Nada") ~ 1,
+                                    str_detect(ANYTHINGELSE, "everything|Everything") ~ 1,
+                                    str_detect(ANYTHINGELSE, "todo|Todo") ~ 1,
+                                    str_detect(ANYTHINGELSE, "none|None") ~ 1,
+                                    str_detect(ANYTHINGELSE, "ningun|Ningun") ~ 1,
+                                    str_detect(ANYTHINGELSE, "99") ~ 1,
+                                    str_detect(ANYTHINGELSE, "Not at all|not at all|Not At All") ~ 1,
+                                    str_detect(ANYTHINGELSE, "all good| All good| All Good") ~ 1,
+                                    ANYTHINGELSE == "Yes" ~ 1, 
+                                    TRUE ~ 0)) %>%
   rowwise() %>%
-  mutate(FLAG1 = sum(across(c(F1_SPEED, F1_USKG_ANY, F1_DUP))),
-         FLAG2 = sum(across(starts_with("F2_"))),
-         FLAG3 = sum(across(starts_with("F3_"))), 
-         FLAGSUM = sum(across(c("FLAG2", "FLAG3")))) %>% 
-  ungroup()
+  mutate(#RFLAG1 = sum(across(c(R_F1_SPEED, R_F1_USKG_ANY, R_F1_DUP))),
+    FLAG2 = sum(across(starts_with("F2_"))),
+    FLAG3 = sum(across(starts_with("F3_"))), 
+    FLAGSUM = sum(across(c("FLAG2", "FLAG3"))), 
+    N_ANYTHING = sum(across(c(F_WELL, F_DIDNT, F_ANYTHINGELSE)))) %>% 
+  ungroup() %>% 
+  mutate(F1_ANYTHING = case_when(N_ANYTHING > 1 ~ 1, TRUE ~ 0))
 
 # setwd("/Users/rubybarnard-mayers/Documents/2025-2026/LTM")
 # write.csv(LTM, "LTM_RUBY_FLAGREVISION.csv")
@@ -202,14 +234,16 @@ LTM <- LTM %>%
          F4_MISSING_LABORHRS = F3_MISSING_LABORHRS, 
          F4_MISSING_MOMDAYS = F3_MISSING_MOMDAYS) %>% 
   rowwise() %>%
-  mutate() %>% 
-  mutate(FLAG1 = sum(across(c(F1_SPEED, F1_USKG_ANY, F1_DUP))),
-         FLAG2 = sum(across(starts_with("F2_"))),
-         FLAG3 = sum(across(starts_with("F3_"))), 
-         FLAG4 = sum(across(starts_with("F4_"))),
-         FLAG23 = sum(across(c("FLAG2", "FLAG3"))), 
-         FLAG234 = sum(across(c("FLAG2", "FLAG3", "FLAG4")))) %>% 
-  ungroup()
+  mutate(#FLAG1 = sum(across(c(FLAG1, F1_ANYTHING))),
+    FLAG2 = sum(across(c(starts_with("F2_")))),
+    FLAG3 = sum(across(c(starts_with("F3_"), F1_ANYTHING))), 
+    FLAG4 = sum(across(starts_with("F4_"))),
+    FLAG23 = sum(across(c("FLAG2", "FLAG3"))), 
+    FLAG234 = sum(across(c("FLAG2", "FLAG3", "FLAG4")))) %>% 
+  ungroup() %>% 
+  mutate(EXCL_REASON = case_when(FLAG1 > 0 ~ "FLAG 1", 
+                                 FLAG2 > 2 ~ "More than 2 FLAG 2s",
+                                 FLAG234 > 5 ~ "More than 5 FLAG2s + FLAG3s + FLAG 4s"))
 
 # Full Dataset 
 t_0 <- LTM %>% 
@@ -223,12 +257,14 @@ t_0 <- LTM %>%
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
             NOPNC=round(sum(LEARNED2 == 1)/n, 5),
-            OBGYN = round(sum(PROVIDER == 1, na.rm = T)/n, 5), 
-            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
+            ANY_DOULA=round(sum(ANY_DOULA == 1)/n, 5),
+            NONE = round(sum(N_ANYTHING == 0)/n, 5), 
+            ANY23 = round(sum(N_ANYTHING > 1)/n, 5)) %>% 
   t() %>% as.data.frame()
-rownames(t_0) <- c("n", "CESAREAN","MARRIED","NULLIPAROUS","SOLIDFOOD" ,
-                   "VAGASSIST","EARLYPNC","HYPERTENSION",
-                   "DIABETES", "NOPNC", "OBGYN", "CS_MIDWIFE")
+rownames(t_0) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
+                   "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
+                   "F3_PRE_DIABETES", "NO_PNC", "DOULA","No weird answers", 
+                   "2-3 weird answers")
 colnames(t_0) <- c("Full Dataset")
 
 # First Step 
@@ -244,14 +280,16 @@ t_1 <- LTM %>%
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
             NOPNC=round(sum(LEARNED2 == 1)/n, 5),
-            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
-            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
+            ANY_DOULA=round(sum(ANY_DOULA == 1)/n, 5),
+            NONE = round(sum(N_ANYTHING == 0)/n, 5), 
+            ANY23 = round(sum(N_ANYTHING > 1)/n, 5)) %>% 
   subset(FLAG1 == 0) %>%
   t() %>% as.data.frame()
 t_1 <- t_1[-1,] %>% as.data.frame()
-rownames(t_1) <- c("n","CESAREAN","MARRIED","NULLIPAROUS","SOLIDFOOD" ,
-                   "VAGASSIST","EARLYPNC","HYPERTENSION",
-                   "DIABETES", "NOPNC", "OBGYN", "CS_MIDWIFE")
+rownames(t_1) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
+                   "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
+                   "F3_PRE_DIABETES", "NO_PNC", "DOULA","No weird answers", 
+                   "2-3 weird answers")
 colnames(t_1) <- c("Deletes removed")
 
 # Second Step 
@@ -270,14 +308,16 @@ t_2 <- LTM %>%
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
             NOPNC=round(sum(LEARNED2 == 1)/n, 5),
-            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
-            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
+            ANY_DOULA=round(sum(ANY_DOULA == 1)/n, 5),
+            NONE = round(sum(N_ANYTHING == 0)/n, 5), 
+            ANY23 = round(sum(N_ANYTHING > 1)/n, 5)) %>% 
   subset(FLAG2 == 0) %>%
   t() %>% as.data.frame()
 t_2 <- t_2[-1,] %>% as.data.frame()
-rownames(t_2) <- c("n","CESAREAN","MARRIED","NULLIPAROUS","SOLIDFOOD" ,
-                   "VAGASSIST","EARLYPNC","HYPERTENSION",
-                   "DIABETES", "NOPNC", "OBGYN", "CS_MIDWIFE")
+rownames(t_2) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
+                   "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
+                   "F3_PRE_DIABETES", "NO_PNC", "DOULA","No weird answers", 
+                   "2-3 weird answers")
 colnames(t_2) <- c("Three Strikes and Out")
 
 # Third Step (< 4)
@@ -297,14 +337,16 @@ t_3_4 <- LTM %>%
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
             NOPNC=round(sum(LEARNED2 == 1)/n, 5),
-            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
-            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
+            ANY_DOULA=round(sum(ANY_DOULA == 1)/n, 5),
+            NONE = round(sum(N_ANYTHING == 0)/n, 5), 
+            ANY23 = round(sum(N_ANYTHING > 1)/n, 5)) %>% 
   subset(FLAG23 == 0) %>%
   t() %>% as.data.frame()
 t_3_4 <- t_3_4[-1,] %>% as.data.frame()
 rownames(t_3_4) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                      "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                     "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
+                     "F3_PRE_DIABETES", "NO_PNC", "DOULA","No weird answers", 
+                     "2-3 weird answers")
 colnames(t_3_4) <- c("Step 3a < 4 Total Flags")
 
 # Third Step (< 5)
@@ -323,14 +365,16 @@ t_3_5 <- LTM %>%
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
             NOPNC=round(sum(LEARNED2 == 1)/n, 5),
-            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
-            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
+            ANY_DOULA=round(sum(ANY_DOULA == 1)/n, 5),
+            NONE = round(sum(N_ANYTHING == 0)/n, 5), 
+            ANY23 = round(sum(N_ANYTHING > 1)/n, 5)) %>% 
   subset(FLAG23 == 0) %>%
   t() %>% as.data.frame()
 t_3_5 <- t_3_5[-1,] %>% as.data.frame()
-rownames(t_3_5) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
-                     "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                     "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
+rownames(t_3_5) <-c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
+                    "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
+                    "F3_PRE_DIABETES", "NO_PNC", "DOULA","No weird answers", 
+                    "2-3 weird answers")
 colnames(t_3_5) <- c("Step 3b < 5 Total Flags")
 
 # Fourth Step (< 4 & < 4)
@@ -349,14 +393,16 @@ t_4_4_4 <- LTM %>%
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
             NOPNC=round(sum(LEARNED2 == 1)/n, 5),
-            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
-            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
+            ANY_DOULA=round(sum(ANY_DOULA == 1)/n, 5),
+            NONE = round(sum(N_ANYTHING == 0)/n, 5), 
+            ANY23 = round(sum(N_ANYTHING > 1)/n, 5)) %>% 
   subset(FLAG234 == 0) %>%
   t() %>% as.data.frame()
 t_4_4_4 <- t_4_4_4[-1,] %>% as.data.frame()
 rownames(t_4_4_4) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                       "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
+                       "F3_PRE_DIABETES", "NO_PNC", "DOULA","No weird answers", 
+                       "2-3 weird answers")
 colnames(t_4_4_4) <- c("Step 4aa < 4 Total Flags")
 
 # Fourth Step (< 4 & < 5)
@@ -375,14 +421,16 @@ t_4_4_5 <- LTM %>%
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
             NOPNC=round(sum(LEARNED2 == 1)/n, 5),
-            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
-            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
+            ANY_DOULA=round(sum(ANY_DOULA == 1)/n, 5),
+            NONE = round(sum(N_ANYTHING == 0)/n, 5), 
+            ANY23 = round(sum(N_ANYTHING > 1)/n, 5)) %>% 
   subset(FLAG234 == 0) %>%
   t() %>% as.data.frame()
 t_4_4_5 <- t_4_4_5[-1,] %>% as.data.frame()
 rownames(t_4_4_5) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                       "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
+                       "F3_PRE_DIABETES", "NO_PNC", "DOULA","No weird answers", 
+                       "2-3 weird answers")
 colnames(t_4_4_5) <- c("Step 4ab < 5 Total Flags")
 
 # Fourth Step (< 4 & < 6)
@@ -401,14 +449,16 @@ t_4_4_6 <- LTM %>%
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
             NOPNC=round(sum(LEARNED2 == 1)/n, 5),
-            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
-            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
+            ANY_DOULA=round(sum(ANY_DOULA == 1)/n, 5),
+            NONE = round(sum(N_ANYTHING == 0)/n, 5), 
+            ANY23 = round(sum(N_ANYTHING > 1)/n, 5)) %>% 
   subset(FLAG234 == 0) %>%
   t() %>% as.data.frame()
 t_4_4_6 <- t_4_4_6[-1,] %>% as.data.frame()
 rownames(t_4_4_6) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                       "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
+                       "F3_PRE_DIABETES", "NO_PNC", "DOULA","No weird answers", 
+                       "2-3 weird answers")
 colnames(t_4_4_6) <- c("Step 4ac < 6 Total Flags")
 
 # Fourth Step (< 5 & < 4)
@@ -427,14 +477,16 @@ t_4_5_4 <- LTM %>%
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
             NOPNC=round(sum(LEARNED2 == 1)/n, 5),
-            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
-            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
+            ANY_DOULA=round(sum(ANY_DOULA == 1)/n, 5),
+            NONE = round(sum(N_ANYTHING == 0)/n, 5), 
+            ANY23 = round(sum(N_ANYTHING > 1)/n, 5)) %>% 
   subset(FLAG234 == 0) %>%
   t() %>% as.data.frame()
 t_4_5_4 <- t_4_5_4[-1,] %>% as.data.frame()
 rownames(t_4_5_4) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                       "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
+                       "F3_PRE_DIABETES", "NO_PNC", "DOULA","No weird answers", 
+                       "2-3 weird answers")
 colnames(t_4_5_4) <- c("Step 4ba < 4 Total Flags")
 
 # Fourth Step (< 5 & < 5)
@@ -453,15 +505,17 @@ t_4_5_5 <- LTM %>%
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
             NOPNC=round(sum(LEARNED2 == 1)/n, 5),
-            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
-            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
+            ANY_DOULA=round(sum(ANY_DOULA == 1)/n, 5),
+            NONE = round(sum(N_ANYTHING == 0)/n, 5), 
+            ANY23 = round(sum(N_ANYTHING > 1)/n, 5)) %>% 
   subset(FLAG234 == 0) %>%
   t() %>% as.data.frame()
 t_4_5_5 <- t_4_5_5[-1,] %>% as.data.frame()
 rownames(t_4_5_5) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                       "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
-colnames(t_4_5_5) <- c("Step 4bb < 5 Total Flags")
+                       "F3_PRE_DIABETES", "NO_PNC", "DOULA","No weird answers", 
+                       "2-3 weird answers")
+colnames(t_4_5_6) <- c("Step 4bb < 5 Total Flags")
 
 # Fourth Step (< 5 & < 6)
 t_4_5_6 <- LTM %>% 
@@ -479,24 +533,28 @@ t_4_5_6 <- LTM %>%
             HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
             DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
             NOPNC=round(sum(LEARNED2 == 1)/n, 5),
-            OBGYN = round(sum(PROVIDER ==1, na.rm = T)/n, 5), 
-            CS_MIDWIFE = round(sum(CS_MIDWIFE == 1)/n,5)) %>% 
+            ANY_DOULA=round(sum(ANY_DOULA == 1)/n, 5),
+            NONE = round(sum(N_ANYTHING == 0)/n, 5), 
+            ANY23 = round(sum(N_ANYTHING > 1)/n, 5)) %>% 
   subset(FLAG234 == 0) %>%
   t() %>% as.data.frame()
 t_4_5_6 <- t_4_5_6[-1,] %>% as.data.frame()
 rownames(t_4_5_6) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
-                       "F3_PRE_DIABETES", "NO_PNC", "OBGYN", "CS_MIDWIFE")
+                       "F3_PRE_DIABETES", "NO_PNC", "DOULA","No weird answers", 
+                       "2-3 weird answers")
 colnames(t_4_5_6) <- c("Step 4bc < 6 Total Flags")
 
 # MERGING TOGETHER ----
 all_results <- cbind(t_0, t_1, t_2, t_3_5, t_3_4, 
                      t_4_5_6,t_4_4_6,t_4_5_5, 
                      t_4_4_5, t_4_5_4, t_4_4_4)
-all_results$NatDat <- c(NA, .32, .53, .40, .08, .03, .04, .03, .01, .02, NA, NA)
+all_results$NatDat <- c(NA, .32, .53, .40, .08, .03, .04, .03, .01, .02, NA, NA, NA)
 all_results$measure <- rownames(all_results)
 all_results <- all_results %>% relocate(measure)
 
 all_results %>% View()
+
+
 
 

@@ -71,3 +71,23 @@ LTM %>%
   summarise(n = n()) %>% 
   mutate(p = n/3681) %>% 
   select(-c(n))
+
+
+
+
+# Text responses ----
+
+LTM %>% 
+  select(c(F_WELL, WENTWELL, 
+           F_DIDNT, DIDNTGOWELL, 
+           F_ANYTHINGELSE, ANYTHINGELSE, DOULA3)) %>% 
+  View()
+
+# FLAG: 
+
+
+# F_WELL: todo, everything, 99
+# F_DIDNT: nothing, nada, everything, none, todo, ningun
+# F_ANYTHINGELSE: 99, No, nada, Nothing, ningun, None, Not at all, all good, Yes (only)
+
+
