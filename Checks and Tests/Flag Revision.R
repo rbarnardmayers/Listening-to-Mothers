@@ -3,7 +3,22 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Helpful_Function
 
 # Data Read in &  Get rid of identifying information ----
 LTM <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Data_TEMP.csv")
-LTM <- LTM %>% 
+setwd("/Users/rubybarnard-mayers/Documents/2025-2026/LTM")
+nans_dat <- read.csv("nansdata.csv")
+
+LTM_orig <- LTM %>%
+  mutate(UID2 = as.character(UID2))
+
+nans_dat <- nans_dat %>% 
+  unique() %>% 
+  mutate(UID2 = as.character(UID2),
+         reject = 1)
+
+LTM_orig <- LTM_orig %>% 
+  left_join(nans_dat)
+
+# 
+LTM2 <- LTM_orig %>% 
   mutate(RACE = case_when(RACEC1 == 1 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NHW", 
                           RACEC1 == 0 & RACEC2 == 1 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "Hispanic", 
                           RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 1 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NH Black or African American", 
@@ -96,6 +111,7 @@ LTM <- LTM %>%
          # Flag 2s
          F2_GA_EXT = case_when(GESTAGE_WEEKS < 27 ~ 1, 
                                GESTAGE_WEEKS > 42 ~ 1, 
+                               GESTAGE_WEEKS == "#NULL!" ~ 1,
                                TRUE ~ 0),
          F2_HT_EXT = case_when(HEIGHT <= 57 ~ 1, 
                                HEIGHT >= 77 ~ 1, 
@@ -177,30 +193,34 @@ LTM <- LTM %>%
          F3_MISSING_BABYDAYS = case_when(is.na(BABYHOSP) ~ 1, 
                                          BABYHOSP == 99 ~ 1,
                                          TRUE ~ 0)) %>%
-  mutate(F_WELL = case_when(str_detect(WENTWELL, "todo|Todo") ~ 1, 
-                            str_detect(WENTWELL, "everything|Everything") ~ 1, 
-                            str_detect(WENTWELL, "99") ~ 1, 
-                            str_detect(WENTWELL, "very well|Very Well| Very well") ~ 1, 
-                            str_detect(WENTWELL, "went well|Went Well| Went well") ~ 1, 
+  mutate(num_well = str_count(WENTWELL, '\\w+'), 
+         num_didnt = str_count(DIDNTGOWELL, '\\w+'),
+         num_anything = str_count(ANYTHINGELSE, '\\w+'),
+         
+         F_WELL = case_when(str_detect(WENTWELL, "todo|Todo") & num_well < 5 ~ 1, 
+                            str_detect(WENTWELL, "everything|Everything") & num_well < 5 ~ 1, 
+                            str_detect(WENTWELL, "very well|Very Well| Very well") & num_well < 5  ~ 1, 
+                            str_detect(WENTWELL, "went well|Went Well| Went well") & num_well < 5  ~ 1, 
+                            WENTWELL == "Yes" ~ 1,
                             TRUE ~ 0),
          
-         F_DIDNT = case_when(str_detect(DIDNTGOWELL, "nothing|Nothing") ~ 1,
-                             str_detect(DIDNTGOWELL, "nada|Nada") ~ 1,
-                             str_detect(DIDNTGOWELL, "everything|Everything") ~ 1,
-                             str_detect(DIDNTGOWELL, "todo|Todo") ~ 1,
-                             str_detect(DIDNTGOWELL, "none|None") ~ 1,
-                             str_detect(DIDNTGOWELL, "ningun|Ningun") ~ 1,
-                             str_detect(DIDNTGOWELL, "99") ~ 1,
+         F_DIDNT = case_when(str_detect(DIDNTGOWELL, "nothing|Nothing")& num_didnt < 5  ~ 1,
+                             str_detect(DIDNTGOWELL, "nada|Nada") & num_didnt < 5 ~ 1,
+                             str_detect(DIDNTGOWELL, "everything|Everything") & num_didnt < 5 ~ 1,
+                             str_detect(DIDNTGOWELL, "todo|Todo") & num_didnt < 5 ~ 1,
+                             str_detect(DIDNTGOWELL, "none|None") & num_didnt < 5 ~ 1,
+                             str_detect(DIDNTGOWELL, "no|No") & num_didnt < 5 ~ 1,
+                             str_detect(DIDNTGOWELL, "ningun|Ningun") & num_didnt < 5 ~ 1,
                              TRUE ~ 0), 
-         F_ANYTHINGELSE = case_when(str_detect(ANYTHINGELSE, "nothing|Nothing") ~ 1,
-                                    str_detect(ANYTHINGELSE, "nada|Nada") ~ 1,
-                                    str_detect(ANYTHINGELSE, "everything|Everything") ~ 1,
-                                    str_detect(ANYTHINGELSE, "todo|Todo") ~ 1,
-                                    str_detect(ANYTHINGELSE, "none|None") ~ 1,
-                                    str_detect(ANYTHINGELSE, "ningun|Ningun") ~ 1,
-                                    str_detect(ANYTHINGELSE, "99") ~ 1,
-                                    str_detect(ANYTHINGELSE, "Not at all|not at all|Not At All") ~ 1,
-                                    str_detect(ANYTHINGELSE, "all good| All good| All Good") ~ 1,
+         F_ANYTHINGELSE = case_when(str_detect(ANYTHINGELSE, "nothing|Nothing")& num_anything < 5  ~ 1,
+                                    str_detect(ANYTHINGELSE, "nada|Nada")& num_anything < 5  ~ 1,
+                                    str_detect(ANYTHINGELSE, "everything|Everything")& num_anything < 5  ~ 1,
+                                    str_detect(ANYTHINGELSE, "todo|Todo") & num_anything < 5 ~ 1,
+                                    str_detect(ANYTHINGELSE, "none|None") & num_anything < 5 ~ 1,
+                                    str_detect(ANYTHINGELSE, "ningun|Ningun") & num_anything < 5 ~ 1,
+                                    str_detect(ANYTHINGELSE, "no|No") & num_anything < 5 ~ 1,
+                                    str_detect(ANYTHINGELSE, "Not at all|not at all|Not At All") & num_anything < 5 ~ 1,
+                                    str_detect(ANYTHINGELSE, "all good| All good| All Good") & num_anything < 5 ~ 1,
                                     ANYTHINGELSE == "Yes" ~ 1, 
                                     TRUE ~ 0)) %>%
   rowwise() %>%
@@ -221,7 +241,7 @@ LTM <- LTM %>%
 # < 5 total flags 	< 4 total flags	< 6 total flags	< 6 total flags	< 5* total flags	< 5* total flags	< 4* total flags	< 4* total flags	National Data
 
 # ALGORITHM PROCESS ----
-LTM <- LTM %>% 
+LTM <- LTM2 %>% 
   rename(F4_PRE_HYPER = F3_PRE_HYPER, 
          F4_PRE_DIABETES = F3_PRE_DIABETES, 
          F4_NO_PNC = F3_NO_PNC, 
@@ -235,8 +255,8 @@ LTM <- LTM %>%
          F4_MISSING_MOMDAYS = F3_MISSING_MOMDAYS) %>% 
   rowwise() %>%
   mutate(#FLAG1 = sum(across(c(FLAG1, F1_ANYTHING))),
-    FLAG2 = sum(across(c(starts_with("F2_")))),
-    FLAG3 = sum(across(c(starts_with("F3_"), F1_ANYTHING))), 
+    FLAG2 = sum(across(c(starts_with("F2_")))), #F1_ANYTHING))), 
+    FLAG3 = sum(across(c(starts_with("F3_")))), #F1_ANYTHING))), 
     FLAG4 = sum(across(starts_with("F4_"))),
     FLAG23 = sum(across(c("FLAG2", "FLAG3"))), 
     FLAG234 = sum(across(c("FLAG2", "FLAG3", "FLAG4")))) %>% 
@@ -491,7 +511,7 @@ colnames(t_4_5_4) <- c("Step 4ba < 4 Total Flags")
 
 # Fourth Step (< 5 & < 5)
 t_4_5_5 <- LTM %>% 
-  subset(FLAG1 == 0 & FLAG2 < 3 & FLAG23 < 5) %>% 
+  subset(FLAG1 == 0 & FLAG2 < 3 & FLAG23 < 5 & is.na(reject)) %>% 
   mutate(FLAG234 = case_when(FLAG234 < 5 ~ 0, 
                              FLAG234 >= 5 ~ 1)) %>%
   group_by(FLAG234) %>% 
@@ -515,7 +535,7 @@ rownames(t_4_5_5) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
                        "F3_PRE_DIABETES", "NO_PNC", "DOULA","No weird answers", 
                        "2-3 weird answers")
-colnames(t_4_5_6) <- c("Step 4bb < 5 Total Flags")
+colnames(t_4_5_5) <- c("Step 4bb < 5 Total Flags")
 
 # Fourth Step (< 5 & < 6)
 t_4_5_6 <- LTM %>% 
@@ -554,6 +574,24 @@ all_results$measure <- rownames(all_results)
 all_results <- all_results %>% relocate(measure)
 
 all_results %>% View()
+
+
+LTM %>% 
+  subset(FLAG1 == 0 ) %>%
+  select(c(F1_ANYTHING, FLAG1, WENTWELL, F_WELL ,DIDNTGOWELL,F_DIDNT ,ANYTHINGELSE, F_ANYTHINGELSE )) %>% 
+  View()
+
+LTM %>% 
+  mutate(DUEDATE = as.numeric(DUEDATE)/86400,
+         BIRTHDATE = as.numeric(BIRTHDATE/86400), 
+         DUEDATE = as.Date(DUEDATE, origin = "1582-10-14", "%Y-%"), 
+         BIRTHDATE = as.Date(BIRTHDATE, origin = "1582-10-14"), 
+         gestage = difftime(BIRTHDATE, DUEDATE, units = "days"), 
+         gestage = 40 + as.numeric(gestage)/7) %>% 
+  select(c(gestage, BIRTHDATE,DUEDATE,GESTAGE)) %>% 
+  mutate(GESTAGE = as.numeric(GESTAGE)) %>% View()
+
+# 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 
 
 
 
