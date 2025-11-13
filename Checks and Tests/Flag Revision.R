@@ -3,21 +3,32 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Helpful_Function
 
 # Data Read in &  Get rid of identifying information ----
 LTM <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Data_TEMP.csv")
-setwd("/Users/rubybarnard-mayers/Documents/2025-2026/LTM")
-nans_dat <- read.csv("nansdata.csv")
+nans_dat <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/nansdata1.csv")
 
-LTM_orig <- LTM %>%
-  mutate(UID2 = as.character(UID2))
+# Getting nan's rejects and merging into full dataset ----
+LTM_UIDs <- LTM %>%
+  mutate(UID2 = str_trim(UID2, "both")) %>% 
+  select(UID2) %>% 
+  mutate(LTM = 1)
 
 nans_dat <- nans_dat %>% 
   unique() %>% 
-  mutate(UID2 = as.character(UID2),
-         reject = 1)
+  mutate(UID2 = str_trim(UID2, "both"), 
+         NAN = 1)
 
-LTM_orig <- LTM_orig %>% 
-  left_join(nans_dat)
+test <- LTM_UIDs %>%  
+  full_join(nans_dat) %>% 
+  subset(LTM == 1 & NAN == 1) %>% 
+  mutate(DETERMINATION = "BAD") %>% 
+  select(UID2, DETERMINATION)
 
-# 
+LTM_orig <- LTM %>% 
+  mutate(UID2 = str_trim(UID2, "both")) %>% 
+  full_join(test) %>% 
+  mutate(DETERMINATION = case_when(DETERMINATION == "BAD" ~ "BAD", 
+                   TRUE ~ "GOOD"))
+
+# cleaning and recoding variables ----
 LTM2 <- LTM_orig %>% 
   mutate(RACE = case_when(RACEC1 == 1 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NHW", 
                           RACEC1 == 0 & RACEC2 == 1 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "Hispanic", 
@@ -240,7 +251,7 @@ LTM2 <- LTM_orig %>%
 #3 strikes and out 
 # < 5 total flags 	< 4 total flags	< 6 total flags	< 6 total flags	< 5* total flags	< 5* total flags	< 4* total flags	< 4* total flags	National Data
 
-# ALGORITHM PROCESS ----
+# Creating flag 4s ----
 LTM <- LTM2 %>% 
   rename(F4_PRE_HYPER = F3_PRE_HYPER, 
          F4_PRE_DIABETES = F3_PRE_DIABETES, 
@@ -265,7 +276,7 @@ LTM <- LTM2 %>%
                                  FLAG2 > 2 ~ "More than 2 FLAG 2s",
                                  FLAG234 > 5 ~ "More than 5 FLAG2s + FLAG3s + FLAG 4s"))
 
-# Full Dataset 
+# Full Dataset summary ----
 t_0 <- LTM %>% 
   summarise(n = n(),
             CESAREAN=round(sum(MODE2023 == 2)/n, 5),
@@ -287,7 +298,7 @@ rownames(t_0) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                    "2-3 weird answers")
 colnames(t_0) <- c("Full Dataset")
 
-# First Step 
+# First Step  summary ----
 t_1 <- LTM %>% 
   group_by(FLAG1) %>% 
   summarise(n = n(),
@@ -312,7 +323,7 @@ rownames(t_1) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                    "2-3 weird answers")
 colnames(t_1) <- c("Deletes removed")
 
-# Second Step 
+# Second Step  summary ----
 t_2 <- LTM %>% 
   subset(FLAG1 == 0) %>% 
   mutate(FLAG2 = case_when(FLAG2 < 3 ~ 0, 
@@ -340,7 +351,7 @@ rownames(t_2) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                    "2-3 weird answers")
 colnames(t_2) <- c("Three Strikes and Out")
 
-# Third Step (< 4)
+# Third Step (< 4) summary ----
 
 t_3_4 <- LTM %>% 
   subset(FLAG1 == 0 & FLAG2 < 3) %>% 
@@ -369,7 +380,7 @@ rownames(t_3_4) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                      "2-3 weird answers")
 colnames(t_3_4) <- c("Step 3a < 4 Total Flags")
 
-# Third Step (< 5)
+# Third Step (< 5) summary ----
 t_3_5 <- LTM %>% 
   subset(FLAG1 == 0 & FLAG2 < 3) %>% 
   mutate(FLAG23 = case_when(FLAG23 < 5 ~ 0, 
@@ -397,7 +408,7 @@ rownames(t_3_5) <-c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                     "2-3 weird answers")
 colnames(t_3_5) <- c("Step 3b < 5 Total Flags")
 
-# Fourth Step (< 4 & < 4)
+# Fourth Step (< 4 & < 4) summary ----
 t_4_4_4 <- LTM %>% 
   subset(FLAG1 == 0 & FLAG2 < 3 & FLAG23 < 4) %>% 
   mutate(FLAG234 = case_when(FLAG234 < 4 ~ 0, 
@@ -425,7 +436,7 @@ rownames(t_4_4_4) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "2-3 weird answers")
 colnames(t_4_4_4) <- c("Step 4aa < 4 Total Flags")
 
-# Fourth Step (< 4 & < 5)
+# Fourth Step (< 4 & < 5) summary ----
 t_4_4_5 <- LTM %>% 
   subset(FLAG1 == 0 & FLAG2 < 3 & FLAG23 < 4) %>% 
   mutate(FLAG234 = case_when(FLAG234 < 5 ~ 0, 
@@ -453,7 +464,7 @@ rownames(t_4_4_5) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "2-3 weird answers")
 colnames(t_4_4_5) <- c("Step 4ab < 5 Total Flags")
 
-# Fourth Step (< 4 & < 6)
+# Fourth Step (< 4 & < 6) summary ----
 t_4_4_6 <- LTM %>% 
   subset(FLAG1 == 0 & FLAG2 < 3 & FLAG23 < 4) %>% 
   mutate(FLAG234 = case_when(FLAG234 < 6 ~ 0, 
@@ -481,7 +492,7 @@ rownames(t_4_4_6) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "2-3 weird answers")
 colnames(t_4_4_6) <- c("Step 4ac < 6 Total Flags")
 
-# Fourth Step (< 5 & < 4)
+# Fourth Step (< 5 & < 4) summary ----
 t_4_5_4 <- LTM %>% 
   subset(FLAG1 == 0 & FLAG2 < 3 & FLAG23 < 5) %>% 
   mutate(FLAG234 = case_when(FLAG234 < 4 ~ 0, 
@@ -509,9 +520,9 @@ rownames(t_4_5_4) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "2-3 weird answers")
 colnames(t_4_5_4) <- c("Step 4ba < 4 Total Flags")
 
-# Fourth Step (< 5 & < 5)
+# Fourth Step (< 5 & < 5) summary ----
 t_4_5_5 <- LTM %>% 
-  subset(FLAG1 == 0 & FLAG2 < 3 & FLAG23 < 5 & is.na(reject)) %>% 
+  subset(FLAG1 == 0 & FLAG2 < 3 & FLAG23 < 5) %>% 
   mutate(FLAG234 = case_when(FLAG234 < 5 ~ 0, 
                              FLAG234 >= 5 ~ 1)) %>%
   group_by(FLAG234) %>% 
@@ -537,7 +548,7 @@ rownames(t_4_5_5) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "2-3 weird answers")
 colnames(t_4_5_5) <- c("Step 4bb < 5 Total Flags")
 
-# Fourth Step (< 5 & < 6)
+# Fourth Step (< 5 & < 6) summary ----
 t_4_5_6 <- LTM %>% 
   subset(FLAG1 == 0 & FLAG2 < 3 & FLAG23 < 5) %>% 
   mutate(FLAG234 = case_when(FLAG234 < 6 ~ 0, 
@@ -565,10 +576,37 @@ rownames(t_4_5_6) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
                        "2-3 weird answers")
 colnames(t_4_5_6) <- c("Step 4bc < 6 Total Flags")
 
-# MERGING TOGETHER ----
+# Getting rid of bads determined by Nan  summary ----
+t_final <- LTM %>% 
+  subset(FLAG1 == 0 & FLAG2 < 3 & FLAG23 < 5 & FLAG234 < 5) %>% 
+  group_by(DETERMINATION) %>% 
+  summarise(n = n(),
+            CESAREAN=round(sum(MODE2023 == 2)/n, 5),
+            MARRIED=round(sum(RELATIONSHIP == 1)/n, 5),
+            NULLIPAROUS=round(sum(PARITY == "Nulliparous")/n, 5),
+            SOLIDFOOD=round(sum(F3_GAFOOD == 1)/n, 5),
+            VAGASSIST=round(sum(F3_VAGASSIST == 1)/n, 5),
+            EARLYPNC=round(sum(F3_EARLYPNC == 1)/n, 5),
+            HYPERTENSION=round(sum(F4_PRE_HYPER == 1)/n, 5),
+            DIABETES=round(sum(F4_PRE_DIABETES == 1)/n, 5),
+            NOPNC=round(sum(LEARNED2 == 1)/n, 5),
+            ANY_DOULA=round(sum(ANY_DOULA == 1)/n, 5),
+            NONE = round(sum(N_ANYTHING == 0)/n, 5), 
+            ANY23 = round(sum(N_ANYTHING > 1)/n, 5)) %>% 
+  subset(DETERMINATION == "GOOD") %>%
+  t() %>% as.data.frame()
+t_final <- t_final[-1,] %>% as.data.frame()
+rownames(t_final) <- c("n","MODE2023","RELATIONSHIP","PARITY","F3_GAFOOD" ,
+                       "F3_VAGASSIST","F3_EARLYPNC","F3_PRE_HYPER",
+                       "F3_PRE_DIABETES", "NO_PNC", "DOULA","No weird answers", 
+                       "2-3 weird answers")
+colnames(t_final) <- c("Final with nan's rejects")
+
+
+# full steps  summary ----
 all_results <- cbind(t_0, t_1, t_2, t_3_5, t_3_4, 
                      t_4_5_6,t_4_4_6,t_4_5_5, 
-                     t_4_4_5, t_4_5_4, t_4_4_4)
+                     t_4_4_5, t_4_5_4, t_4_4_4, t_final)
 all_results$NatDat <- c(NA, .32, .53, .40, .08, .03, .04, .03, .01, .02, NA, NA, NA)
 all_results$measure <- rownames(all_results)
 all_results <- all_results %>% relocate(measure)
@@ -578,7 +616,8 @@ all_results %>% View()
 
 LTM %>% 
   subset(FLAG1 == 0 ) %>%
-  select(c(F1_ANYTHING, FLAG1, WENTWELL, F_WELL ,DIDNTGOWELL,F_DIDNT ,ANYTHINGELSE, F_ANYTHINGELSE )) %>% 
+  select(c(F1_ANYTHING, FLAG1, WENTWELL, F_WELL ,
+           DIDNTGOWELL,F_DIDNT ,ANYTHINGELSE, F_ANYTHINGELSE )) %>% 
   View()
 
 LTM %>% 
