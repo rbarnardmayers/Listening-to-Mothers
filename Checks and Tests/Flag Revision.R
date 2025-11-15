@@ -29,7 +29,7 @@ LTM <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Data_TEMP.csv
 #                                    TRUE ~ "GOOD"))
 LTM_orig <- LTM
 # cleaning and recoding variables ----
-LTM2 <- LTM_orig %>%
+LTM2 <- LTM %>%
   mutate(RACE = case_when(RACEC1 == 1 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NHW", 
                           RACEC1 == 0 & RACEC2 == 1 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "Hispanic", 
                           RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 1 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NH Black or African American", 
@@ -44,9 +44,9 @@ LTM2 <- LTM_orig %>%
          BIRTHDATE = as.numeric(BIRTHDATE/86400), 
          DUEDATE = as.Date(DUEDATE, origin = "1582-10-14", "%Y-%"), 
          BIRTHDATE = as.Date(BIRTHDATE, origin = "1582-10-14"), 
-         gestage = difftime(BIRTHDATE, DUEDATE, units = "days"), 
-         gestage = 40 + as.numeric(gestage)/7, 
-         gestage_weeks = floor(gestage),
+         # gestage = difftime(BIRTHDATE, DUEDATE, units = "days"), 
+         # gestage = 40 + as.numeric(gestage)/7, 
+         # gestage_weeks = floor(gestage),
          PARITY = case_when(NUMB_BIRTH == 1 ~ "Nulliparous", 
                             NUMB_BIRTH > 1 ~ "Multiparous", 
                             TRUE ~ "Missing"), 
@@ -105,12 +105,12 @@ LTM2 <- LTM_orig %>%
                                  !is.na(PPVISITTIME2) ~ PPVISITTIME2),
          
          # Flag 1s
-         R_F1_DUP = DUP_FLAG,
-         R_F1_SPEED = case_when(TotalDurationSec < 19*60 ~ 1, 
+         # F1_DUP = F1_DUP,
+         F1_SPEED = case_when(TotalDurationSec < 19*60 ~ 1, 
                                 TotalDurationSec >= 19*60 ~ 0),
-         R_F1_USKG_ANY = case_when(BIRTHCOUNTRY == 1 & KG_any == 1 ~ 1, 
+         F1_USKG_ANY = case_when(BIRTHCOUNTRY == 1 & KG_any == 1 ~ 1, 
                                    TRUE ~ 0),
-         R_F1_NOTRIBALAFF = case_when(RACE == "AIAN" & "99" %in% AIAN  ~ 1,
+         F1_NOTRIBALAFF = case_when(RACE == "AIAN" & "99" %in% AIAN  ~ 1,
                                       RACE == "AIAN" & AIAN == "99 " ~ 1,
                                       RACE == "AIAN" & AIAN == " 99" ~ 1,
                                       RACE == "AIAN" & AIAN == "11" ~ 1,
@@ -128,9 +128,9 @@ LTM2 <- LTM_orig %>%
                                       TRUE ~ 0),
          
          # Flag 2s
-         F2_GA_EXT = case_when(gestage_weeks < 27 ~ 1, 
-                               gestage_weeks > 42 ~ 1, 
-                               is.na(gestage_weeks) ~ 1,
+         F2_GA_EXT = case_when(GESTAGE_WEEKS < 27 ~ 1, 
+                               GESTAGE_WEEKS > 42 ~ 1, 
+                               # is.na(gestage_weeks) ~ 1,
                                TRUE ~ 0),
          F2_HT_EXT = case_when(HEIGHT <= 57 ~ 1, 
                                HEIGHT >= 77 ~ 1, 
@@ -150,7 +150,7 @@ LTM2 <- LTM_orig %>%
                                       TRUE ~ 0), 
          F2_VLBNICU = case_when(BIRTHWEIGHT < 1500 & NICU == 3 ~ 1, 
                                 TRUE ~ 0), 
-         F2_VLBHOSP = case_when(BIRTHWEIGHT < 1500 & BABYHOSP< 4 ~ 1, 
+         F2_VLBHOSP = case_when(BIRTHWEIGHT < 1500 & BABYHOSP < 4 ~ 1, 
                                 TRUE ~ 0), 
          
          # Flag 3s
@@ -162,7 +162,7 @@ LTM2 <- LTM_orig %>%
                                TRUE ~ 0),
          F3_PREGWT = case_when(PREG_WEIGHT <= 129 & F2_WT_EXT == 0 ~ 1, 
                                TRUE ~ 0),
-         F3_WTDIFF = case_when(PREG_WEIGHT < PREPREG_WEIGHT ~ 1, 
+         F3_WTDIFF = case_when(PREG_WEIGHT <= PREPREG_WEIGHT ~ 1, 
                                TRUE ~ 0 ),
          F3_HT = case_when(HEIGHT >= 70 & HEIGHT < 77 ~ 1, 
                            TRUE ~ 0),
@@ -189,8 +189,8 @@ LTM2 <- LTM_orig %>%
                             TRUE ~ 0),
          F3_INC_NEEDS = case_when(INCOME >= 150000 & NEED_F == 1 ~ 1,
                                   TRUE ~ 0),
-         # F3_PRE_HYPER = case_when(PREPREG_PHYSCONDC1 == 1 ~ 1, 
-         #                          TRUE ~ 0),
+         F3_PRE_HYPER = case_when(PREPREG_PHYSCONDC1 == 1 ~ 1,
+                                  TRUE ~ 0),
          F3_PRE_DIABETES = case_when(PREPREG_PHYSCONDC2 == 1 ~ 1,
                                      TRUE ~ 0),
          F3_CS_LABOR = case_when(LABCSEC == 1 & CSECTIONTYPE == 1 ~ 1, 
@@ -198,18 +198,18 @@ LTM2 <- LTM_orig %>%
          
          F3_VAGEXAM = case_when(LABORINTC5 == 0 ~ 1, 
                                 TRUE ~ 0),
-         F3_TERM_NICU = case_when(gestage_weeks <= 42 & gestage_weeks >= 37 & NICU %in% c(1,2) ~ 1, 
+         F3_TERM_NICU = case_when(GESTAGE_WEEKS <= 42 & GESTAGE_WEEKS >= 37 & NICU %in% c(1,2) ~ 1, 
                                   TRUE ~ 0),
-         F3_PPTVISITS = case_when(PPVISIT == 99 ~ 1, 
+         F3_PPTVISITS = case_when(PPVISIT >= 4 ~ 1, 
                                   TRUE ~ 0),
          F3_MISSING_BW = case_when(is.na(BIRTHWEIGHT) ~ 1, 
                                    TRUE ~ 0),
-         F3_MISSING_LABORHRS = case_when(is.na(as.numeric(LABORLENGTH)) ~ 1, 
+         F3_MISSING_LABORHRS = case_when(LABORLENGTH == 999 ~ 1, 
                                          TRUE ~ 0),
-         F3_MISSING_MOMDAYS = case_when(is.na(DAYSHOSP)~ 1, 
+         F3_MISSING_MOMDAYS = case_when(DAYSHOSP == 98~ 1, 
                                         DAYSHOSP == 99 ~ 1,
                                         TRUE ~ 0),
-         F3_MISSING_BABYDAYS = case_when(is.na(BABYHOSP) ~ 1, 
+         F3_MISSING_BABYDAYS = case_when(BABYHOSP == 98 ~ 1, 
                                          BABYHOSP == 99 ~ 1,
                                          TRUE ~ 0)) %>%
   mutate(num_well = str_count(WENTWELL, '\\w+'), 
@@ -242,7 +242,7 @@ LTM2 <- LTM_orig %>%
                                     str_detect(ANYTHINGELSE, "all good| All good| All Good") & num_anything < 5 ~ 1,
                                     ANYTHINGELSE == "Yes" ~ 1, 
                                     TRUE ~ 0)) %>%
-  select(-c(F3_PRE_HYPER)) %>% 
+  # select(-c(F3_PRE_HYPER)) %>% 
   rowwise() %>%
   mutate(#RFLAG1 = sum(across(c(R_F1_SPEED, R_F1_USKG_ANY, R_F1_DUP))),
     FLAG2 = sum(across(starts_with("F2_"))),
@@ -640,6 +640,81 @@ LTM %>%
   mutate(GESTAGE = as.numeric(GESTAGE)) %>% View()
 
 
+# Summary of flags ----
+MDR <- LTM %>% 
+  summarise(F1_DUP = sum(F1_DUP == 1), 
+            F1_SPEED = sum(F1_SPEED == 1),
+            F1_USKG_ANY = sum(F1_USKG_ANY == 1), 
+            
+            F2_ZIPCHECK = sum(F2_ZIPCHECK == 1),
+            F2_GA_EXT = sum(F2_GA_EXT == 1),
+            F2_PNCB4LEARN = sum(F2_PNCB4LEARN == 1),
+            F2_HT_EXT = sum(F2_HT_EXT == 1),
+            F2_WT_EXT = sum(F2_WT_EXT == 1),
+            F2_BW_EXT = sum(F2_BW_EXT == 1),
+            F2_MCAID_INC_EXT = sum(F2_MCAID_INC_EXT == 1),
+            F2_VLBNICU = sum(F2_VLBNICU == 1),
+            F2_VLBHOSP = sum(F2_VLBHOSP == 1),
+            F2_DKREFCHECK = sum(F2_DKREFCHECK == 1),
+            
+            F3_EARLYPNC = sum(F3_EARLYPNC ==1),
+            F3_NO_PNC = sum(F3_NO_PNC ==1),
+            F3_PREGWT = sum(F3_PREGWT ==1),
+            F3_WTDIFF = sum(F3_WTDIFF ==1),
+            F3_HT = sum(F3_HT ==1),
+            F3_LBW_NICU = sum(F3_LBW_NICU ==1),
+            F3_LBW_DAYS = sum(F3_LBW_DAYS ==1),
+            F3_VAGASSIST = sum(F3_VAGASSIST ==1),
+            F3_GAFOOD = sum(F3_GAFOOD ==1),
+            F3_INC_MCAID = sum(F3_INC_MCAID ==1),
+            F3_INC_PAN = sum(F3_INC_PAN ==1),
+            F3_INC_NEEDS = sum(F3_INC_NEEDS ==1),
+            F3_PRE_HYPER = sum(F3_PRE_HYPER ==1),
+            F3_PRE_DIABETES = sum(F3_PRE_DIABETES ==1),
+            F3_CS_LABOR = sum(F3_CS_LABOR ==1),
+            F3_VAGEXAM = sum(F3_VAGEXAM ==1),
+            F3_TERM_NICU = sum(F3_TERM_NICU ==1),
+            F3_PPTVISITS = sum(F3_PPTVISITS ==1),
+            F3_MISSING_BW = sum(F3_MISSING_BW ==1),
+            F3_MISSING_LABORHRS = sum(F3_MISSING_LABORHRS ==1),
+            F3_MISSING_MOMDAYS = sum(F3_MISSING_MOMDAYS ==1),
+            F3_MISSING_BABYDAYS = sum(F3_MISSING_BABYDAYS ==1)) %>% 
+  t() %>% as.data.frame()
+
+MDR <- MDR %>% 
+  mutate(VAR = rownames(MDR)) %>% 
+  rename(MDR = V1)
+
+ME <- ME %>% 
+  mutate(VAR = rownames(MDR)) %>%
+  rename(ME = V1)
+
+
+comp <- full_join(ME, MDR) %>% 
+  mutate(flag = case_when(ME != MDR ~ 1, TRUE ~ 0))
+
+
+# Checking low birthweight
+t1 <- LTM %>% 
+  mutate(BIRTHWEIGHT_G = as.numeric(BIRTHWEIGHT_G), 
+         BIRTHWEIGHT_LBS = as.numeric(BIRTHWEIGHT_LBS), 
+         BIRTHWEIGHT_OZ = as.numeric(BIRTHWEIGHT_OZ)) %>% 
+  select(c(UID2, BIRTHWEIGHT_G, BIRTHWEIGHT_LBS, 
+           BIRTHWEIGHT_OZ)) %>%
+  mutate(VLB = case_when(BIRTHWEIGHT_G < 1500 ~ 1, 
+                         as.numeric(BIRTHWEIGHT_LBS) < 3.3125 ~ 1, 
+                         TRUE ~ 0)) 
+t2 <- LTM2 %>% 
+  mutate(BIRTHWEIGHT_G = as.numeric(BIRTHWEIGHT_G), 
+         BIRTHWEIGHT_LBS = as.numeric(BIRTHWEIGHT_LBS), 
+         BIRTHWEIGHT_OZ = as.numeric(BIRTHWEIGHT_OZ)) %>% 
+  select(c(UID2, BIRTHWEIGHT_G, BIRTHWEIGHT_LBS, 
+           BIRTHWEIGHT_OZ)) %>%
+  mutate(VLB = case_when(BIRTHWEIGHT_G < 1500 ~ 1, 
+                         as.numeric(BIRTHWEIGHT_LBS) + as.numeric(BIRTHWEIGHT_OZ)*0.0625 < 3.3125 ~ 1, 
+                         TRUE ~ 0)) %>%  rename(VLB_me = VLB)
+
+t1 %>% full_join(t2) %>% View()
 
 
 
