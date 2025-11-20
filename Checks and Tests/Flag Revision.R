@@ -107,25 +107,25 @@ LTM2 <- LTM %>%
          # Flag 1s
          # F1_DUP = F1_DUP,
          F1_SPEED = case_when(TotalDurationSec < 19*60 ~ 1, 
-                                TotalDurationSec >= 19*60 ~ 0),
+                              TotalDurationSec >= 19*60 ~ 0),
          F1_USKG_ANY = case_when(BIRTHCOUNTRY == 1 & KG_any == 1 ~ 1, 
-                                   TRUE ~ 0),
+                                 TRUE ~ 0),
          F1_NOTRIBALAFF = case_when(RACE == "AIAN" & "99" %in% AIAN  ~ 1,
-                                      RACE == "AIAN" & AIAN == "99 " ~ 1,
-                                      RACE == "AIAN" & AIAN == " 99" ~ 1,
-                                      RACE == "AIAN" & AIAN == "11" ~ 1,
-                                      RACE == "AIAN" & AIAN == "Na" ~ 1,
-                                      RACE == "AIAN" & AIAN == "None" ~ 1,
-                                      RACE == "AIAN" & AIAN == "N/A" ~ 1,
-                                      RACE == "AIAN" & AIAN == "None Officially" ~ 1,
-                                      RACE == "AIAN" & AIAN == "Don't Have One" ~ 1,
-                                      RACE == "AIAN" & AIAN == "American Indian /African American/white" ~ 1,
-                                      RACE == "AIAN" & AIAN == " " ~ 1,
-                                      RACE == "AIAN" & AIAN == "African American" ~ 1,
-                                      RACE == "AIAN" & AIAN == "" ~ 1,
-                                      RACE == "AIAN" & AIAN == "American" ~ 1,
-                                      RACE == "AIAN" & AIAN == "American Indian" ~ 1,
-                                      TRUE ~ 0),
+                                    RACE == "AIAN" & AIAN == "99 " ~ 1,
+                                    RACE == "AIAN" & AIAN == " 99" ~ 1,
+                                    RACE == "AIAN" & AIAN == "11" ~ 1,
+                                    RACE == "AIAN" & AIAN == "Na" ~ 1,
+                                    RACE == "AIAN" & AIAN == "None" ~ 1,
+                                    RACE == "AIAN" & AIAN == "N/A" ~ 1,
+                                    RACE == "AIAN" & AIAN == "None Officially" ~ 1,
+                                    RACE == "AIAN" & AIAN == "Don't Have One" ~ 1,
+                                    RACE == "AIAN" & AIAN == "American Indian /African American/white" ~ 1,
+                                    RACE == "AIAN" & AIAN == " " ~ 1,
+                                    RACE == "AIAN" & AIAN == "African American" ~ 1,
+                                    RACE == "AIAN" & AIAN == "" ~ 1,
+                                    RACE == "AIAN" & AIAN == "American" ~ 1,
+                                    RACE == "AIAN" & AIAN == "American Indian" ~ 1,
+                                    TRUE ~ 0),
          
          # Flag 2s
          F2_GA_EXT = case_when(GESTAGE_WEEKS < 27 ~ 1, 
@@ -135,22 +135,40 @@ LTM2 <- LTM %>%
          F2_HT_EXT = case_when(HEIGHT <= 57 ~ 1, 
                                HEIGHT >= 77 ~ 1, 
                                TRUE ~ 0),
-         F2_WT_EXT = case_when(PREG_WEIGHT <= 115 ~ 1, 
-                               PREG_WEIGHT >= 340 ~ 1, 
-                               PREPREG_WEIGHT <= 94 ~ 1, 
-                               PREPREG_WEIGHT >= 317 ~ 1, 
+         F2_WT_EXT = case_when(PREGWEIGHT_A1 <= 115 ~ 1,
+                               2.20462 * PREGWEIGHT_B1 <= 115 ~ 1,
+                               PREGWEIGHT_A1 >= 340 ~ 1, 
+                               2.20462 * PREGWEIGHT_B1 >= 340 ~ 1, 
+                               
+                               PREPREG_WEIGHT_A1 <= 94 ~ 1, 
+                               2.20462 * PREPREG_WEIGHT_B1 <= 94 ~ 1,
+                               PREPREG_WEIGHT_A1 >= 317 ~ 1, 
+                               2.20462 * PREPREG_WEIGHT_B1  >= 317 ~ 1,
+                               
                                TRUE ~ 0),
-         F2_BW_EXT = case_when(BIRTHWEIGHT <= 970 ~ 1, 
-                               BIRTHWEIGHT >= 4620 & PREPREG_PHYSCONDC2 == 0 & 
+         F2_BW_EXT = case_when(BIRTHWEIGHT_LBS*453.59237 + BIRTHWEIGHT_OZ*28.3495 <= 970 ~ 1, 
+                               BIRTHWEIGHT_G <= 970 ~ 1,
+                               
+                               BIRTHWEIGHT_G >= 4620 & PREPREG_PHYSCONDC2 == 0 & 
                                  PREGCONDITIONC1 == 0 ~ 1,
-                               BIRTHWEIGHT >= 4800 & PREPREG_PHYSCONDC2 == 1 ~ 1,
-                               BIRTHWEIGHT >= 4800 & PREGCONDITIONC1 == 1 ~ 1,
+                               
+                               BIRTHWEIGHT_LBS*453.59237 + BIRTHWEIGHT_OZ*28.3495 >= 4620 & 
+                                 PREPREG_PHYSCONDC2 == 0 & PREGCONDITIONC1 == 0 ~ 1,
+                               
+                               BIRTHWEIGHT_G >= 4800 & PREPREG_PHYSCONDC2 == 1 ~ 1,
+                               BIRTHWEIGHT_LBS*453.59237 + BIRTHWEIGHT_OZ*28.3495 >= 4800 & PREPREG_PHYSCONDC2 == 1 ~ 1,
+                               
+                               BIRTHWEIGHT_G >= 4800 & PREGCONDITIONC1 == 1 ~ 1,
+                               BIRTHWEIGHT_LBS*453.59237 + BIRTHWEIGHT_OZ*28.3495 >= 4800 & PREGCONDITIONC1 == 1 ~ 1,
                                TRUE ~ 0),
+         
          F2_MCAID_INC_EXT = case_when(INCOME > 150000 & INSURC2 == 1 ~ 1, 
                                       TRUE ~ 0), 
-         F2_VLBNICU = case_when(BIRTHWEIGHT < 1500 & NICU == 3 ~ 1, 
+         F2_VLBNICU = case_when(BIRTHWEIGHT_G < 1500 & NICU == 3 ~ 1, 
+                                BIRTHWEIGHT_LBS*453.59237 + BIRTHWEIGHT_OZ*28.3495 < 1500 & NICU == 3 ~ 1,
                                 TRUE ~ 0), 
-         F2_VLBHOSP = case_when(BIRTHWEIGHT < 1500 & BABYHOSP < 4 ~ 1, 
+         F2_VLBHOSP = case_when(BIRTHWEIGHT_G < 1500 & BABYHOSP < 4 ~ 1, 
+                                BIRTHWEIGHT_LBS*453.59237 + BIRTHWEIGHT_OZ*28.3495 < 1500 & BABYHOSP < 4 ~ 1,
                                 TRUE ~ 0), 
          
          # Flag 3s
@@ -160,16 +178,27 @@ LTM2 <- LTM %>%
                                  TRUE ~ 0),
          F3_NO_PNC = case_when(LEARNED2 == 1 ~ 1, 
                                TRUE ~ 0),
-         F3_PREGWT = case_when(PREG_WEIGHT <= 129 & F2_WT_EXT == 0 ~ 1, 
+         F3_PREGWT = case_when( 2.20462 * PREGWEIGHT_B1 <= 129 & F2_WT_EXT == 0 ~ 1, 
+                                PREGWEIGHT_A1 <= 129 & F2_WT_EXT == 0 ~ 1, 
                                TRUE ~ 0),
-         F3_WTDIFF = case_when(PREG_WEIGHT <= PREPREG_WEIGHT ~ 1, 
+         F3_WTDIFF = case_when(PREGWEIGHT_A1 <= PREPREG_WEIGHT_A1 ~ 1, 
+                               PREGWEIGHT_B1 <= PREPREG_WEIGHT_B1 ~ 1, 
+                               PREGWEIGHT_A1 <= PREPREG_WEIGHT_B1 ~ 1, 
+                               PREGWEIGHT_B1 <= PREPREG_WEIGHT_A1 ~ 1, 
                                TRUE ~ 0 ),
+         
          F3_HT = case_when(HEIGHT >= 70 & HEIGHT < 77 ~ 1, 
                            TRUE ~ 0),
-         F3_LBW_NICU = case_when(BIRTHWEIGHT >= 1500 & BIRTHWEIGHT < 2500 & 
+         F3_LBW_NICU = case_when(BIRTHWEIGHT_G >= 1500 & BIRTHWEIGHT < 2500 & 
                                    NICU == 3 ~ 1, 
+                                 BIRTHWEIGHT_LBS*453.59237 + BIRTHWEIGHT_OZ*28.3495 >= 1500 & 
+                                   BIRTHWEIGHT_LBS*453.59237 + BIRTHWEIGHT_OZ*28.3495 < 2500 & 
+                                   NICU == 3 ~ 1,
                                  TRUE ~ 0),
          F3_LBW_DAYS = case_when(BIRTHWEIGHT >= 1500 & BIRTHWEIGHT < 2500 & 
+                                   BABYHOSP < 4 ~ 1, 
+                                 BIRTHWEIGHT_LBS*453.59237 + BIRTHWEIGHT_OZ*28.3495 >= 1500 & 
+                                   BIRTHWEIGHT_LBS*453.59237 + BIRTHWEIGHT_OZ*28.3495 < 2500 &
                                    BABYHOSP < 4 ~ 1, 
                                  TRUE ~ 0),
          
@@ -204,7 +233,8 @@ LTM2 <- LTM %>%
                                   TRUE ~ 0),
          F3_MISSING_BW = case_when(is.na(BIRTHWEIGHT) ~ 1, 
                                    TRUE ~ 0),
-         F3_MISSING_LABORHRS = case_when(LABORLENGTH == 999 ~ 1, 
+         F3_MISSING_LABORHRS = case_when(LABORLENGTH == 999.00 ~ 1, 
+                                         LABORLENGTH == "#NULL!" ~ 1,
                                          TRUE ~ 0),
          F3_MISSING_MOMDAYS = case_when(DAYSHOSP == 98~ 1, 
                                         DAYSHOSP == 99 ~ 1,
@@ -263,16 +293,16 @@ LTM2 <- LTM %>%
 # Creating flag 4s ----
 LTM <- LTM2 %>% 
   rename(#F4_PRE_HYPER = F3_PRE_HYPER, 
-         F4_PRE_DIABETES = F3_PRE_DIABETES, 
-         F4_NO_PNC = F3_NO_PNC, 
-         F4_CS_LABOR = F3_CS_LABOR, 
-         F4_VAGEXAM = F3_VAGEXAM,
-         F4_TERM_NICU = F3_TERM_NICU, 
-         F4_PPTVISITS = F3_PPTVISITS, 
-         F4_MISSING_BABYDAYS = F3_MISSING_BABYDAYS,
-         F4_MISSING_BW = F3_MISSING_BW, 
-         F4_MISSING_LABORHRS = F3_MISSING_LABORHRS, 
-         F4_MISSING_MOMDAYS = F3_MISSING_MOMDAYS) %>% 
+    F4_PRE_DIABETES = F3_PRE_DIABETES, 
+    F4_NO_PNC = F3_NO_PNC, 
+    F4_CS_LABOR = F3_CS_LABOR, 
+    F4_VAGEXAM = F3_VAGEXAM,
+    F4_TERM_NICU = F3_TERM_NICU, 
+    F4_PPTVISITS = F3_PPTVISITS, 
+    F4_MISSING_BABYDAYS = F3_MISSING_BABYDAYS,
+    F4_MISSING_BW = F3_MISSING_BW, 
+    F4_MISSING_LABORHRS = F3_MISSING_LABORHRS, 
+    F4_MISSING_MOMDAYS = F3_MISSING_MOMDAYS) %>% 
   rowwise() %>%
   mutate(#FLAG1 = sum(across(c(FLAG1, F1_ANYTHING))),
     FLAG2 = sum(across(c(starts_with("F2_")))), #F1_ANYTHING))), 
