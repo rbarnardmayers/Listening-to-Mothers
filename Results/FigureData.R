@@ -1,5 +1,6 @@
 setwd("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Listening-to-Mothers")
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/ApplyDictionary.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Fig_Helpful_Functions.R")
 
 # Data manip for figures ----
 # PPVISIT categorized as 0, 1, 2, 3, 4+ 
@@ -10,18 +11,18 @@ LTM_final <- LTM_final %>%
                                INSURANCE == "None" ~ "None", 
                                INSURANCE == "Missing" ~ NA, 
                                TRUE ~ "Other"),
-         PROVIDER2 = case_when(PROVIDER == "An obstetrician-gynecologist doctor (could be called OB, OBGYN, or maternal-fetal medicine specialist)" ~ "Any Doctor", 
-                               PROVIDER == "A midwife (could be called CNM)" ~ "Midwife", 
-                               PROVIDER == "A family medicine doctor (could be called FP)" ~ "Any Doctor", 
+         PROVIDER2 = case_when(PROVIDER == "An obstetrician-gynecologist doctor (could be called OB, OBGYN, or maternal-fetal medicine specialist)" ~ "Any Doctor",
+                               PROVIDER == "A midwife (could be called CNM)" ~ "Midwife",
+                               PROVIDER == "A family medicine doctor (could be called FP)" ~ "Any Doctor",
                                PROVIDER == "A doctor but I'm not sure what kind" ~ "Any Doctor",
                                PROVIDER == "Missing" | PROVIDER == "I'd prefer not to answer" | is.na(PROVIDER) ~ "Missing",
                                TRUE ~ "Other"),
-         PROVIDERCHOICE = case_when(PRENAT == "No Prenatal Care" ~ "No Prenatal Care", 
-                                    PROVIDERCHOICE == "No, I had no choice; my maternity care provider was assigned to me" ~ "No Choice",
+         PROVIDERCHOICE = case_when(PRENAT == "No Prenatal Care" ~ "No Prenatal Care",
+                                    PROVIDERCHOICE == 3 ~ "No Choice",
                                     PROVIDERCHOICE %in% c("Missing", "I'd prefer not to answer") ~ "Missing",
                                     TRUE ~ "Yes"),
          PROVIDERCHOICE = factor(PROVIDERCHOICE, levels = c("Yes", "No Choice", "No Prenatal Care", "Missing")),
-         PPVISIT = case_when(PPVISIT == 0 ~ 0, 
+         PPVISIT = case_when(PPVISIT == 0 ~ 0,
                              PPVISIT == 1 ~ 1, 
                              PPVISIT == 2 ~ 2, 
                              PPVISIT == 3 ~ 3, 
@@ -34,7 +35,8 @@ LTM_final <- LTM_final %>%
 
 
 # Create survey design ----
-LTM_dsn <- LTM_final %>% as_survey(weight = wght, id = 1)
+LTM_dsn <- LTM_final %>% 
+  as_survey(weight = wght, id = 1)
 
 # Tables as excel sheets
 
@@ -51,7 +53,7 @@ LTM_dsn <- LTM_final %>% as_survey(weight = wght, id = 1)
 # CHAPTER 1 ----
 # Provider Type ----
 # Percent of racial distribution for each provider
-fig_1_1 <- print.fig("PROVIDER")
+fig_1_1 <- print.fig("PROVIDER") %>% as.data.frame()
 
 # get % of race for each provider type 
 fig_1_2 <- fig.2by2("PROVIDER", "RACE") %>% as.data.frame()

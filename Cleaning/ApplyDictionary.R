@@ -49,7 +49,8 @@ LTM_final <- LTM2 %>%
   full_join(LTM_include)
 
 # Create a weight variable while waiting for final version of dataset ----
-LTM_final$wght = rnorm(n=nrow(LTM_final), mean = 1, sd = .02)
+# LTM_final$wght = rnorm(n=nrow(LTM_final), mean = 1, sd = .02)
+LTM_final$wght = 1
 
 # Create list of categorical variables by excluding numeric ----
 categorical <- LTM_final %>%
@@ -96,7 +97,7 @@ continuous <- LTM_final %>%
            NUMB_BIRTH,BIRTHWEIGHT,AGEBIRTH,PPVISIT,LEARNED2,
            DISABLEYRS,MODE_ALL,MEDINDUCE4,MEDINDUCE5,LEARNED1,
            PREG_WEIGHT, PREPREG_WEIGHT, WEIGHTGAIN, HEIGHT, BMI,
-           GESTAGE, FIRSTVISIT, VAGEXAM, LABORLENGTH, DAYSHOSP, BABYHOSP, PPVISIT, 
+           GESTAGE, VAGEXAM, LABORLENGTH, DAYSHOSP, BABYHOSP, PPVISIT, 
            PPVISITTIME1, PPVISITTIME2, EXCLUSIVEBF, WEAN, FAMSIZE1, FAMSIZE2, INCOME )) %>% 
   colnames()
 
@@ -104,8 +105,8 @@ for(i in continuous){
   LTM_final[[i]] <- as.numeric(LTM_final[[i]])
 }
 
-rm(LTM_include)
-rm(LTM2)
+# rm(LTM_include)
+# rm(LTM2)
 gc()
 
 for (i in seq_len(nrow(dict2))) {
@@ -116,6 +117,8 @@ for (i in seq_len(nrow(dict2))) {
     var_label(LTM_final[[var_name]]) <- var_label
   }
 }
+
+# LTM_final <- lapply(LTM_final, function(x)  gsub("I’d prefer not to answer", "Missing", x))
 
 LTM_dsn <- LTM_final %>% 
   as_survey_design(weight = wght, id = 1)

@@ -91,6 +91,11 @@ recode.phq <- function(col, dat = LTM2){
 # Don't use alone, use .from.bases function 
 print.cat <- function(var, data = LTM_dsn){
   var <- parse_expr(var)
+  
+  tab_t <- data %>% summarise(Values = unweighted(n())) %>%
+    mutate(Group = "Total", 
+           weights = " ") %>% relocate(Group)
+  colnames(tab_t) <- c("Group", "Values", "Weighted Proportion")
   tab1 <- data %>%
     # as_survey(weights = c(wght)) %>%
     group_by({{var}}) %>%
@@ -105,8 +110,9 @@ print.cat <- function(var, data = LTM_dsn){
            prop = paste0(round(prop, 1), "%"),
            results = paste0(prop, " (", ci, ")")) %>%
     select(-c(prop_low, prop_upp, prop,ci))
-  colnames(tab1) <- c( "Unweighted Count","Values", "Weighted Proportion")
+  colnames(tab1) <- c( "Group","Values", "Weighted Proportion")
   
+  tab1 <- rbind(tab1, tab_t)
   return(tab1)
 }
 
@@ -137,52 +143,26 @@ print.cat.from.bases <- function(var_name, data = LTM_dsn, bases_lookup = bases)
 }
 
 
-# Print out categorical frequencies for figures----
-print.fig <- function(var, data = LTM_dsn, bases_lookup = bases){
-  
-  condition_string <- bases_lookup %>%
-    filter(variable == var) %>%
-    pull(Base)
-  var <- parse_expr(var)
-  
-  if (length(condition_string) == 0 || is.na(condition_string)) {
-    tab1 <- data %>%
-      group_by({{var}}) %>%
-      summarize(prop = survey_prop(vartype = "ci")) %>% 
-      as.data.frame()
-    
-  } else {
-    
-    # Parse the condition into an expression
-    filter_expr <- parse_expr(condition_string)
-    
-    # Subset the data
-    # filtered_data <- data %>%
-    #   filter(!!filter_expr)
-    
-    tab1 <- data %>%
-      filter(!!filter_expr) %>%
-      group_by({{var}}) %>%
-      summarize(prop = survey_prop(vartype = "ci")) %>% 
-      as.data.frame()
-    
-  }
-  return(tab1)
-  
-}
-
-
 # Print continuous info  ----
 # don't run alone, use print.cont.from.bases
 print.cont <- function(var, data = LTM_dsn){
   var_sym <- parse_expr(var)
+  
+  tab_t <- data %>% 
+    summarize(unweighted = unweighted(n())) %>% 
+    mutate(Group = "Total", CI = NA) %>% 
+    relocate(Group)
+  colnames(tab_t) <- c("Group", "Mean", "Confidence Interval")
+  
   tab1 <- data %>%
     summarize(unweighted = unweighted(n()), 
               mean = survey_mean({{var_sym}}, na.rm = T, vartype = "ci"))%>% 
     mutate(mean = round(mean,1), 
            ci = paste0(round(mean_low, 1), ", ", round(mean_upp,1))) %>%
     select(-c(mean_low, mean_upp))
-  colnames(tab1) <- c("Unweighted Count", "Mean", "Confidence Interval")
+  colnames(tab1) <- c("Group", "Mean", "Confidence Interval")
+  
+  tab1 <- rbind(tab1, tab_t)
   return(tab1)
 }
 
@@ -230,8 +210,13 @@ print.cont.groups <- function(var1, var2, data = LTM_dsn,
       select(-c(mean_low, mean_upp))
     colnames(tab1) <- c("Groups", "Unweighted Count", "Mean")  
   } else {
+    filter_expr <- parse_expr(condition_string)
     
-    tab1 <- data %>%
+    # Subset the data
+    filtered_data <- data %>%
+      filter(!!filter_expr)
+    
+    tab1 <- filtered_data %>%
       group_by({{var1}}) %>%
       summarize(N = unweighted(n()), 
                 mean = survey_mean({{var2}}, na.rm = T, vartype = "ci"))%>% 
@@ -240,114 +225,10 @@ print.cont.groups <- function(var1, var2, data = LTM_dsn,
     colnames(tab1) <- c("Groups", "Unweighted Count", "Mean")
   }    
   return(tab1)
-
+  
 }
 
-# Look at 2 by 2 tables -- don't want to use ----
-
-print.2by2 <- function(var1, var2, data = LTM_dsn){
-  tab1 <- data %>%
-    group_by({{var1}}, {{var2}}) %>%
-    summarize(unweighted = unweighted(n()),
-              prop = survey_prop(vartype = "ci")) %>% 
-    mutate(Value = paste0(unweighted,"; ", round(prop,3)*100, "%, (", round(prop_low, 3)*100, "%, ", round(prop_upp,3)*100, "%")) %>%
-    select(-c(prop, prop_low, prop_upp)) %>%
-    spread(key = {{var2}}, value = Value)
-  return(tab1)
-}
-
-# Print 2 by 2 tables for figures ----
-# Will group % by first variable listed
-# Don't use alone
-fig.2by2 <- function(var1, var2, data = LTM_dsn){
-  var1 <- parse_expr(var1)
-  var2 <- parse_expr(var2)
-  
-  tab1 <- data %>%
-    group_by({{var1}}, {{var2}}) %>%
-    summarize(prop = survey_prop(vartype = "ci")) %>% 
-    select(-c(prop_low, prop_upp)) %>% 
-    spread(key = {{var2}}, value = prop)
-  return(tab1)
-}
-
-# print 2 by 2 without unweighted counts for bases ----
-
-fig.2by2.bases <- function(var1, var_name, data = LTM_dsn, 
-                           bases_lookup = bases) {
-  # Get the condition from the bases table
-  condition_string <- bases_lookup %>%
-    filter(variable == var_name) %>%
-    pull(Base)
-  
-  if (length(condition_string) == 0 || is.na(condition_string)) {
-    result <- fig.2by2(var1 = var1, var2 = var_name, 
-                       data = data)
-  } else{
-    
-    # Parse the condition into an expression
-    filter_expr <- parse_expr(condition_string)
-    
-    # Subset the data
-    filtered_data <- data %>%
-      filter(!!filter_expr)
-    
-    # Use the original print.cat with the filtered data and variable
-    result <- fig.2by2(var1 = var1, var2 = var_name, 
-                       data = filtered_data)
-  }
-  return(result)
-}
-
-# Collapsing into one dataset across multiple columns ----
-collapse.fun <- function(cols, data = LTM_dsn){ 
-  dat <- data.frame(Object = cols, 
-                    n = NA,
-                    pct = NA, 
-                    lower = NA, 
-                    upper = NA)
-  
-  for(i in cols) {
-    tab <- data %>% 
-      group_by(get(i)) %>% 
-      summarize(unweighted = unweighted(n()), 
-                pct = survey_prop(vartype = "ci")) %>% 
-      as.data.frame()
-    colnames(tab) <- c("Var","Unweighted", "pct", "pct_low", "pct_upp")
-    tab <- tab %>% subset(Var == "Yes")
-    dat[dat$Object == i, 2:5] <- tab[,2:5]
-  }
-  return(dat)
-}
-
-# 2 by 2 for multiple categories ----
-collapse.2by2 <- function(cols, var, data = LTM_dsn){
-  
-  dat <- data %>% 
-    group_by(!!sym(var)) %>% 
-    summarise(N = n()) %>% as.data.frame() %>% 
-    select(-c(N))
-  colnames(dat) <- c("Variable")
-  
-  for(i in cols){
-    var_sym <- sym(i)
-    
-    tab1 <- data %>%
-      group_by(!!sym(var), !!var_sym) %>%
-      summarize(prop = survey_prop(vartype = "ci")) %>% 
-      as.data.frame()
-    colnames(tab1) <- c("Variable", "yn", "prop", "lower", "upper")
-    tab1 <- tab1 %>% 
-      filter(yn == "Yes") %>%
-      select(-c(lower, upper)) %>%
-      spread(key = yn, value = prop) 
-    colnames(tab1) <- c("Variable", i)
-    dat <- merge(dat, tab1)
-  }
-  
-  return(dat)
-}
-
+# 
 
 # Data Dictionary ----
 setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")
@@ -365,6 +246,7 @@ dict <- dict %>%
 
 colnames(dict2) <- c("variable", "variable_label")
 data_dict <- merge(dict, dict2)
+data_dict <- data_dict %>% mutate(value = as.numeric(value))
 
 # Bases ----
 bases <- read.csv("Bases.csv")
@@ -372,8 +254,5 @@ bases <- bases %>%
   rename(variable = Variable.Name) %>%
   full_join(dict2)
 base_cols = bases %>% subset(!is.na(Base)) %>% pull(variable)
-
-# labelling 
-# Apply variable labels based on the data dictionary
 
 

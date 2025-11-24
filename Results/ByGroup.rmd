@@ -23,15 +23,15 @@ library(knitr)
 LTM_dsn %>% 
   tbl_svysummary(
     by = RACE,
-    include = c(cat_1, cont_1,cat_2,cont_2, cat_3, cont_3, cat_4, cont_4),
+    include = c(cat_1), #cont_1,cat_2,cont_2, cat_3, cont_3, cat_4, cont_4),
     statistic =  list(all_categorical() ~ "{p}%"),
-    all_continuous()  ~ "{mean} ({sd})",
-  ) %>%
-  modify_header(
-    #label = "**Variable**",
-    all_stat_cols() ~ "**{level}**<br>{style_percent(p, digits=0)}%") %>%
-  modify_caption("Weighted descriptive statistics, by race") %>%
-  bold_labels()
+    all_continuous()  ~ "{mean} ({sd})") %>% 
+  add_p() #%>% 
+  # modify_header(
+  #   #label = "**Variable**",
+  #   all_stat_cols() ~ "**{level}**<br>{style_percent(p, digits=0)}%") %>%
+  # modify_caption("Weighted descriptive statistics, by race") %>%
+  # bold_labels()
 ```
 
 ```{r, echo = F, warning=F, message = F, eval = F}
@@ -41,7 +41,7 @@ LTM_dsn %>%
     include = c(cat_1, cont_1,cat_2,cont_2, cat_3, cont_3, cat_4, cont_4),
     statistic =  list(all_categorical() ~ "{p}%"),
     all_continuous()  ~ "{mean} ({sd})",
-  ) %>%
+  ) %>% add_p() %>% 
   modify_header(label = "**Variable**",
                 all_stat_cols() ~ "**{level}**<br>{style_percent(p, digits=0)}%") %>%
   modify_caption("Weighted descriptive statistics, by insurance") %>%
