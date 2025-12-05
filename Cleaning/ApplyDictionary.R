@@ -118,7 +118,9 @@ for (i in seq_len(nrow(dict2))) {
   }
 }
 
-# LTM_final <- lapply(LTM_final, function(x)  gsub("I’d prefer not to answer", "Missing", x))
+for(i in categorical){
+    LTM_final[i] <- lapply(LTM_final[i], function(x)  gsub("I’d prefer not to answer", "Missing", x))  
+}
 
 LTM_dsn <- LTM_final %>% 
   as_survey_design(weight = wght, id = 1)

@@ -9,6 +9,7 @@ library(rlang)
 library(purrr)
 library(phdcocktail)
 library(openxlsx)
+library(gtsummary)
 library(labelled)
 
 # Convert to numeric ----
