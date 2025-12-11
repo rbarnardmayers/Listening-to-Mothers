@@ -83,10 +83,10 @@ LTM2 <- LTM1 %>%
          # DUEDATE_D = as.numeric(DUEDATE_D),
          # DUEDATE = as.Date(paste0(DUEDATE_M,"/", DUEDATE_D, "/",DUEDATE_Y), "m%/%d/%Y"),
          # 
-         # BIRTHDATE_Y = as.numeric(BIRTHDATE_Y),
+         # YEARBIRTH = as.numeric(YEARBIRTH),
          # BIRTHDATE_M = as.numeric(BIRTHDATE_M),
          # BIRTHDATE_D = as.numeric(BIRTHDATE_D),
-         # BIRTHDATE = as.Date(paste0(BIRTHDATE_M,"/", BIRTHDATE_D, "/",BIRTHDATE_Y), "m%/%d/%Y"),
+         # BIRTHDATE = as.Date(paste0(BIRTHDATE_M,"/", BIRTHDATE_D, "/",YEARBIRTH), "m%/%d/%Y"),
          # GESTAGE = as.numeric(difftime(BIRTHDATE, DUEDATE))/7 + 40,
          HEIGHT = (HEIGHT_FEET*12) + HEIGHT_INCHES, 
          PREPREG_WEIGHT = case_when(is.na(PREPREG_WEIGHT_A1) ~ 2.20462 * PREPREG_WEIGHT_B1, 
