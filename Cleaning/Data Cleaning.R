@@ -16,24 +16,23 @@ LTM1 <- LTM %>%
             AgentId,AgentUserName,Priority,CallNote,ResCompleted,
             ResBlocked,IsAnonymized,ResActive,Modified,DNC,Callback,
             PIN,RID,PID,PID1,REFID1,NAME,ADDRESS,CITY,ZIPCODE,BATCH,
-            CHILDNAME, FINAL_QC, contains("FLAG"),starts_with("SCREEN"),
+            CHILDNAME, contains("FLAG"),starts_with("SCREEN"),
             starts_with("F1"), starts_with("F2"), starts_with("F3"), 
-            starts_with("x"), starts_with("X"))) %>% 
-  subset(FINAL_DETERMINATION == "Keep")
+            starts_with("x"), starts_with("X")))
 
 
 # Identify text response columns ending for other ----
 ends_o <- LTM1[str_ends(colnames(LTM1), "O")] %>% 
   select(-c(INTRO)) %>% colnames()
 
-# Create dataset of just text responses and UID2 ----
+# Create dataset of just text responses and MDID ----
 LTM_ignore <- LTM1 %>% 
-  select(c(all_of(ends_o), UID2, DOULA3, INDUCE6, REPEATCSEC,
+  select(c(all_of(ends_o), MDID, DOULA3, INDUCE6, REPEATCSEC,
            MEDINDUCE4, MEDINDUCE5, WENTWELL, DIDNTGOWELL, ANYTHINGELSE, AIAN,
            DISABILITYCOND, Source)) 
 
 ignores <- LTM_ignore %>% 
-  select(-c(UID2)) %>% 
+  select(-c(MDID)) %>% 
   colnames() 
 
 # Create dataset of the rest of the columns ----
@@ -42,7 +41,7 @@ LTM_keep <- LTM1 %>%
 
 # Create list of column names to conver to numeric
 tochange <- LTM_keep %>% 
-  select(-c(UID2)) %>% 
+  select(-c(MDID)) %>% 
   colnames()
 
 # Convert to numeric
@@ -56,7 +55,8 @@ for(i in tochange){
 #   } 
 # }
 
-LTM1 <- full_join(LTM_ignore, LTM_keep)
+LTM1 <- LTM_ignore %>% 
+  full_join(LTM_keep, join_by(MDID))
 
 # test2 <- LTM_keep[131,] %>% select(c(UID2))
 # test1 <- LTM_ignore[1,] %>% select(c(UID2))
@@ -78,11 +78,21 @@ LTM2 <- LTM1 %>%
   mutate(PARITY = case_when(NUMB_BIRTH == 1 ~ "Nulliparous", 
                             NUMB_BIRTH > 1 ~ "Multiparous", 
                             TRUE ~ "Missing"),
+         # DUEDATE_Y = as.numeric(DUEDATE_Y),
+         # DUEDATE_M = as.numeric(DUEDATE_M),
+         # DUEDATE_D = as.numeric(DUEDATE_D),
+         # DUEDATE = as.Date(paste0(DUEDATE_M,"/", DUEDATE_D, "/",DUEDATE_Y), "m%/%d/%Y"),
+         # 
+         # BIRTHDATE_Y = as.numeric(BIRTHDATE_Y),
+         # BIRTHDATE_M = as.numeric(BIRTHDATE_M),
+         # BIRTHDATE_D = as.numeric(BIRTHDATE_D),
+         # BIRTHDATE = as.Date(paste0(BIRTHDATE_M,"/", BIRTHDATE_D, "/",BIRTHDATE_Y), "m%/%d/%Y"),
+         # GESTAGE = as.numeric(difftime(BIRTHDATE, DUEDATE))/7 + 40,
          HEIGHT = (HEIGHT_FEET*12) + HEIGHT_INCHES, 
          PREPREG_WEIGHT = case_when(is.na(PREPREG_WEIGHT_A1) ~ 2.20462 * PREPREG_WEIGHT_B1, 
                                     !is.na(PREPREG_WEIGHT_A1) ~ PREPREG_WEIGHT_A1), 
-         PREG_WEIGHT = case_when(is.na(PREGWEIGHT_A1) ~ 2.20462 * PREGWEIGHT_B1, 
-                                 !is.na(PREGWEIGHT_A1) ~ PREGWEIGHT_A1), 
+         PREG_WEIGHT = case_when(is.na(PREGWEIGHT_LBS_2) ~ 2.20462 * PREGWEIGHT_KG_2, 
+                                 !is.na(PREGWEIGHT_LBS_2) ~ PREGWEIGHT_LBS_2), 
          RACE = case_when(RACEC1 == 1 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NHW", 
                           RACEC1 == 0 & RACEC2 == 1 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "Hispanic", 
                           RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 1 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NH Black or African American", 
