@@ -1,7 +1,7 @@
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Helpful_Functions.R")
 
 # Data Read in &  Get rid of identifying information ----
-LTM <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Data_TEMP.csv") 
+LTM <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Data_FINAL.csv") 
 
 LTM1 <- LTM %>% 
   mutate(MDID = as.character(MDID)) %>% 
@@ -105,10 +105,10 @@ LTM2 <- LTM1 %>%
                           TRUE ~ "Missing"),
          INSURANCE = case_when(INSURC1 == 1 ~ "Private",
                                INSURC2 == 1 ~ "Medicaid/CHIP",
-                               INSURC3 == 1 ~ "TRICARE or other military health care",
-                               INSURC4 == 1 ~ "Indian Health Service or tribal",
-                               INSURC5 == 1 ~ "Other",
-                               INSURC6 == 1 ~ "None",
+                               INSURC3 == 1 ~ "Other",#"TRICARE or other military health care",
+                               INSURC4 == 1 ~ "Other",#"Indian Health Service or tribal",
+                               INSURC5 == 1 ~ "Other",#"Other",
+                               INSURC6 == 1 ~ "None",#"None",
                                INSURC7 == 1 ~ "Missing",
                                TRUE ~ "Missing"),
          LANGUAGE = case_when(LANGHOMEC1 == 1 ~ "English",
