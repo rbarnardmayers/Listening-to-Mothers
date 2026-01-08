@@ -9,6 +9,7 @@ library(rlang)
 library(purrr)
 library(phdcocktail)
 library(openxlsx)
+library(naniar)
 library(gtsummary)
 library(labelled)
 
@@ -235,9 +236,9 @@ print.cont.groups <- function(var1, var2, data = LTM_dsn,
 setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")
 dict <- read_excel("Data_Dictionary.xlsx", 
                    sheet = "Variable Values") 
+dict <- dict[2:4934,]
 dict2 <-  read_excel("Data_Dictionary.xlsx", 
-                     sheet = "Variable Labels") %>% 
-  select(-c("Variable Type", "Notes"))
+                     sheet = "Variable Labels")
 
 colnames(dict) <- c("variable", "value", "value_label")
 
@@ -245,8 +246,9 @@ dict <- dict %>%
   fill(variable) #%>% 
 # mutate(value = as.numeric(value))
 
-colnames(dict2) <- c("variable", "variable_label")
-data_dict <- merge(dict, dict2)
+colnames(dict2) <- c("variable", "variable_label", "missing")
+dict3 <- dict2 %>% select(-c("missing"))
+data_dict <- merge(dict, dict3)
 data_dict <- data_dict %>% mutate(value = as.numeric(value))
 
 # Bases ----

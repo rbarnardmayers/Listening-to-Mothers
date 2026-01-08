@@ -11,7 +11,8 @@ cat_1 <- LTM_final %>%
   select(c(PARITY, 'PREG_INT', starts_with("PREPREG_PH"),
            starts_with("PREPREG_MH"), 'PROVIDER', 'PROVIDERCHOICE',
            DOULA, DOULAC1, starts_with("DOULA1"), starts_with("CARESETTING"),
-          starts_with("CARETYPE"), starts_with("CAREMODE"), starts_with("WHYTELE"),
+           CAREMODEC1, CAREMODEC2, CAREMODEPREF,
+           starts_with("WHYTELE"),starts_with("CARETYPE"),
           starts_with("ATHOMECARE"), CONFIDENCE_ANY, BPCONFID, URINECONFID,
           WEIGHCONFID, BABYHRCONFID, CURREDUC, PRIOREDUC, EDUCTYPE, starts_with("EDUCMODE"),
           starts_with("EDUCIMPACT"), starts_with("PREGCOND"), PHQ2_cat, GAD2_cat, PHQ4_cat,
@@ -19,10 +20,11 @@ cat_1 <- LTM_final %>%
           EMPLOYBEN, EMPLOYCHANGE, EMPLOYCHANGE1, BIGBABY1, BIGBABY2,
           starts_with("PLANNEDFEED")
           )) %>%
-  select(-c(PREGCONDITIONC11, PREPREG_MHCONDC5, PREPREG_PHYSCONDC3,
-            CARESETTINGC8O,WHYTELEC7O,EDUCIMPACTC7O,PREGCONDITIONC9O,
-            DOULA1C6, DOULA1C7, PREGCONDITIONC9, PREPREG_PHYSCONDC3O,
-            PREPREG_MHCONDC5O, ends_with("O"))) %>%
+  select(-c( PREPREG_PHYSCONDC3,WHYTELEC7O,WHYTELEC8,CARETYPEC3,ATHOMECAREC6,
+             EDUCMODEC5,PLANNEDFEEDC4,PLANNEDFEEDC3,SOCIALNEEDC11,DOULA1C8,
+             SOCIALNEEDC10,PREGCONDITIONC11,EDUCIMPACTC8,CARESETTINGC9,
+             PREPREG_MHCONDC7,PREPREG_PHYSCONDC5,
+            ends_with("O"))) %>%
   colnames()
 
 cont_1 <- LTM_final %>%
@@ -44,7 +46,8 @@ cat_2 <- LTM_final %>%
   colnames()
 
 cont_2 <-  LTM_final %>%
-  select(c(AGEBIRTH, NUMB_BIRTH, LABORLENGTH, DAYSHOSP,#GESTAGE,
+  select(c(#AGEBIRTH, 
+           NUMB_BIRTH, LABORLENGTH, DAYSHOSP,#GESTAGE,
            BIRTHWEIGHT, BABYHOSP, MEDINDUCE5, MEDINDUCE4)) %>%
   colnames()
 
@@ -78,22 +81,5 @@ cat_4 <- LTM_final %>%
 cont_4 <- LTM_final %>%
   select(c(PPVISITTIME1, PPVISITTIME2, PPVISIT, EXCLUSIVEBF)) %>% colnames()
 
-# Checking ----
-# 
-# for(i in cat_3){
-#   lab = dict2[dict2$variable == i,]$variable_label
-#   # if(i %in% base_cols){
-#   #   k <- print.cat.from.bases(i)} else {
-#   #     k <- print.cat(i)
-#   #   } 
-#   k <- print.cat.from.bases(i)
-#   print(k)
-#   
-# }
-# 
-# 
-# test_3 <- LTM_final %>%
-#   select(c(ends_with("O"))) %>%
-#   colnames()
 
 

@@ -6,12 +6,12 @@ LTM2 <- read.csv("LTM_clean.csv")
 # Data dictionary prep ----
 # Getting rid of columns with no conversion in dict
 
-dict2 <- dict2 %>% 
+dict3 <- dict3 %>% 
   mutate(KEEP = case_when(variable %in% colnames(LTM2) ~ 1, TRUE ~ 0)) %>% 
   subset(KEEP == 1) %>% 
   select(-c(KEEP))
 
-LTM_include <- LTM2 %>% select(dict2$variable)
+LTM_include <- LTM2 %>% select(dict3$variable)
 
 # 
 LTM2 <- LTM2 %>% 
@@ -33,33 +33,31 @@ LTM_final <- LTM2 %>%
 
 # Create a weight variable while waiting for final version of dataset ----
 # LTM_final$wght = rnorm(n=nrow(LTM_final), mean = 1, sd = .02)
-LTM_final$wght = 1
 
 # Create list of categorical variables by excluding numeric ----
 categorical <- LTM_final %>%
-  select(-c(HEIGHT,CaseId,MDID,ST, INTRO, AGE,TIMES,YEARBIRTH, 
+  select(-c(HEIGHT,MDID, AGE,YEARBIRTH, 
             DOULA3, INDUCE6, REPEATCSEC,#GESTAGE, DUEDATE, BIRTHDATE,BIRTHDATE_Y,
-            MEDINDUCE4, MEDINDUCE5, WENTWELL, DIDNTGOWELL, ANYTHINGELSE, AIAN,
+            MEDINDUCE4, MEDINDUCE5, #WENTWELL, DIDNTGOWELL, AIAN,
+            ANYTHINGELSE,
             DISABILITYCOND, Source,ends_with("O"), YEARBIRTH,
             ends_with("BIRTHYEAR"), starts_with("SCREEN"), starts_with("TRAP"),
             CURRWEIGHT_LBS,PREGWEIGHT_KG_2,PREGWEIGHT_LBS_2,
-            starts_with("FOLLOWUP"), UID, UID2,
+            starts_with("FOLLOWUP"), UID2,
             starts_with("x"),contains("FLAG"), starts_with("F2_"),ends_with("O"),
             starts_with("F3_"),  starts_with("F1_"),starts_with("X"),
-            NUMB_BIRTH_OLD, PREG_INT,PREPREG_WEIGHT_B1,LEARNED2,
-            TRAP_AREA_SELECTOR,NUMB_BIRTH,HEIGHT_FEET,HEIGHT_INCHES,CURRWEIGHT_KG,
-            BIRTHWEIGHT_LBS,BIRTHWEIGHT_OZ,BIRTHWEIGHT_G,AGEBIRTH,AGECHECK,
-            DISABLEYRS,MODE_ALL, wght,
+            PREG_INT,PREPREG_WEIGHT_B1,LEARNED2,
+            NUMB_BIRTH,HEIGHT_FEET,HEIGHT_INCHES,CURRWEIGHT_KG,
+            BIRTHWEIGHT_LBS,BIRTHWEIGHT_OZ,BIRTHWEIGHT_G,AGECHECK,
+            DISABLEYRS,MODE_ALL,
             PREG_INT, HEIGHT_FEET,HEIGHT_INCHES, HEIGHT,
             PREPREG_WEIGHT_A1,PREGCONDITIONC11,DUEDATE_M, DUEDATE_Y,
             DUEDATE_D, BIRTHDATE_D, BIRTHDATE_M,WEIGHTGAIN,LEARNED1,
             VAGEXAM, LABORLENGTH, DAYSHOSP, BABYHOSP, PPVISIT, PREG_WEIGHT,
             PPVISITTIME1, PPVISITTIME2, EXCLUSIVEBF,BIRTHWEIGHT,
             HEIGHT, PREPREG_WEIGHT, RACE, INSURANCE, LANGUAGE, BMI, DOULA,
-            DOULAC1, DOULAC2, DOULAC3, PRENAT, PRENAT,IMMIGRATION,
-            WEAN, ZIP, FAMSIZE1, FAMSIZE2, INCOME, IMMIGRATION, "RANDOM",
-            "SURMODE","META_USERAGENT"  ,"META_REFERER" , "META_IPADDRESS" ,
-            "META_BROWSER_LANGUAGE","META_JAVASUPPORT","META_OPERATINGSYSTEM"))  %>%   colnames()
+            DOULAC1, DOULAC2, DOULAC3, PRENAT,IMMIGRATION,
+            WEAN, ZIP, FAMSIZE1, FAMSIZE2, INCOME, IMMIGRATION))  %>%   colnames()
 
 # Factor categorical variables and reorder values----
 for(i in categorical){
@@ -69,7 +67,7 @@ for(i in categorical){
 # Convert continuous variables into numeric class ----
 continuous <- LTM_final %>% 
   select(c(AGE,YEARBIRTH,#GESTAGE,
-           NUMB_BIRTH,BIRTHWEIGHT,AGEBIRTH,PPVISIT,LEARNED2,
+           NUMB_BIRTH,BIRTHWEIGHT,PPVISIT,LEARNED2,
            DISABLEYRS,MODE_ALL,MEDINDUCE4,MEDINDUCE5,LEARNED1,
            PREG_WEIGHT, PREPREG_WEIGHT, WEIGHTGAIN, HEIGHT, BMI,
            VAGEXAM, LABORLENGTH, DAYSHOSP, BABYHOSP, PPVISIT, 
@@ -98,5 +96,6 @@ for(i in categorical){
 }
 
 LTM_dsn <- LTM_final %>% 
-  as_survey_design(weight = wght, id = 1)
+  mutate(FINALWT = as.numeric(FINALWT)) %>%
+  as_survey_design(weight = FINALWT, id = 1)
 

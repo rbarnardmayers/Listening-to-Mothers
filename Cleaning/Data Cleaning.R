@@ -5,30 +5,22 @@ LTM <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Data_FINAL.cs
 
 LTM1 <- LTM %>% 
   mutate(MDID = as.character(MDID)) %>% 
-  select(-c(ResEmail, ResPhone, DialingMode,ManualDialing,resTimeZone,
-            ResPIN,SurveyName,ResLanguage, PanelistId, CallBackDate,
-            LastConnectionDate,LastConnectionWeek,LastConnectionStartTime,
-            ConnectionDurationInSeconds,ConnectionDurationInMinutes,
-            LastQuestionFilled,NumberOfConnections,resDisposition,
-            ResCaseResult,TotalDurationSec,Device,DeviceOS,DeviceVersion,
-            DeviceBrowser,DeviceBrowserVersion,GeoLocation,OfflineUser,
-            AppointmentDate,SurveyLink,AccessExpiration,CustomResult,
-            AgentId,AgentUserName,Priority,CallNote,ResCompleted,
-            ResBlocked,IsAnonymized,ResActive,Modified,DNC,Callback,
-            PIN,RID,PID,PID1,REFID1,NAME,ADDRESS,CITY,ZIPCODE,BATCH,
-            CHILDNAME, contains("FLAG"),starts_with("SCREEN"),
+  select(-c(ResLanguage,
+            TotalDurationSec,
+            contains("FLAG"),starts_with("SCREEN"),
             starts_with("F1"), starts_with("F2"), starts_with("F3"), 
             starts_with("x"), starts_with("X")))
 
 
 # Identify text response columns ending for other ----
-ends_o <- LTM1[str_ends(colnames(LTM1), "O")] %>% 
-  select(-c(INTRO)) %>% colnames()
+ends_o <- LTM1[str_ends(colnames(LTM1), "O")]  %>% colnames()
 
 # Create dataset of just text responses and MDID ----
 LTM_ignore <- LTM1 %>% 
   select(c(all_of(ends_o), MDID, DOULA3, INDUCE6, REPEATCSEC,
-           MEDINDUCE4, MEDINDUCE5, WENTWELL, DIDNTGOWELL, ANYTHINGELSE, AIAN,
+           MEDINDUCE4, MEDINDUCE5, 
+           #WENTWELL, DIDNTGOWELL, AIAN,
+           ANYTHINGELSE,
            DISABILITYCOND, Source)) 
 
 ignores <- LTM_ignore %>% 
@@ -37,7 +29,7 @@ ignores <- LTM_ignore %>%
 
 # Create dataset of the rest of the columns ----
 LTM_keep <- LTM1 %>% 
-  select(-c(all_of(ignores)), MDID, ST)
+  select(-c(all_of(ignores)), MDID)
 
 # Create list of column names to conver to numeric
 tochange <- LTM_keep %>% 
@@ -49,28 +41,11 @@ for(i in tochange){
   LTM_keep[[i]] <- as.numeric(LTM_keep[[i]])
 }
 
-# for(i in colnames(LTM_ignore)){
-#   if(i %in% colnames(LTM_keep)){
-#     print(i)
-#   } 
-# }
-
 LTM1 <- LTM_ignore %>% 
   full_join(LTM_keep, join_by(MDID))
 
-# test2 <- LTM_keep[131,] %>% select(c(UID2))
-# test1 <- LTM_ignore[1,] %>% select(c(UID2))
-# 
-# LTM_ignore[LTM_ignore$UID2 == test1$UID2, ] %>% 
-#   relocate(UID2) %>% 
-#   View()
-# 
-# LTM_keep[LTM_keep$UID2 == test2$UID2, ] %>% 
-#   relocate(UID2) %>% 
-#   View()
-
-rm(LTM_ignore)
-rm(LTM_keep)
+# rm(LTM_ignore)
+# rm(LTM_keep)
 
 # Recode variables ----
 
@@ -130,8 +105,8 @@ LTM2 <- LTM1 %>%
          DOULAC3 = case_when(DOULA == "Yes" & DOULAC3 == 1 ~ "Postpartum", 
                              DOULA == "Yes" & DOULAC3 == 0 ~ "Not Postpartum", 
                              DOULA == "No" | DOULA == "Missing" ~ NA), 
-         LEARNED1 = case_when(LEARNED1 == 99 ~ "Missing", 
-                              is.na(LEARNED1) ~ "Missing",
+         LEARNED1 = case_when(LEARNED1 == 99 ~ NA, 
+                              is.na(LEARNED1) ~ NA,
                               TRUE ~ as.character(LEARNED1)), 
          PRENAT = case_when(LEARNED2 == 1 ~ "No Prenatal Care", 
                             LEARNED2 == 99 ~ "Missing", 
@@ -148,20 +123,19 @@ rm(LTM1)
 # Midwife, physician, other for provider
 
 # Subscale respectful care ----
-LTM2$RESPECT <- likert('RESPECT')
-LTM2$KNOWLEDGE <- likert('KNOWLEDGE')
-LTM2$HEARD <- likert('HEARD')
-LTM2$DECISIONS <- likert('DECISIONS')
-LTM2$CONSENT <- likert('CONSENT')
-LTM2$INFORMED <- likert('INFORMED')
-LTM2$TIMELINESS <- likert('TIMELINESS')
-LTM2$TRUST <- likert('TRUST')
-LTM2$FEEDING <- likert('FEEDING')
-LTM2$SAFE <- likert('SAFE')
-
-LTM2$DISCRIMINATION <- rev.likert('DISCRIMINATION')
-LTM2$NEGLECT <- rev.likert('NEGLECT')
-
+# LTM2$RESPECT <- likert('RESPECT')
+# LTM2$KNOWLEDGE <- likert('KNOWLEDGE')
+# LTM2$HEARD <- likert('HEARD')
+# LTM2$DECISIONS <- likert('DECISIONS')
+# LTM2$CONSENT <- likert('CONSENT')
+# LTM2$INFORMED <- likert('INFORMED')
+# LTM2$TIMELINESS <- likert('TIMELINESS')
+# LTM2$TRUST <- likert('TRUST')
+# LTM2$FEEDING <- likert('FEEDING')
+# LTM2$SAFE <- likert('SAFE')
+# 
+# LTM2$DISCRIMINATION <- rev.likert('DISCRIMINATION')
+# LTM2$NEGLECT <- rev.likert('NEGLECT')
 
 LTM2$PPBOTHER_1 <- recode.phq("PPBOTHER_A1")
 LTM2$PPBOTHER_2 <- recode.phq("PPBOTHER_A2")
@@ -220,8 +194,8 @@ LTM2 <- LTM2 %>%
                             MODE13 == 2 ~ 1),
          MODE14 = case_when(MODE14 == 1 ~ 0, 
                             MODE14 == 2 ~ 1),
-         MODE15 = case_when(MODE15 == 1 ~ 0, 
-                            MODE15 == 2 ~ 1),
+         # MODE15 = case_when(MODE15 == 1 ~ 0, 
+         #                    MODE15 == 2 ~ 1),
          phys_cb = case_when(PAINMEDSC1 == 1 ~ "Physiologic Childbirth", 
                              PAINMEDSC2 == 1 ~ "Physiologic Childbirth", 
                              PAINMEDSC3 == 1 ~ "Physiologic Childbirth", 
@@ -284,5 +258,42 @@ LTM2 <- LTM2 %>%
          MDID = as.numeric(MDID)) %>%
   rename(MODE2023 = MDE2023)
 
+# Recoding missing values ----
+missing_d <- dict2 %>% 
+  select(c("missing", "variable")) %>% 
+  mutate(missing = as.numeric(missing)) %>% 
+  subset(!is.na(missing)) %>%
+  mutate(KEEP = case_when(startsWith(variable, "x") ~ 0, TRUE ~ 1)) %>% 
+  subset(KEEP == 1)
+
+missing_99 <- missing_d %>% subset(missing == 99)
+missing_999 <- missing_d %>% subset(missing == 999)
+missing_99999 <- missing_d %>% subset(missing == 99999)
+missing_999999999999 <- missing_d %>% subset(missing == 999999999999)
+
+LTM_99 <- LTM2 %>% 
+  select(c(missing_99$variable, MDID))  %>% 
+  replace_with_na_all(condition = ~.x ==  99) 
+
+LTM_999 <- LTM2 %>% 
+  select(c(missing_999$variable, MDID)) %>% 
+  replace_with_na_all(condition = ~.x ==  999) 
+
+LTM_99999 <- LTM2 %>% 
+  select(c(missing_99999$variable, MDID)) %>% 
+  replace_with_na_all(condition = ~.x ==  99999) 
+
+LTM_999999999999 <- LTM2 %>% 
+  select(c(missing_999999999999$variable, MDID)) %>% 
+  replace_with_na_all(condition = ~.x ==  999999999999) 
+
+LTM3 <- LTM2 %>% 
+  select(-c(missing_d$variable)) %>%
+full_join(LTM_99, join_by(MDID)) %>% 
+  full_join(LTM_999, join_by(MDID)) %>% 
+  full_join(LTM_99999, join_by(MDID)) %>% 
+  full_join(LTM_999999999999, join_by(MDID)) 
+  
+# Exporting ----
 setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")
-write.csv(LTM2, "LTM_clean.csv")
+write.csv(LTM3, "LTM_clean.csv")

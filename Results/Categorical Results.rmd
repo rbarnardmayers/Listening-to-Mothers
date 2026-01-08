@@ -51,8 +51,8 @@ for(i in cat_1){
 
 
 #### Chapter 2 
-``` {r results = "asis", echo = F, warning = F}
-
+``` {r results = "asis", echo = F, warning = F,eval = T}
+#for(i in cat_1){print(i);print(print.cat.from.bases(i))}
 for(i in cat_2){
   lab = dict2[dict2$variable == i,]$variable_label
   # if(i %in% base_cols){
@@ -71,7 +71,7 @@ for(i in cat_2){
 ```
 
 #### Chapter 3 
-``` {r results = "asis", echo = F, warning = F}
+``` {r results = "asis", echo = F, warning = F,eval = T}
 
 for(i in cat_3){
   lab = dict2[dict2$variable == i,]$variable_label
@@ -92,7 +92,7 @@ for(i in cat_3){
 ```
 
 #### Chapter 4
-``` {r results = "asis", echo = F, warning = F}
+``` {r results = "asis", echo = F, warning = F,eval = T}
 
 for(i in cat_4){
   lab = dict2[dict2$variable == i,]$variable_label
