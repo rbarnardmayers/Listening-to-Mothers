@@ -13,7 +13,7 @@ library(naniar)
 library(gtsummary)
 library(labelled)
 
-# Convert to numeric ----
+# Convert columns to numeric ----
 convert.fun <- function(dat, vars){
   for(i in vars){
     dat[[i]] <- as.numeric(dat[[i]])
@@ -21,7 +21,7 @@ convert.fun <- function(dat, vars){
   return(dat)
 }
 
-# Make yes/no from 1/0 ----
+# Make columns yes/no instead of 1/0 ----
 convert.yn <- function(dat, vars){
   for(i in vars){
     dat[[i]] <- ifelse(dat[[i]] == 1, "Yes", 
@@ -52,7 +52,7 @@ rev.likert <- function(col, dat = LTM2){
 }
 
 
-# Refactor categorical ----
+# Refactor categorical so that missing is the last category shown ----
 refac.fun <- function(col, vars = c("Missing"), dat = LTM_final){
   dat[[col]] <- ifelse(is.na(dat[[col]]), "Missing", dat[[col]])
   dat[[col]] <- factor(dat[[col]])
@@ -64,7 +64,7 @@ refac.fun <- function(col, vars = c("Missing"), dat = LTM_final){
   return(dat[[col]])
 }
 
-# Refactor numeric ----
+# Refactor numeric columns so that missing is last----
 refac.num <- function(col, val = c("Missing"), dat = LTM_final){
   dat[[col]] <- factor(dat[[col]])
   t <- data.frame(names = levels(dat[[col]]))
@@ -78,18 +78,17 @@ refac.num <- function(col, val = c("Missing"), dat = LTM_final){
   
 }
 
-# PHQ amd GAD ----
+# PHQ and GAD coding for calculations----
 recode.phq <- function(col, dat = LTM2){
   dat[,col] <- ifelse(dat[,col] == 4, 0,
                       ifelse(dat[,col] == 3, 1,
                              ifelse(dat[,col] == 2, 2, 
                                     ifelse(dat[,col] == 1, 3, NA))))
-  
   return(dat[,col])
   
 }
 
-# Print out categorical frequencies ----
+# Print out categorical weighted frequencies ----
 # Don't use alone, use .from.bases function 
 print.cat <- function(var, data = LTM_dsn){
   var <- parse_expr(var)
@@ -118,7 +117,7 @@ print.cat <- function(var, data = LTM_dsn){
   return(tab1)
 }
 
-# Categorical with bases included ----
+# Print categorical weighted proportions with bases included ----
 print.cat.from.bases <- function(var_name, data = LTM_dsn, bases_lookup = bases) {
   # Get the condition from the bases table
   condition_string <- bases_lookup %>%
@@ -143,7 +142,6 @@ print.cat.from.bases <- function(var_name, data = LTM_dsn, bases_lookup = bases)
   return(result)
   
 }
-
 
 # Print continuous info  ----
 # don't run alone, use print.cont.from.bases

@@ -1,7 +1,7 @@
 ---
 title: "Comparisons by Group"
 author: "Ruby Barnard-Mayers"
-date: "2025-10-14"
+date: "2026-01-08"
 output: html_document
 ---
 
@@ -23,7 +23,7 @@ library(knitr)
 LTM_dsn %>% 
   tbl_svysummary(
     by = RACE,
-    include = c(cat_1)#, #cont_1,cat_2,cont_2, cat_3, cont_3, cat_4, cont_4),
+    include = c(cat_1, cont_1,cat_2,cont_2, cat_3, cont_3, cat_4, cont_4),
     # statistic =  list(all_categorical() ~ "{p}%"),
     # all_continuous()  ~ "{mean} ({sd})"
     ) %>% 

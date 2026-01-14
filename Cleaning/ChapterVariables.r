@@ -1,14 +1,14 @@
 # Chapter Variables
 
 group_vars <- LTM_final %>% 
-  select(c(RACE, PROVIDER, INSURANCE, MODE2023)) %>% 
+  select(c(RACEALONE, PROVIDER, INSURCAT, MODE2023)) %>% 
   colnames()
 
 # SELFINDUCE2C8, PPMEDSC4, POSITION2C7, NOPRENATALC13
 # Chapter 1 ----
 
 cat_1 <- LTM_final %>%
-  select(c(PARITY, 'PREG_INT', starts_with("PREPREG_PH"),
+  select(c(NUMB_BIRTH, 'PREG_INT', starts_with("PREPREG_PH"),
            starts_with("PREPREG_MH"), 'PROVIDER', 'PROVIDERCHOICE',
            DOULA, DOULAC1, starts_with("DOULA1"), starts_with("CARESETTING"),
            CAREMODEC1, CAREMODEC2, CAREMODEPREF,
@@ -34,7 +34,7 @@ cont_1 <- LTM_final %>%
 
 # Chapter 2 ----
 cat_2 <- LTM_final %>%
-  select(c(BIRTHWEIGHT_CAT, GOLDENHOUR,SKIN,HOSPLOC, NICU, BIRTHATTEND,
+  select(c(BW_CAT, GOLDENHOUR,SKIN,HOSPLOC, NICU, BIRTHATTEND,
            ATTENDSTUDENT, DOULAC2, starts_with("DOULA2"),
            starts_with("OTHERSUPPORT"), starts_with("INDUCE"), SDM, starts_with("MEDINDUCE"),
            MODE2023, starts_with("SELFINDUCE"), starts_with("MEDINDUCE"),
@@ -57,6 +57,7 @@ cont_2 <-  LTM_final %>%
 
 cat_3 <- LTM_final %>%
   select(c(MODE2023, VAGASSIST, CSECTIONTYPE, UNPLANNEDREASON,
+           POLIT, EPIST,
            # REPEATCSEC,
            VBACCHOICE, VBACINTEREST)) %>%
   colnames()

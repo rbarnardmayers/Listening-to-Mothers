@@ -4,55 +4,46 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Helpful_Function
 LTM <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Data_FINAL.csv") 
 
 LTM1 <- LTM %>% 
-  mutate(MDID = as.character(MDID)) %>% 
-  select(-c(ResLanguage,
-            TotalDurationSec,
-            contains("FLAG"),starts_with("SCREEN"),
-            starts_with("F1"), starts_with("F2"), starts_with("F3"), 
-            starts_with("x"), starts_with("X")))
-
+  mutate(MDID = as.character(MDID))
 
 # Identify text response columns ending for other ----
+# Don't want to convert these columns to numeric
 ends_o <- LTM1[str_ends(colnames(LTM1), "O")]  %>% colnames()
 
-# Create dataset of just text responses and MDID ----
+# Create dataset of just text responses and MDID (so we can merge back) ----
+# Don't want to convert these columns to numeric
 LTM_ignore <- LTM1 %>% 
   select(c(all_of(ends_o), MDID, DOULA3, INDUCE6, REPEATCSEC,
-           MEDINDUCE4, MEDINDUCE5, 
-           #WENTWELL, DIDNTGOWELL, AIAN,
-           ANYTHINGELSE,
-           DISABILITYCOND, Source)) 
+           ResLanguage, ANYTHINGELSE, DISABILITYCOND)) 
 
+# List of columns that are text only 
 ignores <- LTM_ignore %>% 
   select(-c(MDID)) %>% 
   colnames() 
 
-# Create dataset of the rest of the columns ----
+# Create dataset of the numeric columns to convert----
 LTM_keep <- LTM1 %>% 
   select(-c(all_of(ignores)), MDID)
 
-# Create list of column names to conver to numeric
-tochange <- LTM_keep %>% 
-  select(-c(MDID)) %>% 
+# Create list of column names to convert to numeric
+tochange <- LTM_keep %>% select(-c(MDID)) %>%
   colnames()
 
-# Convert to numeric
+# Convert all columns to numeric
 for(i in tochange){
   LTM_keep[[i]] <- as.numeric(LTM_keep[[i]])
 }
 
+# merge the text columns back in with the numeric ones
 LTM1 <- LTM_ignore %>% 
   full_join(LTM_keep, join_by(MDID))
 
-# rm(LTM_ignore)
-# rm(LTM_keep)
-
 # Recode variables ----
-
 LTM2 <- LTM1 %>% 
-  mutate(PARITY = case_when(NUMB_BIRTH == 1 ~ "Nulliparous", 
-                            NUMB_BIRTH > 1 ~ "Multiparous", 
-                            TRUE ~ "Missing"),
+  mutate(
+    #PARITY = case_when(NUMB_BIRTH == 1 ~ "Nulliparous", 
+                            # NUMB_BIRTH > 1 ~ "Multiparous", 
+                            # TRUE ~ "Missing"),
          # DUEDATE_Y = as.numeric(DUEDATE_Y),
          # DUEDATE_M = as.numeric(DUEDATE_M),
          # DUEDATE_D = as.numeric(DUEDATE_D),
@@ -68,27 +59,27 @@ LTM2 <- LTM1 %>%
                                     !is.na(PREPREG_WEIGHT_A1) ~ PREPREG_WEIGHT_A1), 
          PREG_WEIGHT = case_when(is.na(PREGWEIGHT_LBS_2) ~ 2.20462 * PREGWEIGHT_KG_2, 
                                  !is.na(PREGWEIGHT_LBS_2) ~ PREGWEIGHT_LBS_2), 
-         RACE = case_when(RACEC1 == 1 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NHW", 
-                          RACEC1 == 0 & RACEC2 == 1 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "Hispanic", 
-                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 1 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NH Black or African American", 
-                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 1 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NH Asian", 
-                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 1 & RACEC6 == 0 & RACEC7 == 0 ~ "AIAN", 
-                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 1 & RACEC7 == 0 ~ "MENA", 
-                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 1 ~ "NHPI", 
-                          RACEC1 == 1 | RACEC2 == 1 | RACEC3 == 1 | RACEC4 == 1 | RACEC5 == 1 | RACEC6 == 1 | RACEC7 == 1 ~ "Multiracial", 
-                          RACEC8 == 1 ~ "Prefer not to answer", 
-                          TRUE ~ "Missing"),
-         INSURANCE = case_when(INSURC1 == 1 ~ "Private",
-                               INSURC2 == 1 ~ "Medicaid/CHIP",
-                               INSURC3 == 1 ~ "Other",#"TRICARE or other military health care",
-                               INSURC4 == 1 ~ "Other",#"Indian Health Service or tribal",
-                               INSURC5 == 1 ~ "Other",#"Other",
-                               INSURC6 == 1 ~ "None",#"None",
-                               INSURC7 == 1 ~ "Missing",
-                               TRUE ~ "Missing"),
-         LANGUAGE = case_when(LANGHOMEC1 == 1 ~ "English",
-                              LANGHOMEC1 == 0 ~ "Other",
-                              TRUE ~ "Missing"),
+         # RACE = case_when(RACEC1 == 1 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NHW", 
+         #                  RACEC1 == 0 & RACEC2 == 1 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "Hispanic", 
+         #                  RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 1 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NH Black or African American", 
+         #                  RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 1 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "NH Asian", 
+         #                  RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 1 & RACEC6 == 0 & RACEC7 == 0 ~ "Indigenous", 
+         #                  RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 1 & RACEC7 == 0 ~ "MENA", 
+         #                  RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 & RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 1 ~ "Indigenous", 
+         #                  RACEC1 == 1 | RACEC2 == 1 | RACEC3 == 1 | RACEC4 == 1 | RACEC5 == 1 | RACEC6 == 1 | RACEC7 == 1 ~ "Multiracial", 
+         #                  RACEC8 == 1 ~ "Prefer not to answer", 
+         #                  TRUE ~ "Missing"),
+         # INSURANCE = case_when(INSURC1 == 1 ~ "Private",
+         #                       INSURC2 == 1 ~ "Medicaid/CHIP",
+         #                       INSURC3 == 1 ~ "Other",#"TRICARE or other military health care",
+         #                       INSURC4 == 1 ~ "Other",#"Indian Health Service or tribal",
+         #                       INSURC5 == 1 ~ "Other",#"Other",
+         #                       INSURC6 == 1 ~ "None",#"None",
+         #                       INSURC7 == 1 ~ "Missing",
+         #                       TRUE ~ "Missing"),
+         # LANGUAGE = case_when(LANGHOMEC1 == 1 ~ "English",
+         #                      LANGHOMEC1 == 0 ~ "Other",
+         #                      TRUE ~ "Missing"),
          BMI = PREPREG_WEIGHT *703 / HEIGHT^2, 
          DOULA = case_when(DOULAC1 == 1 ~ "Yes", 
                            DOULAC2 == 1 ~ "Yes", 
@@ -119,7 +110,7 @@ LTM2 <- LTM1 %>%
          BIRTHWEIGHT = as.numeric(BIRTHWEIGHT))
 
 
-rm(LTM1)
+# rm(LTM1)
 # Midwife, physician, other for provider
 
 # Subscale respectful care ----
@@ -215,12 +206,12 @@ LTM2 <- LTM2 %>%
                            INDUCE3 == 2 ~ 0),
          SDM_4 = case_when(INDUCE4 == 1 ~ 1, 
                            INDUCE4 == 2 ~ 0),
-         WEIGHTGAIN = PREG_WEIGHT - PREPREG_WEIGHT,
-         BIRTHWEIGHT_CAT = case_when(BIRTHWEIGHT < 1500 ~ "VLBW",
-                                     BIRTHWEIGHT < 2500 ~ "LBW",
-                                     BIRTHWEIGHT > 4000 ~ "LBW",
-                                     is.na(BIRTHWEIGHT) ~ NA,
-                                     TRUE ~ "Normal BW"),
+         # WEIGHTGAIN = PREG_WEIGHT - PREPREG_WEIGHT,
+         # BIRTHWEIGHT_CAT = case_when(BIRTHWEIGHT < 1500 ~ "VLBW",
+         #                             BIRTHWEIGHT < 2500 ~ "LBW",
+         #                             BIRTHWEIGHT > 4000 ~ "LBW",
+         #                             is.na(BIRTHWEIGHT) ~ NA,
+         #                             TRUE ~ "Normal BW"),
          BPCONFID = case_when(BPCONFID == 99 ~ NA,
                               TRUE ~ BPCONFID), 
          URINECONFID = case_when(URINECONFID == 99 ~ NA,
