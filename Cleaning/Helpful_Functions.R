@@ -148,21 +148,21 @@ print.cat.from.bases <- function(var_name, data = LTM_dsn, bases_lookup = bases)
 print.cont <- function(var, data = LTM_dsn){
   var_sym <- parse_expr(var)
   
-  tab_t <- data %>% 
-    summarize(unweighted = unweighted(n())) %>% 
-    mutate(Group = "Total", CI = NA) %>% 
-    relocate(Group)
-  colnames(tab_t) <- c("Group", "Mean", "Confidence Interval")
-  
+  # tab_t <- data %>% 
+  #   summarize(unweighted = unweighted(n())) %>% 
+  #   mutate(Group = "Total", CI = NA) %>% 
+  #   relocate(Group)
+  # colnames(tab_t) <- c("Total N", "Mean", "Confidence Interval")
+  # 
   tab1 <- data %>%
     summarize(unweighted = unweighted(n()), 
               mean = survey_mean({{var_sym}}, na.rm = T, vartype = "ci"))%>% 
     mutate(mean = round(mean,1), 
            ci = paste0(round(mean_low, 1), ", ", round(mean_upp,1))) %>%
     select(-c(mean_low, mean_upp))
-  colnames(tab1) <- c("Group", "Mean", "Confidence Interval")
+  colnames(tab1) <- c("Total", "Mean", "Confidence Interval")
   
-  tab1 <- rbind(tab1, tab_t)
+  # tab1 <- rbind(tab1, tab_t)
   return(tab1)
 }
 
@@ -175,7 +175,7 @@ print.cont.from.bases <- function(var_name, data = LTM_dsn,
     pull(Base)
   
   if (length(condition_string) == 0 || is.na(condition_string)) {
-    print.cont(var = var_name, data = data)
+    result <- print.cont(var = var_name, data = data)
   } else{
     
     # Parse the condition into an expression
@@ -203,6 +203,7 @@ print.cont.groups <- function(var1, var2, data = LTM_dsn,
   
   if (length(condition_string) == 0 || is.na(condition_string)) {
     tab1 <- data %>%
+      filter(!is.na({{var1}})) %>%
       group_by({{var1}}) %>%
       summarize(N = unweighted(n()), 
                 mean = survey_mean({{var2}}, na.rm = T, vartype = "ci"))%>% 
@@ -217,6 +218,7 @@ print.cont.groups <- function(var1, var2, data = LTM_dsn,
       filter(!!filter_expr)
     
     tab1 <- filtered_data %>%
+      filter(!is.na({{var1}})) %>%
       group_by({{var1}}) %>%
       summarize(N = unweighted(n()), 
                 mean = survey_mean({{var2}}, na.rm = T, vartype = "ci"))%>% 

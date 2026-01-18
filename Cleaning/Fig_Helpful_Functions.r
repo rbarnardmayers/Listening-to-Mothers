@@ -21,8 +21,10 @@ print.fig <- function(var, data = LTM_dsn, bases_lookup = bases){
   
   if (length(condition_string) == 0 || is.na(condition_string)) {
     tab1 <- data %>%
+      filter(!is.na({{var}})) %>%
       group_by({{var}}) %>%
       summarize(prop = survey_prop(vartype = "ci")) %>% 
+      select(-c("prop_low", "prop_upp")) %>%
       as.data.frame()
     
   } else {
@@ -36,8 +38,10 @@ print.fig <- function(var, data = LTM_dsn, bases_lookup = bases){
     
     tab1 <- data %>%
       filter(!!filter_expr) %>%
+      filter(!is.na({{var}})) %>%
       group_by({{var}}) %>%
       summarize(prop = survey_prop(vartype = "ci")) %>% 
+      select(-c("prop_low", "prop_upp")) %>%
       as.data.frame()
     
   }
@@ -53,6 +57,7 @@ fig.2by2 <- function(var1, var2, data = LTM_dsn){
   var2 <- parse_expr(var2)
   
   tab1 <- data %>%
+    filter(!is.na({{var1}}) & !is.na({{var2}})) %>%
     group_by({{var1}}, {{var2}}) %>%
     summarize(prop = survey_prop(vartype = "ci")) %>% 
     select(-c(prop_low, prop_upp)) %>% 
@@ -91,20 +96,13 @@ fig.2by2.bases <- function(var1, var_name, data = LTM_dsn,
 # Collapsing into one dataset across multiple columns ----
 collapse.fun <- function(cols, data = LTM_dsn){ 
   dat <- data.frame(Object = cols, 
-                    Unweighted = NA,
-                    Weighted = NA, 
-                    Base = NA)
+                    Weighted = NA)
   
   for(i in cols) {
-    tab2 <- print.cat.from.bases(i) %>% 
-      filter(Group == "Yes")
-    tab1 <- print.cat.from.bases(i) %>% 
-      filter(Group == "Total") %>% 
-      select(Values) %>%
-      rename(Total = Values)
-    
-    tab <- cbind(tab2, tab1)
-    dat[dat$Object == i, 2:4] <- tab[,2:4]
+    tab2 <- print.fig(i) %>% 
+      rename("Var" = i) %>%
+      filter(Var != "Not selected") 
+    dat[dat$Object == i, 2] <- tab2[,2]
   }
   return(dat)
 }
@@ -121,7 +119,7 @@ collapse.2by2 <- function(cols, var, data = LTM_dsn){
   for(i in cols){
     # var_sym <- sym(i)
     #####
-    tab1 <- fig.2by2.bases(var, i) %>% select(-c("No"))
+    tab1 <- fig.2by2.bases(var, i) %>% select(-c(`Not selected`))
     # tab1 <- data %>%
     #   group_by(!!sym(var), !!var_sym) %>%
     #   summarize(prop = survey_prop(vartype = "ci")) %>% 
@@ -139,4 +137,30 @@ collapse.2by2 <- function(cols, var, data = LTM_dsn){
   return(dat)
 }
 
+# Compile ----
+fig_compile <- function(maincol, others = c("RACE", "INSURANCE", "URBANICITY2")){
+  fig_1_2a <- print.fig(maincol) %>% as.data.frame() 
+  
+  for(i in others){
+    fig_1_2b <- fig.2by2.bases(i,maincol) %>% 
+      as.data.frame() %>% t() %>% as.data.frame()
+    colnames(fig_1_2b) <- fig_1_2b[1,] 
+    fig_1_2b <- fig_1_2b[-1,]
+    fig_1_2a <- cbind(fig_1_2a, fig_1_2b)
+  }
+  return(fig_1_2a)
+  
+}
+
+fig_compile_2 <- function(cols, others = c("RACE", "INSURANCE", "URBANICITY2")){
+  fig <- data.frame()
+  for(i in cols){
+    fig2 <- fig_compile(i, others)
+    colnames(fig2)[1] <- "Var"
+    rownames(fig2) <- NULL
+    fig <- rbind(fig, fig2)
+  }
+  
+  return(fig)
+}
 

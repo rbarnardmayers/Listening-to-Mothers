@@ -39,25 +39,25 @@ categorical <- LTM_final %>%
   select(-c(HEIGHT,MDID, AGE,YEARBIRTH, 
             DOULA3, INDUCE6, REPEATCSEC,#GESTAGE, DUEDATE, BIRTHDATE,BIRTHDATE_Y,
             MEDINDUCE4, MEDINDUCE5, #WENTWELL, DIDNTGOWELL, AIAN,
-            ANYTHINGELSE,
+            ANYTHINGELSE,SUM_SOCIALNEED,
             DISABILITYCOND, Source,ends_with("O"), YEARBIRTH,
             ends_with("BIRTHYEAR"), starts_with("SCREEN"), starts_with("TRAP"),
             CURRWEIGHT_LBS,PREGWEIGHT_KG_2,PREGWEIGHT_LBS_2,
-            starts_with("FOLLOWUP"), UID2,
+            starts_with("FOLLOWUP"), UID2,RACE,
             starts_with("x"),contains("FLAG"), starts_with("F2_"),ends_with("O"),
             starts_with("F3_"),  starts_with("F1_"),starts_with("X"),
             PREG_INT,PREPREG_WEIGHT_B1,LEARNED2,
             NUMB_BIRTH,HEIGHT_FEET,HEIGHT_INCHES,CURRWEIGHT_KG,
             BIRTHWEIGHT_LBS,BIRTHWEIGHT_OZ,BIRTHWEIGHT_G,AGECHECK,
-            DISABLEYRS,MODE_ALL,
+            DISABLEYRS,MODE_ALL,GESTAGE_WEEKS,GESTAGE,
             PREG_INT, HEIGHT_FEET,HEIGHT_INCHES, HEIGHT,
             PREPREG_WEIGHT_A1,PREGCONDITIONC11,DUEDATE_M, DUEDATE_Y,
-            DUEDATE_D, BIRTHDATE_D, BIRTHDATE_M,WEIGHTGAIN,LEARNED1,
+            DUEDATE_D, BIRTHDATE_D, BIRTHDATE_M,LEARNED1,
             VAGEXAM, LABORLENGTH, DAYSHOSP, BABYHOSP, PPVISIT, PREG_WEIGHT,
             PPVISITTIME1, PPVISITTIME2, EXCLUSIVEBF,BIRTHWEIGHT,
             HEIGHT, PREPREG_WEIGHT, RACEALONE, INSURCAT, ResLanguage, BMI, DOULA,
             DOULAC1, DOULAC2, DOULAC3, PRENAT,IMMIGRATION,
-            WEAN, ZIP, FAMSIZE1, FAMSIZE2, INCOME, IMMIGRATION))  %>%   colnames()
+            WEAN, ZIP, FAMSIZE1, FAMSIZE2, INCOME, IMMIGRATION))  %>% colnames()
 
 # Factor categorical variables and reorder values----
 for(i in categorical){
@@ -66,10 +66,10 @@ for(i in categorical){
 
 # Convert continuous variables into numeric class ----
 continuous <- LTM_final %>% 
-  select(c(AGE,YEARBIRTH,#GESTAGE,
-           NUMB_BIRTH,BIRTHWEIGHT,PPVISIT,LEARNED2,
+  select(c(AGE,YEARBIRTH,GESTAGE,GESTAGE_WEEKS,SUM_RESPECT,SUM_HOSPFEED,
+           NUMB_BIRTH,BIRTHWEIGHT,PPVISIT,LEARNED2,SUM_SOCIALNEED,
            DISABLEYRS,MODE_ALL,MEDINDUCE4,MEDINDUCE5,LEARNED1,
-           PREG_WEIGHT, PREPREG_WEIGHT, WEIGHTGAIN, HEIGHT, BMI,
+           PREG_WEIGHT, PREPREG_WEIGHT, HEIGHT, BMI, SUM_SNNEEDS,
            VAGEXAM, LABORLENGTH, DAYSHOSP, BABYHOSP, PPVISIT, 
            PPVISITTIME1, PPVISITTIME2, EXCLUSIVEBF, WEAN, FAMSIZE1, FAMSIZE2, INCOME )) %>% 
   colnames()
@@ -94,6 +94,11 @@ for (i in seq_len(nrow(dict2))) {
 for(i in categorical){
     LTM_final[i] <- lapply(LTM_final[i], function(x)  gsub("I’d prefer not to answer", "Missing", x))  
 }
+
+for(i in categorical){
+  LTM_final[i] <- lapply(LTM_final[i], function(x)  gsub("Missing", NA, x))  
+}
+
 
 LTM_dsn <- LTM_final %>% 
   mutate(FINALWT = as.numeric(FINALWT)) %>%
