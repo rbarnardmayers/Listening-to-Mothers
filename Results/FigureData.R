@@ -121,7 +121,12 @@ fig18 <- fig_compile('EMPLOYBEN')
 
 # BIGBABY1 == 1 ----
 # BIGBABY1
-fig19 <- fig_compile('BIGBABY1', c("INDUCE", "MODE2023"))
+fig19a <- fig.2by2("BIGBABY1", "MODE2023", 
+                   data = subset(LTM_dsn, BIGBABY1 %in% c("Yes", "No"))) %>% as.data.frame()
+fig19b <- fig.2by2("BIGBABY1", "INDUCE", 
+                   data = subset(LTM_dsn, BIGBABY1 %in% c("Yes", "No") & 
+                                   INDUCE %in% c("Yes", "No"))) %>% as.data.frame()
+fig19 <- cbind(fig19a, fig19b)
 
 fig20 <- fig_compile("BW_CAT", c("BIGBABY1"))
 
@@ -139,6 +144,8 @@ fig23 <- print.cont("GESTAGE_WEEKS") #GESTAGE is off
 
 # GOLDENHOUR ----
 fig24 <- fig_compile('GOLDENHOUR', c("RACE", "MODE2023"))
+
+
 
 # SKIN ----
 fig25a <- LTM_dsn %>% 
@@ -164,7 +171,7 @@ fig25c <- LTM_dsn %>%
   select(-c(prop_se)) %>% 
   spread(key = MODE2023, value = prop)
 
-fig25 <- cbind(fig25a, fig25b, fig25c)
+fig25 <- merge(fig25a, merge(fig25b, fig25c))
 
 # BIRTHATTEND ----
 fig26 <- fig_compile('BIRTHATTEND2')
@@ -362,10 +369,11 @@ for(i in c("SNMEAL","SNLIVE", "SNUTILITIES",
   }
   
   fig61 <- rbind(fig61, t)
-  fig61$ITEM <- rep(c("SNMEAL","SNLIVE", "SNUTILITIES",
-                      "SNTRANSPORT","SNCHILDCARE", "SNINCOME",
-                      "SNDRUGS", "SNUNSAFE", "SNABUSE"), each = 2)
 }
+
+fig61$ITEM <- rep(c("SNMEAL","SNLIVE", "SNUTILITIES",
+                    "SNTRANSPORT","SNCHILDCARE", "SNINCOME",
+                    "SNDRUGS", "SNUNSAFE", "SNABUSE"), each = 2)
 
 fig62 <- fig_compile("SUM_SNNEEDS")
 

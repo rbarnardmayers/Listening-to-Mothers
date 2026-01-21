@@ -22,6 +22,7 @@ print.fig <- function(var, data = LTM_dsn, bases_lookup = bases){
   if (length(condition_string) == 0 || is.na(condition_string)) {
     tab1 <- data %>%
       filter(!is.na({{var}})) %>%
+      filter({{var}} != "Missing") %>%
       group_by({{var}}) %>%
       summarize(prop = survey_prop(vartype = "ci")) %>% 
       select(-c("prop_low", "prop_upp")) %>%
@@ -39,6 +40,7 @@ print.fig <- function(var, data = LTM_dsn, bases_lookup = bases){
     tab1 <- data %>%
       filter(!!filter_expr) %>%
       filter(!is.na({{var}})) %>%
+      filter({{var}} != "Missing") %>%
       group_by({{var}}) %>%
       summarize(prop = survey_prop(vartype = "ci")) %>% 
       select(-c("prop_low", "prop_upp")) %>%
@@ -58,6 +60,7 @@ fig.2by2 <- function(var1, var2, data = LTM_dsn){
   
   tab1 <- data %>%
     filter(!is.na({{var1}}) & !is.na({{var2}})) %>%
+    filter({{var1}} != "Missing" & {{var2}}  != "Missing") %>%
     group_by({{var1}}, {{var2}}) %>%
     summarize(prop = survey_prop(vartype = "ci")) %>% 
     select(-c(prop_low, prop_upp)) %>% 
@@ -139,14 +142,17 @@ collapse.2by2 <- function(cols, var, data = LTM_dsn){
 
 # Compile ----
 fig_compile <- function(maincol, others = c("RACE", "INSURANCE", "URBANICITY2")){
-  fig_1_2a <- print.fig(maincol) %>% as.data.frame() 
+  fig_1_2a <- print.fig(maincol) %>% 
+    as.data.frame() %>% 
+    arrange(prop)
   
   for(i in others){
     fig_1_2b <- fig.2by2.bases(i,maincol) %>% 
       as.data.frame() %>% t() %>% as.data.frame()
     colnames(fig_1_2b) <- fig_1_2b[1,] 
     fig_1_2b <- fig_1_2b[-1,]
-    fig_1_2a <- cbind(fig_1_2a, fig_1_2b)
+    fig_1_2b[[maincol]] <- rownames(fig_1_2b)
+    fig_1_2a <- merge(fig_1_2a, fig_1_2b)
   }
   return(fig_1_2a)
   

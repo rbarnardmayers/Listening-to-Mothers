@@ -34,6 +34,16 @@ for(i in tochange){
   LTM_keep[[i]] <- as.numeric(LTM_keep[[i]])
 }
 
+sn_cols <- LTM_keep %>% 
+  select(starts_with("SN")) %>% 
+  colnames()
+
+for(i in sn_cols){
+  LTM_keep[[i]] <- ifelse(LTM_keep[[i]] == 2, 0, 
+                          ifelse(LTM_keep[[i]] == 99, NA, 
+                                 ifelse(LTM_keep[[i]] == 99999, NA, 1)))
+}
+  
 # merge the text columns back in with the numeric ones
 LTM1 <- LTM_ignore %>% 
   full_join(LTM_keep, join_by(MDID))
@@ -72,9 +82,6 @@ LTM2 <- LTM1 %>%
     PROVIDER2 = case_when(PROVIDER %in% c(1,2,3)  ~ "Doctor",
                           PROVIDER == 4 ~ "Midwife",
                           PROVIDER %in% c(5,6) ~ "Other"),
-    # LANGUAGE = case_when(LANGHOMEC1 == 1 ~ "English",
-    #                      LANGHOMEC1 == 0 ~ "Other",
-    #                      TRUE ~ "Missing"),
     BMI = PREPREG_WEIGHT *703 / HEIGHT^2, 
     DOULA = case_when(DOULAC1 == 1 ~ "Yes", 
                       DOULAC2 == 1 ~ "Yes", 
@@ -82,13 +89,13 @@ LTM2 <- LTM1 %>%
                       DOULAC4 == 1 ~ "No", 
                       DOULAC5 == 1 ~ "Missing", 
                       TRUE ~ "Missing"), 
-    DOULAC1 = case_when(DOULA == "Yes" & DOULAC1 == 1 ~ "During Pregnancy", 
+    DOULAC1_V2 = case_when(DOULA == "Yes" & DOULAC1 == 1 ~ "During Pregnancy", 
                         DOULA == "Yes" & DOULAC1 == 0 ~ "Not During Pregnancy", 
                         DOULA == "No" | DOULA == "Missing" ~ NA),
-    DOULAC2 = case_when(DOULA == "Yes" & DOULAC2 == 1 ~ "During Birth", 
+    DOULAC2_V2 = case_when(DOULA == "Yes" & DOULAC2 == 1 ~ "During Birth", 
                         DOULA == "Yes" & DOULAC2 == 0 ~ "Not During Birth", 
                         DOULA == "No" | DOULA == "Missing" ~ NA),
-    DOULAC3 = case_when(DOULA == "Yes" & DOULAC3 == 1 ~ "Postpartum", 
+    DOULAC3_V2 = case_when(DOULA == "Yes" & DOULAC3 == 1 ~ "Postpartum", 
                         DOULA == "Yes" & DOULAC3 == 0 ~ "Not Postpartum", 
                         DOULA == "No" | DOULA == "Missing" ~ NA), 
     LEARNED1 = case_when(LEARNED1 == 99 ~ NA, 
@@ -223,20 +230,20 @@ LTM2 <- LTM2 %>%
                                 ATHOMECAREC4 == 1 ~ 1, 
                                 TRUE ~ 0)) %>% 
   rename(MDE2023 = MODE2023, 
-         SNEEDC11 = SOCIALNEEDC11,
-         SNEEDC10 = SOCIALNEEDC10, 
+         SONEEDC11 = SOCIALNEEDC11,
+         SONEEDC10 = SOCIALNEEDC10, 
          HSPFEEDC8 = HOSPFEEDC8,
          HSPFEEDC11 = HOSPFEEDC11,
          HSPFEEDC12 = HOSPFEEDC12) %>%
   rowwise() %>% 
   mutate(MODE_ALL = sum(across(starts_with("MODE")), na.rm = T),
-         SUM_SOCIALNEED =sum(across(starts_with("SOCIALNEED"))),
-         SUM_HOSPFEED = sum(across(starts_with("HOSPFEED"))),
+         SUM_SOCIALNEED =sum(across(starts_with("SOCIALNEED")), na.rm = T),
+         SUM_HOSPFEED = sum(across(starts_with("HOSPFEED")), na.rm = T),
          SUM_RESPECT = sum(RESPECT, KNOWLEDGE, HEARD, 
                            DECISIONS, CONSENT, INFORMED,
                            TIMELINESS, TRUST, FEEDING,
                            SAFE, DISCRIMINATION, NEGLECT, na.rm = T),
-         SUM_SNNEEDS = sum(across(starts_with("SN"))),
+         SUM_SNNEEDS = sum(across(starts_with("SN")), na.rm = T),
          SDM = sum(SDM_1,SDM_2,SDM_3,SDM_4, na.rm = T)) 
 
 LTM2 <- LTM2 %>% 
@@ -250,11 +257,16 @@ LTM2 <- LTM2 %>%
                          TRUE ~ SDM), 
          MDID = as.numeric(MDID)) %>%
   rename(MODE2023 = MDE2023,
-         SOCIALNEEDC11 = SNEEDC11,
-         SOCIALNEEDC10 = SNEEDC10, 
+         SOCIALNEEDC11 = SONEEDC11,
+         SOCIALNEEDC10 = SONEEDC10, 
          HOSPFEEDC8 = HSPFEEDC8,
          HOSPFEEDC11 = HSPFEEDC11,
          HOSPFEEDC12 = HSPFEEDC12)
+
+for(i in sn_cols){
+  LTM2[[i]] <- ifelse(LTM2[[i]] == 0, 2, LTM2[[i]])
+}
+
 
 # Recoding missing values ----
 missing_d <- dict2 %>% 
