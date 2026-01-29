@@ -306,7 +306,13 @@ LTM3 <- LTM2 %>%
   mutate(SUM_HOSPFEED = case_when(SUM_HOSPFEED > 10 ~ NA, 
                                   TRUE ~ SUM_HOSPFEED),
          SUM_SNNEEDS = case_when(SUM_SNNEEDS > 10 ~ NA, 
-                                  TRUE ~ SUM_SNNEEDS))
+                                  TRUE ~ SUM_SNNEEDS), 
+         CARETYPE_R = case_when(CARETYPEC1 == 1  & CARETYPEC2 == 0 ~ 1, 
+                                CARETYPEC1 == 1 & CARETYPEC2 == 1 ~ 2, 
+                                CARETYPEC1 == 0 & CARETYPEC2 == 1 ~ 3), 
+         CAREMODE_R = case_when(CAREMODEC1 == 1  & CAREMODEC2 == 0 ~ 1, 
+                                CAREMODEC1 == 1 & CAREMODEC2 == 1 ~ 2, 
+                                CAREMODEC1 == 0 & CAREMODEC2 == 1 ~ 3))
 
 # Exporting ----
 setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")

@@ -17,6 +17,10 @@ fig2 <- fig_compile("PROVIDERCHOICE", c("RACE", "INSURANCE"))
 # DOULAC1	== 1 
 fig3 <- fig_compile_2(c("DOULA", "DOULAC1", "DOULAC2", "DOULAC3"), c("RACE", "INSURANCE"))
 
+LTM_dsn %>% tbl_svysummary(include = c('DOULA1C1','DOULA1C2', 'DOULA1C3',
+                                       'DOULA1C4', 'DOULA1C5', 'DOULA1C6'), 
+                           statistic = list(all_categorical() ~ "{p}%")) 
+
 # First visit ----
 # FIRSTVISIT 1 == YES, 2 == NO
 fig4 <- fig_compile('FIRSTVISIT', c("RACE", "INSURANCE"))
@@ -140,7 +144,7 @@ fig22 <- print.fig("WEIGHTGAIN")
 
 # CHAPTER 2 ####
 # DUE DATE & BIRTHDATE ----
-fig23 <- print.cont("GESTAGE_WEEKS") #GESTAGE is off
+fig23 <- print.cont("xGESTAGE") #GESTAGE is off
 
 # GOLDENHOUR ----
 fig24 <- fig_compile('GOLDENHOUR', c("RACE", "MODE2023"))
@@ -376,6 +380,40 @@ fig61$ITEM <- rep(c("SNMEAL","SNLIVE", "SNUTILITIES",
                     "SNDRUGS", "SNUNSAFE", "SNABUSE"), each = 2)
 
 fig62 <- fig_compile("SUM_SNNEEDS")
+
+# Other variables ----
+# limited to multips, 
+# CURREDUC differed by having taken classes in the past
+
+LTM_dsn %>% 
+  filter(PRIOREDUC %in% c("No", "Yes")) %>%
+  # filter(CURREDUC %in% c("No", "Yes")) %>%
+  filter(NUMB_BIRTH > 1) %>% 
+  tbl_svysummary(by = PRIOREDUC, 
+                 include = c(CURREDUC))
+
+LTM_dsn %>% 
+  tbl_svysummary(include = CARETYPE_R)
+
+LTM_dsn %>% 
+  # filter(CARETYPE1 == "No") %>% 
+  tbl_svysummary(include = CAREMODE_R)
+
+LTM_dsn %>% 
+  # filter(PREPREG_MHCONDC1 == "Depression or sadness") %>% 
+  tbl_svysummary(by = PREPREG_MHCONDC1, 
+                 include = PHQ4_PREG_DEP) %>% add_p()
+
+LTM_dsn %>% 
+  # filter(PREPREG_MHCONDC1 == "Depression or sadness") %>% 
+  tbl_svysummary(by = PREPREG_MHCONDC2, 
+                 include = PHQ4_PREG_ANX) %>% add_p()
+
+LTM_dsn %>% 
+  filter(BIGBABY2 == "Yes, a labor induction") %>% 
+  tbl_svysummary(by = INDUCE , 
+                 statistic = list(all_categorical() ~ "{p}% ({p.std.error})"),
+                 include = c(xGESTAGE)) %>% add_p()
 
 # List of datasets ----
 list_figs <- setNames(
