@@ -27,14 +27,14 @@ fig4 <- fig_compile('FIRSTVISIT', c("RACE", "INSURANCE"))
 
 # Reason for no prenatal ----
 fig5 <- fig_compile_2(c('NOPRENATALC1','NOPRENATALC2','NOPRENATALC3','NOPRENATALC4',
-                       'NOPRENATALC5','NOPRENATALC6','NOPRENATALC7','NOPRENATALC8',
-                       'NOPRENATALC9','NOPRENATALC10','NOPRENATALC11','NOPRENATALC12',
-                       'NOPRENATALC13')) %>% 
+                        'NOPRENATALC5','NOPRENATALC6','NOPRENATALC7','NOPRENATALC8',
+                        'NOPRENATALC9','NOPRENATALC10','NOPRENATALC11','NOPRENATALC12',
+                        'NOPRENATALC13')) %>% 
   subset(Var != "Not selected")
 
 # Care setting ----
 fig6 <- fig_compile_2(c('CARESETTINGC1','CARESETTINGC2','CARESETTINGC3','CARESETTINGC4',
-                       'CARESETTINGC5','CARESETTINGC6','CARESETTINGC7','CARESETTINGC8')) %>% 
+                        'CARESETTINGC5','CARESETTINGC6','CARESETTINGC7','CARESETTINGC8')) %>% 
   subset(Var != "Not selected")
 
 # CARETYPE1 ----
@@ -60,7 +60,7 @@ fig8 <- fig_compile('CARETYPEPREF')
 # WHYTELEC7	  95 = Other, please specify
 
 fig9 <- fig_compile_2(c('WHYTELEC1','WHYTELEC2','WHYTELEC2','WHYTELEC4',
-                       'WHYTELEC5','WHYTELEC6','WHYTELEC7'))
+                        'WHYTELEC5','WHYTELEC6','WHYTELEC7'))
 
 # # BPCONFID+URINECONFID+WEIGHCONFID+BABYHRCONFID ----
 # # 1	Yes, fully confident
@@ -83,14 +83,14 @@ fig10 <- fig_compile('CAREMODEPREF')
 
 # EDUIMPACT ----
 fig11 <- fig_compile_2(c('EDUCIMPACTC1','EDUCIMPACTC2','EDUCIMPACTC3',
-                        'EDUCIMPACTC4','EDUCIMPACTC5','EDUCIMPACTC6',
-                        'EDUCIMPACTC7'))
+                         'EDUCIMPACTC4','EDUCIMPACTC5','EDUCIMPACTC6',
+                         'EDUCIMPACTC7'))
 
 # PREGCONDITION ----
 fig12 <-fig_compile_2(c('PREGCONDITIONC1','PREGCONDITIONC2','PREGCONDITIONC3',
-                       'PREGCONDITIONC4','PREGCONDITIONC5','PREGCONDITIONC6',
-                       'PREGCONDITIONC7','PREGCONDITIONC8','PREGCONDITIONC9',
-                       'PREGCONDITIONC10'))
+                        'PREGCONDITIONC4','PREGCONDITIONC5','PREGCONDITIONC6',
+                        'PREGCONDITIONC7','PREGCONDITIONC8','PREGCONDITIONC9',
+                        'PREGCONDITIONC10'))
 
 # Depression ----
 # PREPREG_MHCONDC1
@@ -107,9 +107,9 @@ fig15 <- fig_compile('MENTALSUPPORT')
 
 # Social needs ----
 fig16 <- fig_compile_2(c('SOCIALNEEDC1','SOCIALNEEDC2','SOCIALNEEDC3',
-                        'SOCIALNEEDC4','SOCIALNEEDC5','SOCIALNEEDC6',
-                        'SOCIALNEEDC7','SOCIALNEEDC8','SOCIALNEEDC9',
-                        'SOCIALNEEDC10','SOCIALNEEDC11'))
+                         'SOCIALNEEDC4','SOCIALNEEDC5','SOCIALNEEDC6',
+                         'SOCIALNEEDC7','SOCIALNEEDC8','SOCIALNEEDC9',
+                         'SOCIALNEEDC10','SOCIALNEEDC11'))
 fig17b <- print.cont.groups("RACE", "SUM_SOCIALNEED") %>% 
   as.data.frame() %>% select(c(Groups, Mean))
 fig17c <- print.cont.groups("INCCAT", "SUM_SOCIALNEED") %>% 
@@ -137,6 +137,7 @@ fig20 <- fig_compile("BW_CAT", c("BIGBABY1"))
 # PLANNEDFEED ----
 fig21 <- fig_compile_2(c('PLANNEDFEEDC1','PLANNEDFEEDC2',
                          'PLANNEDFEEDC3')) %>% subset(Var != "Not selected")
+fig21 <- fig_compile("PLANNEDFEED_ONLY")
 
 # Preg weight gain ----
 # PREGWEIGHT - PREPREGWEIGHT
@@ -190,7 +191,7 @@ fig28 <- fig_compile("INDUCE5")
 fig29a <- fig_compile("DEC_MAKE")
 fig29b <- fig_compile("INDUCE3") %>% 
   rename(DEC_MAKE = INDUCE3)
-  
+
 rownames(fig29a) <- NULL
 rownames(fig29b) <- NULL
 
@@ -215,15 +216,15 @@ fig30 <- fig_compile_2(c("SELFINDUCE2C1", "SELFINDUCE2C2",
 # MEDINDUCE1C8	  98 = I’m not sure
 # MEDINDUCE1C9	  99 = I’d prefer not to answer
 fig31 <- fig_compile_2(c('MEDINDUCE1C1','MEDINDUCE1C2','MEDINDUCE1C3',
-                        'MEDINDUCE1C4','MEDINDUCE1C5','MEDINDUCE1C6',
-                        'MEDINDUCE1C7','MEDINDUCE1C8','MEDINDUCE1C9'))%>%
+                         'MEDINDUCE1C4','MEDINDUCE1C5','MEDINDUCE1C6',
+                         'MEDINDUCE1C7','MEDINDUCE1C8','MEDINDUCE1C9'))%>%
   subset(Var != "Not selected")
 
 # MEDINDUCE3 | MEDINDUCE = 1 ----
 
 fig32 <- fig_compile_2(c('MEDINDUCE3C1','MEDINDUCE3C2','MEDINDUCE3C3',
-                        'MEDINDUCE3C4','MEDINDUCE3C5','MEDINDUCE3C6',
-                        'MEDINDUCE3C7','MEDINDUCE3C8')) %>%
+                         'MEDINDUCE3C4','MEDINDUCE3C5','MEDINDUCE3C6',
+                         'MEDINDUCE3C7','MEDINDUCE3C8')) %>%
   subset(Var != "Not selected")
 
 
@@ -241,8 +242,8 @@ fig35 <- fig34
 # Painmeds ----
 
 fig36 <- fig_compile_2(c("PAINMEDSC1","PAINMEDSC2","PAINMEDSC3",
-                        "PAINMEDSC4","PAINMEDSC5","PAINMEDSC6",
-                        "PAINMEDSC7")) %>%
+                         "PAINMEDSC4","PAINMEDSC5","PAINMEDSC6",
+                         "PAINMEDSC7")) %>%
   subset(Var != "Not selected")
 fig37 <- fig36
 
@@ -261,13 +262,13 @@ fig40 <- fig_compile('phys_cb', c("BIRTHATTEND2", "DOULAC2"))
 fig41 <- data.frame()
 # hospfeed ----
 fig42 <- fig_compile_2(c('HOSPFEEDC1','HOSPFEEDC2','HOSPFEEDC3','HOSPFEEDC4',
-                        'HOSPFEEDC5','HOSPFEEDC6','HOSPFEEDC7',
-                        'HOSPFEEDC9','HOSPFEEDC10'), c("FEED1WEEKC1")) %>%
+                         'HOSPFEEDC5','HOSPFEEDC6','HOSPFEEDC7',
+                         'HOSPFEEDC9','HOSPFEEDC10'), c("FEED1WEEKC1")) %>%
   subset(Var != "Not selected")
 
 # Subscale respectful care ----
 fig43 <- fig_compile("NPCMC_SC")
-  
+
 # culture ----
 fig44 <- fig_compile("CUSTOMS") 
 
@@ -405,15 +406,45 @@ LTM_dsn %>%
                  include = PHQ4_PREG_DEP) %>% add_p()
 
 LTM_dsn %>% 
-  # filter(PREPREG_MHCONDC1 == "Depression or sadness") %>% 
   tbl_svysummary(by = PREPREG_MHCONDC2, 
                  include = PHQ4_PREG_ANX) %>% add_p()
 
 LTM_dsn %>% 
+  tbl_svysummary(by = PREPREG_MHCONDC2, 
+                 include = PHQ4_PREG_ANX) %>% add_p()
+
+LTM_dsn %>% 
+  tbl_svysummary(by = INCCAT, 
+                 include = SUM_SOCIALNEED, 
+                 statistic = all_continuous() ~ "{min}, {p25},{median},{p75},{max}")
+
+LTM_dsn %>% 
+  tbl_svysummary(by = PREPREG_ANY, 
+                 include = MEDSANY) %>% 
+  add_p()
+
+LTM_dsn %>% 
+  filter(BIGBABY2 %in% c("Yes, a labor induction",
+                         "Yes, a C-section",
+                         "Yes, something else (please specify)")) %>%
+  tbl_svysummary(by = MEDINDUCE, 
+    include = c(xGESTAGE)) %>% 
+  add_ci()
+
+LTM_dsn %>% 
   filter(BIGBABY2 == "Yes, a labor induction") %>% 
-  tbl_svysummary(by = INDUCE , 
-                 statistic = list(all_categorical() ~ "{p}% ({p.std.error})"),
-                 include = c(xGESTAGE)) %>% add_p()
+  tbl_svysummary(#by = MEDINDUCE , 
+                 include = c(MEDINDUCE),
+                 statistic = list(all_categorical() ~ "{p}%", 
+                                  all_continuous() ~ "{mean}, {sd}")) %>% 
+  add_ci()
+
+LTM_dsn %>% 
+  tbl_svysummary(by = BIGBABY1, 
+                 include = c(#GESTAGE_R, 
+                             GESTAGE_R_cont), 
+                 statistic = list(all_continuous() ~ "{median} ({p25}, {p75})")) %>% 
+  add_ci()
 
 # List of datasets ----
 list_figs <- setNames(

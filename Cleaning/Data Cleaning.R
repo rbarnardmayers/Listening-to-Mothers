@@ -63,7 +63,10 @@ LTM2 <- LTM1 %>%
     BIRTHDATE_M = as.numeric(BIRTHDATE_M),
     BIRTHDATE_D = as.numeric(BIRTHDATE_D),
     BIRTHDATE = as.Date(paste0(BIRTHDATE_M,"/", BIRTHDATE_D, "/",YEARBIRTH), "m%/%d/%Y"),
-    GESTAGE = as.numeric(difftime(BIRTHDATE, DUEDATE))/7 + 40,
+    GESTAGE_F = case_when(GESTAGE_WEEKS < 27 ~ 1, GESTAGE_WEEKS > 43 ~ 1, TRUE ~ 0), 
+    GESTAGE_R = case_when(GESTAGE_F == 1 ~ NA, 
+                        GESTAGE_F == 0 ~ GESTAGE_WEEKS),
+    GESTAGE_R_cont = as.numeric(GESTAGE_R),
     HEIGHT = (HEIGHT_FEET*12) + HEIGHT_INCHES, 
     PREPREG_WEIGHT = case_when(is.na(PREPREG_WEIGHT_A1) ~ 2.20462 * PREPREG_WEIGHT_B1, 
                                !is.na(PREPREG_WEIGHT_A1) ~ PREPREG_WEIGHT_A1), 
@@ -114,7 +117,10 @@ LTM2 <- LTM1 %>%
                             BIRTHATTEND == 4 ~ "Midwife",
                             BIRTHATTEND %in% c(5,6) ~ "Other"), 
     PPVISIT2 = case_when(PPVISIT >= 4 ~ 4,
-                         TRUE ~ PPVISIT))
+                         TRUE ~ PPVISIT),
+    PLANNEDFEED_ONLY = case_when(PLANNEDFEEDC1 == 1 & PLANNEDFEEDC2 == 1 ~ "Both", 
+                                 PLANNEDFEEDC1 == 1 & PLANNEDFEEDC2 == 0 ~ "Breastmilk", 
+                                 PLANNEDFEEDC1 == 0 & PLANNEDFEEDC2 == 1 ~ "Formula"))
 
 
 # rm(LTM1)
@@ -312,7 +318,18 @@ LTM3 <- LTM2 %>%
                                 CARETYPEC1 == 0 & CARETYPEC2 == 1 ~ 3), 
          CAREMODE_R = case_when(CAREMODEC1 == 1  & CAREMODEC2 == 0 ~ 1, 
                                 CAREMODEC1 == 1 & CAREMODEC2 == 1 ~ 2, 
-                                CAREMODEC1 == 0 & CAREMODEC2 == 1 ~ 3))
+                                CAREMODEC1 == 0 & CAREMODEC2 == 1 ~ 3), 
+         PREPREG_ANY = case_when(PREPREG_MHCONDC1 == 1 ~ 1,
+                                 PREPREG_MHCONDC2 == 1 ~ 1,
+                                 PREPREG_MHCONDC3 == 1 ~ 1,
+                                 PREPREG_MHCONDC4 == 1 ~ 1,
+                                 PREPREG_MHCONDC5 == 1 ~ 1,
+                                 PREPREG_MHCONDC6 == 0 ~ 0), 
+         MEDSANY = case_when(MENTALSUPPORT1C1 == 1 ~ 1,
+                             MENTALSUPPORT1C2 == 1 ~ 1,
+                             MENTALSUPPORT1C3 == 1 ~ 1,
+                             MENTALSUPPORT1C4 == 1 ~ 1,
+                             MENTALSUPPORT1C5 == 1 ~ 0))
 
 # Exporting ----
 setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")
