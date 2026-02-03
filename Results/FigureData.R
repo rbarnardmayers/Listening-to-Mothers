@@ -58,7 +58,8 @@ fig8 <- fig_compile('CARETYPEPREF')
 # WHYTELEC5	  5 = I was more comfortable with remote than office visits
 # WHYTELEC6	  6 = My maternity care provider preferred televisits
 # WHYTELEC7	  95 = Other, please specify
-
+fig9a <- fig_compile_2(c('CAREMODEC1', 'CAREMODEC2')) %>% as.data.frame() %>% 
+  subset(Var != "Not selected")
 fig9 <- fig_compile_2(c('WHYTELEC1','WHYTELEC2','WHYTELEC2','WHYTELEC4',
                         'WHYTELEC5','WHYTELEC6','WHYTELEC7'))
 
@@ -103,7 +104,7 @@ fig14 <- fig_compile('PREPREG_MHCONDC2')
 # MENTALSUPPORT ----
 # MENTALSUPPORT
 
-fig15 <- fig_compile('MENTALSUPPORT')
+fig15 <- fig_compile('MSUPPORT_ANY')
 
 # Social needs ----
 fig16 <- fig_compile_2(c('SOCIALNEEDC1','SOCIALNEEDC2','SOCIALNEEDC3',
@@ -367,7 +368,7 @@ for(i in c("SNMEAL","SNLIVE", "SNUTILITIES",
     t <- t %>% 
       mutate(MENA = c(NA, NA)) %>% 
       select(c(i, "prop", "AIAN-NHPI", "Asian", "Black", "Latine", "MENA", 
-               "Multi", "White", "Commercial", "Medicaid", "Metropolitan", 
+               "Multi", "White", "Private", "Medicaid", "Metropolitan", 
                "Nonmetropolitan"))
     rownames(t) <- NULL
     colnames(t)[1] <- "Var"
@@ -394,7 +395,7 @@ LTM_dsn %>%
                  include = c(CURREDUC))
 
 LTM_dsn %>% 
-  tbl_svysummary(include = CARETYPE_R)
+  tbl_svysummary(include = CLASS_ANY)
 
 LTM_dsn %>% 
   # filter(CARETYPE1 == "No") %>% 
@@ -419,7 +420,7 @@ LTM_dsn %>%
                  statistic = all_continuous() ~ "{min}, {p25},{median},{p75},{max}")
 
 LTM_dsn %>% 
-  tbl_svysummary(by = PREPREG_ANY, 
+  tbl_svysummary(by = PREPREG_MHANY, 
                  include = MEDSANY) %>% 
   add_p()
 
@@ -428,23 +429,38 @@ LTM_dsn %>%
                          "Yes, a C-section",
                          "Yes, something else (please specify)")) %>%
   tbl_svysummary(by = MEDINDUCE, 
-    include = c(xGESTAGE)) %>% 
+                 include = c(xGESTAGE)) %>% 
   add_ci()
 
 LTM_dsn %>% 
   filter(BIGBABY2 == "Yes, a labor induction") %>% 
   tbl_svysummary(#by = MEDINDUCE , 
-                 include = c(MEDINDUCE),
-                 statistic = list(all_categorical() ~ "{p}%", 
-                                  all_continuous() ~ "{mean}, {sd}")) %>% 
+    include = c(MEDINDUCE),
+    statistic = list(all_categorical() ~ "{p}%", 
+                     all_continuous() ~ "{mean}, {sd}")) %>% 
   add_ci()
 
 LTM_dsn %>% 
   tbl_svysummary(by = BIGBABY1, 
                  include = c(#GESTAGE_R, 
-                             GESTAGE_R_cont), 
+                   GESTAGE_R_cont), 
                  statistic = list(all_continuous() ~ "{median} ({p25}, {p75})")) %>% 
   add_ci()
+
+
+LTM_dsn %>% 
+  tbl_svysummary(by = YEARBIRTH, 
+                 include = WHYTELEC4)
+#espondents with private health insurance (average x weeks) learned about their 
+# pregnancies earlier than those with Medicaid/CHIP (average y weeks) 
+# (p < 0.05). Respondents with first births (average x weeks) 
+# learned about their pregnancies earlier than those with prior 
+# births (average y weeks) (p < 0.05). 
+
+LTM_dsn %>% 
+  tbl_svysummary(by = INSURCAT, 
+                 include = LEARNED1, 
+                 statistic = list(all_continuous() ~ "{mean}")) %>% add_p()
 
 # List of datasets ----
 list_figs <- setNames(

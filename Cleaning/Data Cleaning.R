@@ -80,7 +80,7 @@ LTM2 <- LTM1 %>%
                      RACEALONE == 3 ~ "Black",
                      RACEALONE == 4 ~ "Asian",
                      RACEALONE == 6 ~ "MENA"),
-    INSURANCE = case_when(INSURCAT == 1 ~ "Commercial",
+    INSURANCE = case_when(INSURCAT == 1 ~ "Private",
                           INSURCAT == 2 ~ "Medicaid"),
     PROVIDER2 = case_when(PROVIDER %in% c(1,2,3)  ~ "Doctor",
                           PROVIDER == 4 ~ "Midwife",
@@ -120,58 +120,13 @@ LTM2 <- LTM1 %>%
                          TRUE ~ PPVISIT),
     PLANNEDFEED_ONLY = case_when(PLANNEDFEEDC1 == 1 & PLANNEDFEEDC2 == 1 ~ "Both", 
                                  PLANNEDFEEDC1 == 1 & PLANNEDFEEDC2 == 0 ~ "Breastmilk", 
-                                 PLANNEDFEEDC1 == 0 & PLANNEDFEEDC2 == 1 ~ "Formula"))
-
-
-# rm(LTM1)
-# Midwife, physician, other for provider
-
-# Subscale respectful care ----
-# LTM2$RESPECT <- likert('RESPECT')
-# LTM2$KNOWLEDGE <- likert('KNOWLEDGE')
-# LTM2$HEARD <- likert('HEARD')
-# LTM2$DECISIONS <- likert('DECISIONS')
-# LTM2$CONSENT <- likert('CONSENT')
-# LTM2$INFORMED <- likert('INFORMED')
-# LTM2$TIMELINESS <- likert('TIMELINESS')
-# LTM2$TRUST <- likert('TRUST')
-# LTM2$FEEDING <- likert('FEEDING')
-# LTM2$SAFE <- likert('SAFE')
-# 
-# LTM2$DISCRIMINATION <- rev.likert('DISCRIMINATION')
-# LTM2$NEGLECT <- rev.likert('NEGLECT')
-# 
-# LTM2$PPBOTHER_1 <- recode.phq("PPBOTHER_A1")
-# LTM2$PPBOTHER_2 <- recode.phq("PPBOTHER_A2")
-# LTM2$PPBOTHER_3 <- recode.phq("PPBOTHER_A3")
-# LTM2$PPBOTHER_4 <- recode.phq("PPBOTHER_A4")
-# 
-# LTM2 <- LTM2 %>% 
-#   mutate(PPBOTHER_1 = as.numeric(PPBOTHER_1), 
-#          PPBOTHER_2 = as.numeric(PPBOTHER_2),
-#          PPBOTHER_3 = as.numeric(PPBOTHER_3),
-#          PPBOTHER_4 = as.numeric(PPBOTHER_4))
-# LTM2$PHQ2 = LTM2$PPBOTHER_3 + LTM2$PPBOTHER_4
-# LTM2$GAD2 = LTM2$PPBOTHER_1 + LTM2$PPBOTHER_2
-# LTM2$PHQ4 = LTM2$PPBOTHER_1 + LTM2$PPBOTHER_2 + LTM2$PPBOTHER_3 + LTM2$PPBOTHER_4
-
-LTM2 <- LTM2 %>% 
-  mutate(#PHQ2_cat = case_when(PHQ2 < 3 ~ "No", 
-    #                      PHQ2 >= 3 ~ "Yes"), 
-    # GAD2_cat = case_when(GAD2 < 3 ~ "No", 
-    #                      GAD2 >= 3 ~ "Yes"), 
-    # PHQ4_cat = case_when(PHQ4 >= 0 & PHQ4 <= 2 ~ "None",
-    #                      PHQ4 > 2 & PHQ4 <= 5 ~ "Mild",
-    #                      PHQ4 > 5 & PHQ4 <= 8 ~ "Moderate", 
-    #                      PHQ4 > 8 ~ "Severe"),
+                                 PLANNEDFEEDC1 == 0 & PLANNEDFEEDC2 == 1 ~ "Formula"),
     FEED_CONCORDANT = case_when(PLANNEDFEEDC1 == 1 & FEED1WEEKC1 == 1 ~ 1, 
                                 PLANNEDFEEDC2 == 1 & FEED1WEEKC2 == 1 ~ 1, 
                                 PLANNEDFEEDC1 == 1 &  FEED1WEEKC2 == 1 ~ 0,
                                 PLANNEDFEEDC2 == 1 &  FEED1WEEKC1 == 1 ~ 0),
     MODE = case_when(MODE == 1 ~ 0, 
                      MODE == 2 ~ 1),
-    # MODE1 = case_when(MODE1 == 1 ~ 0, 
-    #                   MODE1 == 2 ~ 1),
     MODE2 = case_when(MODE2 == 1 ~ 0, 
                       MODE2 == 2 ~ 1),
     MODE3 = case_when(MODE3 == 1 ~ 0, 
@@ -198,8 +153,6 @@ LTM2 <- LTM2 %>%
                        MODE13 == 2 ~ 1),
     MODE14 = case_when(MODE14 == 1 ~ 0, 
                        MODE14 == 2 ~ 1),
-    # MODE15 = case_when(MODE15 == 1 ~ 0, 
-    #                    MODE15 == 2 ~ 1),
     phys_cb = case_when(PAINMEDSC1 == 1 ~ "Physiologic Childbirth", 
                         PAINMEDSC2 == 1 ~ "Physiologic Childbirth", 
                         PAINMEDSC3 == 1 ~ "Physiologic Childbirth", 
@@ -229,12 +182,36 @@ LTM2 <- LTM2 %>%
                              TRUE ~ BABYHRCONFID), 
     CONFIDENCE_ANY = case_when(BPCONFID < 3  | URINECONFID < 3 | 
                                  WEIGHCONFID < 3 | BABYHRCONFID < 3 ~ "Yes",
+                               is.na(BPCONFID) & is.na(URINECONFID) & 
+                                 is.na(WEIGHCONFID) & is.na(BABYHRCONFID) ~ NA,
                                TRUE ~ "No"), 
     ATHOMECARE_ANY = case_when( ATHOMECAREC1 == 1 ~ 1, 
                                 ATHOMECAREC2 == 1 ~ 1, 
                                 ATHOMECAREC3 == 1 ~ 1,
                                 ATHOMECAREC4 == 1 ~ 1, 
-                                TRUE ~ 0)) %>% 
+                                TRUE ~ 0), 
+    CARETYPE_R = case_when(CARETYPEC1 == 1  & CARETYPEC2 == 0 ~ "Individual Only", 
+                           CARETYPEC1 == 1 & CARETYPEC2 == 1 ~ "Both", 
+                           CARETYPEC1 == 0 & CARETYPEC2 == 1 ~ "Group Only"), 
+    CAREMODE_R = case_when(CAREMODEC1 == 1  & CAREMODEC2 == 0 ~ 1, 
+                           CAREMODEC1 == 1 & CAREMODEC2 == 1 ~ 2, 
+                           CAREMODEC1 == 0 & CAREMODEC2 == 1 ~ 3), 
+    PREPREG_MHANY = case_when(PREPREG_MHCONDC1 == 1 ~ 1,
+                            PREPREG_MHCONDC2 == 1 ~ 1,
+                            PREPREG_MHCONDC3 == 1 ~ 1,
+                            PREPREG_MHCONDC4 == 1 ~ 1,
+                            PREPREG_MHCONDC5 == 1 ~ 1,
+                            PREPREG_MHCONDC6 == 0 ~ 0),
+    MEDSANY = case_when(MENTALSUPPORT1C1 == 1 ~ 1,
+                        MENTALSUPPORT1C2 == 1 ~ 1,
+                        MENTALSUPPORT1C3 == 1 ~ 1,
+                        MENTALSUPPORT1C4 == 1 ~ 1,
+                        MENTALSUPPORT1C5 == 1 ~ 0), 
+    MSUPPORT_ANY = case_when(MEDSANY == 1 ~ 1, 
+                             MENTALSUPPORT == 1 ~ 1,
+                             MEDSANY == 0 & MENTALSUPPORT == 2 ~ 0),
+    CLASS_ANY = case_when(CURREDUC == 1 | PRIOREDUC == 1 ~ 1, 
+                          PRIOREDUC == 2 & CURREDUC == 2 ~ 0)) %>% 
   rename(MDE2023 = MODE2023, 
          SONEEDC11 = SOCIALNEEDC11,
          SONEEDC10 = SOCIALNEEDC10, 
@@ -261,7 +238,11 @@ LTM2 <- LTM2 %>%
                          is.na(SDM_3)~NA,
                          is.na(SDM_4)~NA, 
                          TRUE ~ SDM), 
-         MDID = as.numeric(MDID)) %>%
+         MDID = as.numeric(MDID),
+         SUM_HOSPFEED = case_when(SUM_HOSPFEED > 10 ~ NA, 
+                                  TRUE ~ SUM_HOSPFEED),
+         SUM_SNNEEDS = case_when(SUM_SNNEEDS > 10 ~ NA, 
+                                 TRUE ~ SUM_SNNEEDS)) %>%
   rename(MODE2023 = MDE2023,
          SOCIALNEEDC11 = SONEEDC11,
          SOCIALNEEDC10 = SONEEDC10, 
@@ -308,28 +289,7 @@ LTM3 <- LTM2 %>%
   full_join(LTM_99, join_by(MDID)) %>% 
   full_join(LTM_999, join_by(MDID)) %>% 
   full_join(LTM_99999, join_by(MDID)) %>% 
-  full_join(LTM_999999999999, join_by(MDID))%>% 
-  mutate(SUM_HOSPFEED = case_when(SUM_HOSPFEED > 10 ~ NA, 
-                                  TRUE ~ SUM_HOSPFEED),
-         SUM_SNNEEDS = case_when(SUM_SNNEEDS > 10 ~ NA, 
-                                  TRUE ~ SUM_SNNEEDS), 
-         CARETYPE_R = case_when(CARETYPEC1 == 1  & CARETYPEC2 == 0 ~ 1, 
-                                CARETYPEC1 == 1 & CARETYPEC2 == 1 ~ 2, 
-                                CARETYPEC1 == 0 & CARETYPEC2 == 1 ~ 3), 
-         CAREMODE_R = case_when(CAREMODEC1 == 1  & CAREMODEC2 == 0 ~ 1, 
-                                CAREMODEC1 == 1 & CAREMODEC2 == 1 ~ 2, 
-                                CAREMODEC1 == 0 & CAREMODEC2 == 1 ~ 3), 
-         PREPREG_ANY = case_when(PREPREG_MHCONDC1 == 1 ~ 1,
-                                 PREPREG_MHCONDC2 == 1 ~ 1,
-                                 PREPREG_MHCONDC3 == 1 ~ 1,
-                                 PREPREG_MHCONDC4 == 1 ~ 1,
-                                 PREPREG_MHCONDC5 == 1 ~ 1,
-                                 PREPREG_MHCONDC6 == 0 ~ 0), 
-         MEDSANY = case_when(MENTALSUPPORT1C1 == 1 ~ 1,
-                             MENTALSUPPORT1C2 == 1 ~ 1,
-                             MENTALSUPPORT1C3 == 1 ~ 1,
-                             MENTALSUPPORT1C4 == 1 ~ 1,
-                             MENTALSUPPORT1C5 == 1 ~ 0))
+  full_join(LTM_999999999999, join_by(MDID))
 
 # Exporting ----
 setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")
