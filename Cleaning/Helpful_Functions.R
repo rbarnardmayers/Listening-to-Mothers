@@ -43,10 +43,10 @@ likert <- function(col, dat = LTM2){
 
 # Reverse Likert Function ----
 rev.likert <- function(col, dat = LTM2){
-  dat[,col] <- ifelse(dat[,col] == "No, never", 3,
-                      ifelse(dat[,col] == "Yes, a few times", 2, 
-                             ifelse(dat[,col] == "Yes, most of the time", 1,
-                                    ifelse(dat[,col] == "Yes, all the time", 0,NA))))
+  dat[,col] <- ifelse(dat[,col] == 4, 0,
+                      ifelse(dat[,col] == 3, 1, 
+                             ifelse(dat[,col] == 2, 2,
+                                    ifelse(dat[,col] == 1, 3,NA))))
   
   return(dat[,col])
 }

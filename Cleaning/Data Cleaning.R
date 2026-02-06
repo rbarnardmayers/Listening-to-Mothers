@@ -49,6 +49,11 @@ LTM1 <- LTM_ignore %>%
   full_join(LTM_keep, join_by(MDID))
 
 # Recode variables ----
+LTM1$BOTHER_R1 <- rev.likert("BOTHER_A1", dat = LTM1)
+LTM1$BOTHER_R2 <- rev.likert("BOTHER_A2", dat = LTM1)
+LTM1$BOTHER_R3 <- rev.likert("BOTHER_A3", dat = LTM1)
+LTM1$BOTHER_R4 <- rev.likert("BOTHER_A4", dat = LTM1)
+
 LTM2 <- LTM1 %>% 
   mutate(
     PARITY = case_when(NUMB_BIRTH == 1 ~ "Nulliparous",
@@ -68,10 +73,22 @@ LTM2 <- LTM1 %>%
                         GESTAGE_F == 0 ~ GESTAGE_WEEKS),
     GESTAGE_R_cont = as.numeric(GESTAGE_R),
     HEIGHT = (HEIGHT_FEET*12) + HEIGHT_INCHES, 
+    PREPREG_WEIGHT_A1 = case_when(PREPREG_WEIGHT_A1 == 99999 ~ NA, 
+                                  TRUE ~ as.numeric(PREPREG_WEIGHT_A1)),
+    PREPREG_WEIGHT_B1 = case_when(PREPREG_WEIGHT_B1 == 99999 ~ NA, 
+                                  TRUE ~ as.numeric(PREPREG_WEIGHT_B1)),
+    PREGWEIGHT_LBS_2 = case_when(PREGWEIGHT_LBS_2 == 99999 ~ NA, 
+                                  TRUE ~ as.numeric(PREGWEIGHT_LBS_2)),
+    PREGWEIGHT_KG_2 = case_when(PREGWEIGHT_KG_2 == 99999 ~ NA, 
+                                  TRUE ~ as.numeric(PREGWEIGHT_KG_2)),
     PREPREG_WEIGHT = case_when(is.na(PREPREG_WEIGHT_A1) ~ 2.20462 * PREPREG_WEIGHT_B1, 
                                !is.na(PREPREG_WEIGHT_A1) ~ PREPREG_WEIGHT_A1), 
     PREG_WEIGHT = case_when(is.na(PREGWEIGHT_LBS_2) ~ 2.20462 * PREGWEIGHT_KG_2, 
                             !is.na(PREGWEIGHT_LBS_2) ~ PREGWEIGHT_LBS_2), 
+    WEIGHTGAIN_R = as.numeric(PREG_WEIGHT) - as.numeric(PREPREG_WEIGHT), 
+    MARRIED = case_when(RELATIONSHIP == 1 ~ "Married",
+                        RELATIONSHIP == 2 ~ "Committed Partner", 
+                        RELATIONSHIP == 3 | RELATIONSHIP == 4 ~ "Separated/Single"),
     RACE = case_when(RACEALONE == 5 ~ "AIAN-NHPI",
                      RACEALONE == 7 ~ "AIAN-NHPI",
                      is.na(RACEALONE) ~ "Multi",
@@ -207,9 +224,18 @@ LTM2 <- LTM1 %>%
                         MENTALSUPPORT1C3 == 1 ~ 1,
                         MENTALSUPPORT1C4 == 1 ~ 1,
                         MENTALSUPPORT1C5 == 1 ~ 0), 
+    MEDS_DEP_ANX = case_when(MENTALSUPPORT1C1 == 1 ~ 1,
+                            MENTALSUPPORT1C2 == 1 ~ 1,
+                            MENTALSUPPORT1C5 == 1 ~ 0),
     MSUPPORT_ANY = case_when(MEDSANY == 1 ~ 1, 
                              MENTALSUPPORT == 1 ~ 1,
                              MEDSANY == 0 & MENTALSUPPORT == 2 ~ 0),
+    UNMET_NEEDS = case_when(MEDS_DEP_ANX == 0 & PREPREG_MHCONDC1 == 1 ~ 1, 
+                            MEDS_DEP_ANX == 0 & PREPREG_MHCONDC2 == 1 ~ 1, 
+                            MEDS_DEP_ANX == 1 & PREPREG_MHCONDC1 == 1 ~ 0, 
+                            MEDS_DEP_ANX == 1 & PREPREG_MHCONDC2 == 1 ~ 0, 
+                            PREPREG_MHCONDC1 == 0 ~ NA,
+                            PREPREG_MHCONDC2 == 0 ~ NA),
     CLASS_ANY = case_when(CURREDUC == 1 | PRIOREDUC == 1 ~ 1, 
                           PRIOREDUC == 2 & CURREDUC == 2 ~ 0)) %>% 
   rename(MDE2023 = MODE2023, 
@@ -227,7 +253,10 @@ LTM2 <- LTM1 %>%
                            TIMELINESS, TRUST, FEEDING,
                            SAFE, DISCRIMINATION, NEGLECT, na.rm = T),
          SUM_SNNEEDS = sum(across(starts_with("SN")), na.rm = T),
-         SDM = sum(SDM_1,SDM_2,SDM_3,SDM_4, na.rm = T)) 
+         SDM = sum(SDM_1,SDM_2,SDM_3,SDM_4, na.rm = T), 
+         SUM_ANX = sum(BOTHER_R1, BOTHER_R2, na.rm = T), 
+         SUM_DEP = sum(BOTHER_R3, BOTHER_R4, na.rm = T), 
+         SUM_PHQ4 = sum(across(starts_with("BOTHER_R")))) 
 
 LTM2 <- LTM2 %>% 
   mutate(VBAC = case_when(MODE_ALL > 0 & MDE2023 == 1 ~ 1,
@@ -238,6 +267,14 @@ LTM2 <- LTM2 %>%
                          is.na(SDM_3)~NA,
                          is.na(SDM_4)~NA, 
                          TRUE ~ SDM), 
+         R_PHQ_ANX = case_when(SUM_ANX < 3 ~ 0, 
+                               SUM_ANX >= 3 ~ 1),
+         R_PHQ_DEP = case_when(SUM_DEP < 3 ~ 0, 
+                               SUM_DEP >= 3 ~ 1),
+         R_PHQ4 = case_when(SUM_PHQ4 <= 2 ~ "Normal", 
+                            SUM_PHQ4 <= 5 ~ "Mild", 
+                            SUM_PHQ4 <= 8 ~ "Moderate", 
+                            SUM_PHQ4 <= 12 ~ "Severe"),
          MDID = as.numeric(MDID),
          SUM_HOSPFEED = case_when(SUM_HOSPFEED > 10 ~ NA, 
                                   TRUE ~ SUM_HOSPFEED),

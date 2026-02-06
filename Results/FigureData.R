@@ -404,11 +404,8 @@ LTM_dsn %>%
 LTM_dsn %>% 
   # filter(PREPREG_MHCONDC1 == "Depression or sadness") %>% 
   tbl_svysummary(by = PREPREG_MHCONDC1, 
-                 include = PHQ4_PREG_DEP) %>% add_p()
-
-LTM_dsn %>% 
-  tbl_svysummary(by = PREPREG_MHCONDC2, 
-                 include = PHQ4_PREG_ANX) %>% add_p()
+                 include = PHQ4_PREG_DEP, 
+                 statistic = list(all_categorical() ~ "{p}%")) %>% add_ci()
 
 LTM_dsn %>% 
   tbl_svysummary(by = PREPREG_MHCONDC2, 
@@ -423,6 +420,7 @@ LTM_dsn %>%
   tbl_svysummary(by = PREPREG_MHANY, 
                  include = MEDSANY) %>% 
   add_p()
+fig_compile("UNMET_NEEDS") %>% View()
 
 LTM_dsn %>% 
   filter(BIGBABY2 %in% c("Yes, a labor induction",
@@ -456,6 +454,11 @@ LTM_dsn %>%
 # (p < 0.05). Respondents with first births (average x weeks) 
 # learned about their pregnancies earlier than those with prior 
 # births (average y weeks) (p < 0.05). 
+
+LTM_dsn %>% 
+  tbl_svysummary(by = BMI4_PREPREG, 
+                 include = c(WEIGHTGAIN_R, PREG_WEIGHT, PREPREG_WEIGHT),
+                 statistic = list(all_continuous() ~ "{mean}")) %>% add_ci()
 
 LTM_dsn %>% 
   tbl_svysummary(by = INSURCAT, 
