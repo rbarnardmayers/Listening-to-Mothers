@@ -176,6 +176,7 @@ r_svysummary <- function(by, include){
     tbl_svysummary(by = by, 
                    include = include, 
                    statistic = list(all_categorical() ~ "{p}%")) %>% 
-    add_ci()
+    add_ci(style_fun = list(all_categorical() ~
+                              label_style_sigfig(scale = 1000)))
 }
 

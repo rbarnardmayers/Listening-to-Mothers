@@ -402,6 +402,10 @@ LTM_dsn %>%
   tbl_svysummary(include = CAREMODE_R)
 
 LTM_dsn %>% 
+  tbl_svysummary(by = RACE, 
+                 include = ANX_DEP) %>% add_ci()
+
+LTM_dsn %>% 
   # filter(PREPREG_MHCONDC1 == "Depression or sadness") %>% 
   tbl_svysummary(by = PREPREG_MHCONDC1, 
                  include = PHQ4_PREG_DEP, 
