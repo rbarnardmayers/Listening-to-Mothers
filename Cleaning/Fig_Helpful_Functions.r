@@ -141,13 +141,13 @@ collapse.2by2 <- function(cols, var, data = LTM_dsn){
 }
 
 # Compile ----
-fig_compile <- function(maincol, others = c("RACE", "INSURANCE", "URBANICITY2")){
-  fig_1_2a <- print.fig(maincol) %>% 
+fig_compile <- function(maincol, others = c("RACE", "INSURANCE", "URBANICITY2"), data = LTM_dsn){
+  fig_1_2a <- print.fig(maincol, data = data) %>% 
     as.data.frame() %>% 
     arrange(prop)
   
   for(i in others){
-    fig_1_2b <- fig.2by2.bases(i,maincol) %>% 
+    fig_1_2b <- fig.2by2.bases(i,maincol, data = data) %>% 
       as.data.frame() %>% t() %>% as.data.frame()
     colnames(fig_1_2b) <- fig_1_2b[1,] 
     fig_1_2b <- fig_1_2b[-1,]

@@ -104,7 +104,8 @@ fig14 <- fig_compile('PREPREG_MHCONDC2')
 # MENTALSUPPORT ----
 # MENTALSUPPORT
 
-fig15 <- fig_compile('MSUPPORT_ANY')
+fig15 <- fig_compile('PREG_UNMET_NEEDS', 
+                     data = filter(LTM_dsn, R_PHQ_ANX ==1 | R_PHQ_DEP == 1))
 
 # Social needs ----
 fig16 <- fig_compile_2(c('SOCIALNEEDC1','SOCIALNEEDC2','SOCIALNEEDC3',
@@ -416,9 +417,9 @@ LTM_dsn %>%
                  include = PHQ4_PREG_ANX) %>% add_p()
 
 LTM_dsn %>% 
-  tbl_svysummary(by = INCCAT, 
+  tbl_svysummary(by = DISABILITY, 
                  include = SUM_SOCIALNEED, 
-                 statistic = all_continuous() ~ "{min}, {p25},{median},{p75},{max}")
+                 statistic = all_continuous() ~ "{mean}, {p25},{median},{p75},{max}") %>% add_p()
 
 LTM_dsn %>% 
   tbl_svysummary(by = PREPREG_MHANY, 
@@ -468,6 +469,11 @@ LTM_dsn %>%
   tbl_svysummary(by = INSURCAT, 
                  include = LEARNED1, 
                  statistic = list(all_continuous() ~ "{mean}")) %>% add_p()
+# Among respondents who reported a mental health condition in the three months
+# before pregnancy, xx% reporting receiving counseling or therapy for their 
+# emotional or mental wellbeing during pregnancy
+
+r_svysummary(by = "PREPREG_MHANY", include = "MENTALSUPPORT")
 
 # List of datasets ----
 list_figs <- setNames(
