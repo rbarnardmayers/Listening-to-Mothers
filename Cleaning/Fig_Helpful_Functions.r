@@ -175,8 +175,11 @@ r_svysummary <- function(by, include){
   LTM_dsn %>% 
     tbl_svysummary(by = by, 
                    include = include, 
-                   statistic = list(all_categorical() ~ "{p}%")) %>% 
+                   statistic = list(all_categorical() ~ "{p}%", 
+                                    all_continuous() ~ "{mean}, {median}, {sd}"),
+                   digits = list(all_categorical() ~ 2)) %>% 
     add_ci(style_fun = list(all_categorical() ~
-                              label_style_sigfig(scale = 1000)))
+                              label_style_sigfig(scale = 1000)
+    ))
 }
 
