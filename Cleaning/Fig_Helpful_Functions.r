@@ -170,14 +170,14 @@ fig_compile_2 <- function(cols, others = c("RACE", "INSURANCE", "URBANICITY2")){
   return(fig)
 }
 
-
-r_svysummary <- function(by, include){
-  LTM_dsn %>% 
-    tbl_svysummary(by = by, 
+r_svysummary <- function(by = NULL, include, data = LTM_dsn){
+    tbl_svysummary(data = data, 
+                   by = by, 
                    include = include, 
                    statistic = list(all_categorical() ~ "{p}%", 
-                                    all_continuous() ~ "{mean}, {median}, {sd}"),
-                   digits = list(all_categorical() ~ 2)) %>% 
+                                    all_continuous() ~ "{mean}, {median}"),
+                   digits = list(all_categorical() ~ 2, 
+                                 all_continuous() ~ 1)) %>% 
     add_ci(style_fun = list(all_categorical() ~
                               label_style_sigfig(scale = 1000)
     ))

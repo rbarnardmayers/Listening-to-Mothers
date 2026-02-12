@@ -73,6 +73,7 @@ LTM2 <- LTM1 %>%
                           GESTAGE_F == 0 ~ GESTAGE_WEEKS),
     GESTAGE_R_cont = as.numeric(GESTAGE_R),
     HEIGHT = (HEIGHT_FEET*12) + HEIGHT_INCHES, 
+    AGE_ATBIRTH = floor(as.numeric(AGE) - (GESTAGE_R_cont/52)),
     PREPREG_WEIGHT_A1 = case_when(PREPREG_WEIGHT_A1 == 99999 ~ NA, 
                                   TRUE ~ as.numeric(PREPREG_WEIGHT_A1)),
     PREPREG_WEIGHT_B1 = case_when(PREPREG_WEIGHT_B1 == 99999 ~ NA, 
@@ -130,6 +131,9 @@ LTM2 <- LTM1 %>%
     BIRTHWEIGHT = case_when(!is.na(BIRTHWEIGHT_LBS) ~ BIRTHWEIGHT_LBS*453.592 + BIRTHWEIGHT_OZ*28.3495,
                             !is.na(BIRTHWEIGHT_G) ~ BIRTHWEIGHT_G), 
     BIRTHWEIGHT = as.numeric(BIRTHWEIGHT),
+    PROVIDER2 =case_when(PROVIDER %in% c(1,2,3)  ~ "Doctor",
+                         PROVIDER == 4 ~ "Midwife",
+                         PROVIDER %in% c(5,6) ~ "Other"), 
     BIRTHATTEND2 =case_when(BIRTHATTEND %in% c(1,2,3)  ~ "Doctor",
                             BIRTHATTEND == 4 ~ "Midwife",
                             BIRTHATTEND %in% c(5,6) ~ "Other"), 
@@ -251,11 +255,11 @@ LTM2 <- LTM1 %>%
     WEIGHT_REC = case_when(BMI4_PREPREG == 1  & WEIGHTGAIN_R >= 28 & WEIGHTGAIN_R <= 40 ~ 1, 
                            BMI4_PREPREG == 1 & WEIGHTGAIN_R < 28 | WEIGHTGAIN_R > 40 ~ 0,
                            BMI4_PREPREG == 2  & WEIGHTGAIN_R >= 25 & WEIGHTGAIN_R <= 35 ~ 1,
-                           BMI4_PREPREG == 2  & WEIGHTGAIN_R < 25 & WEIGHTGAIN_R > 35 ~ 0,
+                           BMI4_PREPREG == 2  & WEIGHTGAIN_R < 25 | WEIGHTGAIN_R > 35 ~ 0,
                            BMI4_PREPREG == 3  & WEIGHTGAIN_R >= 15 & WEIGHTGAIN_R <= 25 ~ 1, 
-                           BMI4_PREPREG == 3  & WEIGHTGAIN_R < 15 & WEIGHTGAIN_R > 25 ~ 0,
+                           BMI4_PREPREG == 3  & WEIGHTGAIN_R < 15 | WEIGHTGAIN_R > 25 ~ 0,
                            BMI4_PREPREG == 4  & WEIGHTGAIN_R >= 11 & WEIGHTGAIN_R <= 20 ~ 1,
-                           BMI4_PREPREG == 4  & WEIGHTGAIN_R < 11 & WEIGHTGAIN_R > 20 ~ 0), 
+                           BMI4_PREPREG == 4  & WEIGHTGAIN_R < 11 | WEIGHTGAIN_R > 20 ~ 0), 
     
     WEIGHT_REC_D = case_when(BMI4_PREPREG == 1 & WEIGHTGAIN_R >= 28 & WEIGHTGAIN_R <= 40 ~ "Within",
                              BMI4_PREPREG == 1 & WEIGHTGAIN_R < 28 ~ "Below", 
@@ -277,7 +281,11 @@ LTM2 <- LTM1 %>%
                         MEDINDUCE == 0 ~ 1, 
                         MODE2023 == 1 ~ 1), 
     NEITHER_REC = case_when(BIGBABY2 == 1 | BIGBABY2 == 2 ~ 0, 
-                            BIGBABY2 == 97 ~ 1)) %>% 
+                            BIGBABY2 == 97 ~ 1),
+    OTHERSUPPORT_ONLY = case_when(OTHERSUPPORTC1 == 1 & OTHERSUPPORTC2 == 0 ~ "Spouse",
+                                  OTHERSUPPORTC1 == 0 & OTHERSUPPORTC2 == 1 ~ "Family", 
+                                  OTHERSUPPORTC1 == 1 & OTHERSUPPORTC2 == 1 ~ "Both",
+                                  OTHERSUPPORTC3 == 1 ~ "Neither")) %>% 
   rename(MDE2023 = MODE2023, 
          SONEEDC11 = SOCIALNEEDC11,
          SONEEDC10 = SOCIALNEEDC10, 
@@ -296,7 +304,10 @@ LTM2 <- LTM1 %>%
          SDM = sum(SDM_1,SDM_2,SDM_3,SDM_4, na.rm = T), 
          SUM_ANX = sum(BOTHER_R1, BOTHER_R2, na.rm = T), 
          SUM_DEP = sum(BOTHER_R3, BOTHER_R4, na.rm = T), 
-         SUM_PHQ4 = sum(across(starts_with("BOTHER_R")))) 
+         SUM_PHQ4 = sum(across(starts_with("BOTHER_R"))), 
+         SUM_DRUGFREE = sum(DRUGFREEC1,DRUGFREEC2,DRUGFREEC3,DRUGFREEC4,
+                            DRUGFREEC5,DRUGFREEC6,DRUGFREEC7,DRUGFREEC8,
+                            DRUGFREEC9,DRUGFREEC10))  # including other
 
 LTM2 <- LTM2 %>% 
   mutate(VBAC = case_when(MODE_ALL > 0 & MDE2023 == 1 ~ 1,
