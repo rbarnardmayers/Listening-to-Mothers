@@ -475,6 +475,8 @@ LTM_dsn %>%
 
 r_svysummary(by = "PREPREG_MHANY", include = "MENTALSUPPORT")
 
+r_svysummary("NEITHER_REC", include = c("MEDINDUCE", "MODE2023", "NEITHER"))
+
 # List of datasets ----
 list_figs <- setNames(
   mget(paste0("fig", 1:61)),
