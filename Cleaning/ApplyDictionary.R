@@ -36,7 +36,7 @@ LTM_final <- LTM2 %>%
 
 # Create list of categorical variables by excluding numeric ----
 categorical <- LTM_final %>%
-  select(-c(HEIGHT,MDID, AGE,YEARBIRTH, WEIGHTGAIN_R,
+  select(-c(HEIGHT,MDID, AGE, YEARBIRTH, WEIGHTGAIN_R,AGE_ATBIRTH,
             DOULA3, INDUCE6, REPEATCSEC,#GESTAGE, DUEDATE, BIRTHDATE,BIRTHDATE_Y,
             MEDINDUCE4, MEDINDUCE5, #WENTWELL, DIDNTGOWELL, AIAN,
             ANYTHINGELSE,GESTAGE_R_cont,starts_with("SUM_"),
@@ -67,7 +67,7 @@ for(i in categorical){
 # Convert continuous variables into numeric class ----
 continuous <- LTM_final %>% 
   select(c(AGE,YEARBIRTH,GESTAGE,GESTAGE_WEEKS,starts_with("SUM_"),
-           NUMB_BIRTH,BIRTHWEIGHT,PPVISIT,LEARNED2,
+           NUMB_BIRTH,BIRTHWEIGHT,PPVISIT,LEARNED2,AGE_ATBIRTH,
            DISABLEYRS,MODE_ALL,MEDINDUCE4,MEDINDUCE5,LEARNED1,GESTAGE_R_cont,
            PREG_WEIGHT, PREPREG_WEIGHT, HEIGHT, BMI,WEIGHTGAIN_R,
            VAGEXAM, LABORLENGTH, DAYSHOSP, BABYHOSP, PPVISIT, 

@@ -176,8 +176,9 @@ r_svysummary <- function(by = NULL, include, data = LTM_dsn){
                    include = include, 
                    statistic = list(all_categorical() ~ "{p}%", 
                                     all_continuous() ~ "{mean}, {median}"),
-                   digits = list(all_categorical() ~ 2, 
-                                 all_continuous() ~ 1)) %>% 
+                   digits = list(all_categorical() ~ 4, 
+                                 all_continuous() ~ 1),
+                   missing_stat = "{p_miss}") %>% 
     add_ci(style_fun = list(all_categorical() ~
                               label_style_sigfig(scale = 1000)
     ))

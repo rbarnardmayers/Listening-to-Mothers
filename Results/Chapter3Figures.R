@@ -1,6 +1,7 @@
 setwd("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Listening-to-Mothers")
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/ApplyDictionary.R")
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Fig_Helpful_Functions.R")
+
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/ApplyDictionary.R")
 
 # 3.1	GA vertical bars by gestational week or other viz to show how much we have deviated from a bell curve
 LTM_dsn %>%
@@ -33,7 +34,8 @@ fig_3_5 <- fig_compile("BIRTHATTEND2")
 
 
 # 3.10	SDM in induction: to what extent are various subgroups experiencing SDM, by race and ethnicity, private vs Medicaid insurance
-fig_3_10 <- fig_compile("SDM_dich")
+fig_3_10 <- fig_compile_2(c("INDUCE1", "INDUCE2", "INDUCE3", "INDUCE4"), others = "RACE")
+
 
 # 3.11	SELFINDUCE: simple bar graph of the response choices in descending order of frequency with Overall throughline
 # 3.12	MEDINDUCE1: bar graph of  response choices in descending order of frequency
