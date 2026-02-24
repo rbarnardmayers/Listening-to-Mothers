@@ -15,42 +15,87 @@ fig_3_2 <- fig_compile("GOLDENHOUR", others = c("RACE", "INSURANCE", "MODE2023",
 fig_3_3 <- fig_compile("SKIN", others = c("RACE", "MODE2023", "BIRTHATTEND", "LANGSIMP")) 
 
 # 3.4	 NICU: entire time, part time (segmented or stacked bars? Percentage of babies in NICU part-time or throughout with low-risk characteristics (Could be segmented or stacked (pairs) bars) 
-fig_3_4 <- fig_compile("NICU", others = c("xBABYHOSP", "BW_CAT", "GESTAGE"))
+fig_3_4 <- fig_compile("NICU", others = c("xBABYHOSP", "BW_CAT", "xGESTAGE"))
 # maybe no maternal complications,
 
 # 3.5	 BIRTHATTEND: best to be parallel to 2.3 (prenatal provider: has doctor, midwife, other
 fig_3_5 <- fig_compile("BIRTHATTEND2")
 
-# 3.6	DOULA (at birth): Summative display of doula use across 3 phases of care and by combinations of phases
+# Physiologic childbirth
+fig_3_21 <- fig_compile("phys_cb")
+
+# NICU and gestage
+r_svysummary(by = "ANYNICU", include = "xGESTAGE_R")
 
 
-# 3.7	DOULA Doula use around time of birth, parallel to prenatal: whether had birth doula by race and ethnicity, type of insurance (11.5% = 11% or 12%?), midwife vs obstetrician birth attendant
-
-
-# 3.8	Elective induction at term (INDUCE5 == 1): for whom is elective induction at term being recommended: INDUCE5=1 by race and ethnicity, private vs Medicaid insurance: given that vast majority of people with previous cesarean have repeats high rates of discussing induction because it's around term
-
-
-# 3.9	Narrative could report whether recommendation differs by metro vs nonmetro residence, by age, education, first-time vs experienced
+##### FLOWCHART ####
+# No prior CS, term (37 – 41) birth
+fc <- LTM_dsn %>% 
+  filter(MODE_ALL == 0 & GESTAGE_R >= 37 & GESTAGE_R <= 41)
+r_svysummary(by = "BIGBABY1", include = c("MEDINDUCE", "MODE2023"), data = fc)
 
 
 # 3.10	SDM in induction: to what extent are various subgroups experiencing SDM, by race and ethnicity, private vs Medicaid insurance
 fig_3_10 <- fig_compile_2(c("INDUCE1", "INDUCE2", "INDUCE3", "INDUCE4"), others = "RACE")
+fig_3_10 <- fig_compile("DEC_MAKE", others = c("RACE", "BIRTHATTEND2", "PARITY", "BIRTHCOUNTRY", "DISABILITY"))
+# Let's show RE, along with birth attendant, parity, nativity, disability status
+
+# Customs by race
+r_svysummary(by = "RACE", include = "CUSTOMS")
+# 
+# 5.3.	Concordant BF by race, insurance
+fig_5.3a <- fig_compile("FEED_CONCORDANT", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Breastmilk"))
+fig_5.3b <- fig_compile("FEED_CONCORDANT", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Formula"))
+
+fig_5.3a <- fig_5.3a %>% subset(FEED_CONCORDANT == 1) %>% mutate(Group = "Breast")
+fig_5.3b <- fig_5.3b %>% subset(FEED_CONCORDANT == 1) %>% mutate(Group = "Formula")
+  
+fig_5.3 <- rbind(fig_5.3a, fig_5.3b)
+
+# checking stat sig
+r_svysummary(by = "RACE", include = "FEED_CONCORDANT", data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Breastmilk"))
+r_svysummary(by = "RACE", include = "FEED_CONCORDANT", data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Formula"))
+
+r_svysummary(by = "INSURANCE", include = "FEED_CONCORDANT", data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Breastmilk"))
+r_svysummary(by = "INSURANCE", include = "FEED_CONCORDANT", data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Formula"))
+
+r_svysummary(by = "MODE2023", include = "FEED_CONCORDANT", data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Breastmilk"))
+r_svysummary(by = "MODE2023", include = "FEED_CONCORDANT", data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Formula"))
 
 
-# 3.11	SELFINDUCE: simple bar graph of the response choices in descending order of frequency with Overall throughline
-# 3.12	MEDINDUCE1: bar graph of  response choices in descending order of frequency
-# 3.13	MEDINDUCE3: simple bar graph of the response choices in descending order of frequency with Overall throughline
-# 3.14	LABORPERMIT = 1 or 2: Among those who labored/MODE=1 or LABCSEC=1, whether had oral fluids/LABORPERMIT=1 or oral solids/LABORPERMIT=2 (need to creatively distinguish between no/not interested and no/interested but not allowed); Ambulation; walking; all restrictions among denominator - people who labored
-# 3.15	POSITIONCHOICE: positions used with and without choice
-# 3.16	DRUGFREE: simple bar graph showing use of non-pharm methods in descending order and those who used none. Among those who labored//MODE=1 or LABCSEC=1, percentage who did vs did not use drugfree methods
-# 3.17	DRUGFREE: Consider comparing those who did/did not use drugfree methods and their attributes (e.g., RE, first-time vs experienced mom, physician vs midwife birth attendant, no doula vs doula)
-# 3.18	PAINMEDS: simple bar graph showing use of pharm methods in descending order and those who used none with Overall throughline
-# 3.19	Did/did not use pain meds comparison: Consider comparing those who did/did not use pain meds and their attributes (e.g., RE, first-time vs experienced mom, physician vs midwife birth attendant, no doula vs doula)
-# 3.20	LABORINT: simple bar graph of use of these five interventions in descending order of frequency with Overall throughline
-# 3.21	POSITION: simple bar graph of use of various positions in descending order of frequency with Overall throughline
-# 3.22	EPISTCHOICE (no choice): Consider no choice in having epis or x-ref to that as restriction
-# 3.23	Physiologic childbirth: those who met and did not meet criteria by midwife v physician (prenatal or intrapartum, whichever has greater contrast) and by birth doula vs no birth doula (noting that having both was most associated with meeting the definition in CA)
-# 3.24	LTM cascade of interventions flowchart
-# 3.25	Baby friendly steps: simple bar graph showing cumulative Baby-Friendly steps (leaving HOSPFEED = 8 aside) and likelihood of breastfeeding at 1 week, separating exclusive and mixed feeding
-# 3.26	Respectful care: by race/ethnicity, private vs Medicaid payment
-# 3.27	CULTURE: race and ethnicity [hypothesize greatest acknowledgment of cultural traditions and greatest failure to accommodate them among AIAN, then Black]
+
+# 5.4.	Value added situations?? 
+
+# 5.5.	Hospfeed 
+
+r_svysummary(by = "SUM_HOSPFEED", include = "BFGOAL")
+
+# 5.11.	Received help by screened for PHQ4 by race and insurance
+fig_5.11a <- fig_compile("PP_MSUPPORT_ANY", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PHQ4_PPPSYCH %in% c("Mild (3-5)", "Moderate (6-8)", "Severe (9-12)")))
+fig_5.11b <- fig_compile("PP_MSUPPORT_ANY", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PHQ4_PPPSYCH == "Normal (0-2)"))
+fig_5.11c <- fig_compile("PP_MSUPPORT_ANY", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PHQ4_PPPSYCH == "Mild (3-5)"))
+fig_5.11d <- fig_compile("PP_MSUPPORT_ANY", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PHQ4_PPPSYCH == "Moderate (6-8)"))
+fig_5.11e <- fig_compile("PP_MSUPPORT_ANY", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PHQ4_PPPSYCH == "Severe (9-12)"))
+
+fig_5.11a <- fig_5.11a %>% subset(PP_MSUPPORT_ANY == 1) %>% mutate(Group = "Any")
+fig_5.11b <- fig_5.11b %>% subset(PP_MSUPPORT_ANY == 1) %>% mutate(Group = "Normal")
+fig_5.11c <- fig_5.11c %>% subset(PP_MSUPPORT_ANY == 1) %>% mutate(Group = "Mild")
+fig_5.11d <- fig_5.11d %>% subset(PP_MSUPPORT_ANY == 1) %>% mutate(Group = "Moderate")
+fig_5.11e <- fig_5.11e %>% subset(PP_MSUPPORT_ANY == 1) %>% mutate(Group = "Severe")
+
+fig_5.11 <- rbind(fig_5.11a, fig_5.11b, fig_5.11c, fig_5.11d, fig_5.11e)
+
+r_svysummary(by = "RACE", include ="PP_MSUPPORT_ANY", data = filter(LTM_dsn, PHQ4_PPPSYCH %in% c("Mild (3-5)", "Moderate (6-8)", "Severe (9-12)")))
+
+
+# 5.12.	Social needs postpartum by race and insurance
+fig_5.12 <- fig_compile_2(c("SNABUSE", "SNCHILDCARE", "SNDRUGS", "SNINCOME", 
+                            "SNLIVE", "SNMEAL", "SNTRANSPORT", "SNUNSAFE", 
+                            "SNUTILITIES")) 
+fig_5.12 <- fig_compile("SUM_SNNEEDS")
+
+r_svysummary(by = "RACE", include = "CAT_SNNEEDS")
+
+# 5.13.	Continuing social needs byt counts, race and insurance
+
+

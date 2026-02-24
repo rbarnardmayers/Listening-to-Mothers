@@ -172,6 +172,7 @@ fig_compile_2 <- function(cols, others = c("RACE", "INSURANCE", "URBANICITY2")){
 
 r_svysummary <- function(by = NULL, include, data = LTM_dsn){
     tbl_svysummary(data = data, 
+                   missing = "no",
                    by = by, 
                    include = include, 
                    statistic = list(all_categorical() ~ "{p}%", 
