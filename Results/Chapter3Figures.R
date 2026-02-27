@@ -22,7 +22,17 @@ fig_3_4 <- fig_compile("NICU", others = c("xBABYHOSP", "BW_CAT", "xGESTAGE"))
 fig_3_5 <- fig_compile("BIRTHATTEND2")
 
 # Physiologic childbirth
-fig_3_21 <- fig_compile("phys_cb")
+fig_3_21 <- fig_compile("phys_cb", others = c("RACE", "INSURANCE","BIRTHATTEND2" ,'DOULAC2', 'DOULA'))
+
+# fig_3.23 <- collapse.2by2(c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC4",
+#                             "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC9",
+#                             "HOSPFEEDC10"))
+fig_3.23 <- fig_compile_2(c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC4",
+                            "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC9",
+                            "HOSPFEEDC10", "HOSPFEEDC11"), others = "FEED1WEEK_ONLY") %>% 
+  subset(Var != "Not selected")
+
+fig.3.23b <- fig_compile("SUM_HOSPFEED", others = "FEED1WEEK_ONLY")
 
 # NICU and gestage
 r_svysummary(by = "ANYNICU", include = "xGESTAGE_R")
@@ -34,11 +44,40 @@ fc <- LTM_dsn %>%
   filter(MODE_ALL == 0 & GESTAGE_R >= 37 & GESTAGE_R <= 41)
 r_svysummary(by = "BIGBABY1", include = c("MEDINDUCE", "MODE2023"), data = fc)
 
+r_svysummary(by = "MEDINDUCE", include = "MODE2023", 
+             data = fc)
 
 # 3.10	SDM in induction: to what extent are various subgroups experiencing SDM, by race and ethnicity, private vs Medicaid insurance
 fig_3_10 <- fig_compile_2(c("INDUCE1", "INDUCE2", "INDUCE3", "INDUCE4"), others = "RACE")
 fig_3_10 <- fig_compile("DEC_MAKE", others = c("RACE", "BIRTHATTEND2", "PARITY", "BIRTHCOUNTRY", "DISABILITY"))
 # Let's show RE, along with birth attendant, parity, nativity, disability status
+
+# Painmeds ----
+fig_3pain <- fig_compile_2(c("PAINMEDSC1", "PAINMEDSC2", "PAINMEDSC3", 
+                             "PAINMEDSC4", "PAINMEDSC5", "PAINMEDSC6", "PAINMEDSC7"), 
+                           others = "INSURANCE", 
+                           data = filter(LTM_dsn, MODE2023 == "Vaginal birth")) %>% select(c("Var", "prop")) %>% 
+  subset(Var != "Not selected")
+
+fig_3painany <- fig_compile("PAINMEDSANY", 
+                            others = c("RACE", "PARITY", "BIRTHATTEND2", "DOULA", "DOULAC2"), 
+                            data = filter(LTM_dsn, 
+                                          MODE2023 == "Vaginal birth"))
+
+# Labor int ----
+fig3_laborint <- print.fig("LABORINT_ALL")
+fig3_laborintnone <- print.fig("R_LABORINTC6")
+fig3_laborintall <- collapse.fun(c('LABORINTC1', 'LABORINTC2', 'LABORINTC3', 
+                                   'LABORINTC4', 'LABORINTC5'))
+fig3_augment <- fig_compile("AROM",data = filter(LTM_dsn, MODE2023 == "Vaginal birth" | LABCSEC == "Yes"))
+
+# Position by doula 
+fig_3.position <- fig_compile("POSITION", others = c("DOULAC2"))
+
+# Intake restrictions 
+r_svysummary(by = "LABORPERMIT_A1")
+tabl_labperm <- fig_compile_2(c("LABORPERMIT_A1", "LABORPERMIT_A2"), 
+                              others = "INSURANCE")
 
 # Customs by race
 r_svysummary(by = "RACE", include = "CUSTOMS")
@@ -49,7 +88,7 @@ fig_5.3b <- fig_compile("FEED_CONCORDANT", others = c("RACE", "INSURANCE", "MODE
 
 fig_5.3a <- fig_5.3a %>% subset(FEED_CONCORDANT == 1) %>% mutate(Group = "Breast")
 fig_5.3b <- fig_5.3b %>% subset(FEED_CONCORDANT == 1) %>% mutate(Group = "Formula")
-  
+
 fig_5.3 <- rbind(fig_5.3a, fig_5.3b)
 
 # checking stat sig
@@ -97,5 +136,14 @@ fig_5.12 <- fig_compile("SUM_SNNEEDS")
 r_svysummary(by = "RACE", include = "CAT_SNNEEDS")
 
 # 5.13.	Continuing social needs byt counts, race and insurance
+
+
+# Looking at fetal monitoring
+r_svysummary(include = "FETALMON_ONLY")
+
+# bladder catehtors by epideural or not
+r_svysummary(by = "PAINMEDSC1", include = "LABORINTC4", 
+             data = filter(LTM_dsn, 
+                           MODE2023 == "Vaginal birth" | LABCSEC == "Yes"))
 
 

@@ -158,10 +158,10 @@ fig_compile <- function(maincol, others = c("RACE", "INSURANCE", "URBANICITY2"),
   
 }
 
-fig_compile_2 <- function(cols, others = c("RACE", "INSURANCE", "URBANICITY2")){
+fig_compile_2 <- function(cols, others = c("RACE", "INSURANCE", "URBANICITY2"), data = LTM_dsn){
   fig <- data.frame()
   for(i in cols){
-    fig2 <- fig_compile(i, others)
+    fig2 <- fig_compile(i, others, data = data)
     colnames(fig2)[1] <- "Var"
     rownames(fig2) <- NULL
     fig <- rbind(fig, fig2)

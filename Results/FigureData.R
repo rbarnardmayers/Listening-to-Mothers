@@ -6,6 +6,11 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Fig_Helpful_Func
 # PPVISIT categorized as 0, 1, 2, 3, 4+ 
 
 # CHAPTER 1 ----
+# Mental and physical conditions ----
+fig2.1 <- fig_compile_2(c("PREPREG_MHCONDC1", "PREPREG_MHCONDC2", "PREPREG_MHCONDC3", "PREPREG_MHCONDC4", "PREPREG_MHCONDC5", "PREPREG_MHCONDC6")) %>% subset(Var != "Not selected")
+
+fig2.2 <- fig_compile_2(c("PREPREG_PHYSCONDC1", "PREPREG_PHYSCONDC2", "PREPREG_PHYSCONDC3", "PREPREG_PHYSCONDC4")) %>% subset(Var != "Not selected")
+
 # Provider Type ----
 # Percent of racial distribution for each provider
 fig1 <- fig_compile("PROVIDER2", c("RACE", "INSURANCE"))
@@ -103,9 +108,11 @@ fig14 <- fig_compile('PREPREG_MHCONDC2')
 
 # MENTALSUPPORT ----
 # MENTALSUPPORT
+fig2.17 <- fig_compile("MSUPPORT_ONLY")
+fig2.17 <- fig_compile("MSUPPORT_ANY")
 
-fig15 <- fig_compile('PREG_UNMET_NEEDS', 
-                     data = filter(LTM_dsn, R_PHQ_ANX ==1 | R_PHQ_DEP == 1))
+
+fig2.18 <- fig_compile('PREG_UNMET_NEEDS', others = c("RACE", "INSURANCE", "URBANICITY2", "DISABILITY"))
 
 # Social needs ----
 fig16 <- fig_compile_2(c('SOCIALNEEDC1','SOCIALNEEDC2','SOCIALNEEDC3',
