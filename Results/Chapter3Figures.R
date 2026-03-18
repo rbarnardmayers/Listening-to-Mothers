@@ -1,6 +1,5 @@
 setwd("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Listening-to-Mothers")
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Fig_Helpful_Functions.R")
-
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/ApplyDictionary.R")
 
 # 3.1	GA vertical bars by gestational week or other viz to show how much we have deviated from a bell curve
@@ -22,7 +21,7 @@ fig_3_4 <- fig_compile("NICU", others = c("xBABYHOSP", "BW_CAT", "xGESTAGE"))
 fig_3_5 <- fig_compile("BIRTHATTEND2")
 
 # Physiologic childbirth
-fig_3_21 <- fig_compile("phys_cb", others = c("RACE", "INSURANCE","BIRTHATTEND2" ,'DOULAC2', 'DOULA'))
+fig_3_21 <- fig_compile("phys_cb", others = c("RACE", "INSURANCE","BIRTHATTEND2" ,'DOULAC2', 'DOULA', 'MIDWIFE_DOULA'))
 
 # fig_3.23 <- collapse.2by2(c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC4",
 #                             "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC9",
@@ -31,12 +30,26 @@ fig_3.23 <- fig_compile_2(c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC
                             "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC9",
                             "HOSPFEEDC10", "HOSPFEEDC11"), others = "FEED1WEEK_ONLY") %>% 
   subset(Var != "Not selected")
+r_svysummary(by = "PLANNEDFEED_ONLY", include = c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC4",
+                                                  "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC8",
+                                                  'HOSPFEEDC9', "HOSPFEEDC10", "HOSPFEEDC11"))
+# Babies of those who planned mixed feeding more frequently (48%) were given
+# formula or water supplements than those who planned exclusive breastfeeding 
+# (25%) (n.s. or p < 0.05?). Respondents who planned mixed feeding (54%) were 
+# more frequently given free formula samples, coupons, or offers than those who 
+# planned exclusive breastfeeding (38%) (n.s. or p < 0.05?).
+
+
 
 fig.3.23b <- fig_compile("SUM_HOSPFEED", others = "FEED1WEEK_ONLY")
+r_svysummary(by = "PLANNEDFEED_ONLY", include = "FEED1WEEK_ONLY")
+
 
 # NICU and gestage
 r_svysummary(by = "ANYNICU", include = "xGESTAGE_R")
 
+# planned birth 
+LTM_dsn %>% tbl_svysummary(include = "PLANNED_INDUCED")
 
 ##### FLOWCHART ####
 # No prior CS, term (37 – 41) birth
@@ -63,21 +76,48 @@ fig_3painany <- fig_compile("PAINMEDSANY",
                             others = c("RACE", "PARITY", "BIRTHATTEND2", "DOULA", "DOULAC2"), 
                             data = filter(LTM_dsn, 
                                           MODE2023 == "Vaginal birth"))
+r_svysummary(by = 'DOULAC2', include = 'PAINMEDSANY', 
+             data = filter(LTM_dsn, MODE2023 == "Vaginal birth"))
+
+r_svysummary(include = "AROM_ANY")
+r_svysummary(by = "AROM_ANY", include = "MODE2023")
+r_svysummary(include = "BLADDER")
+
 
 # Labor int ----
 fig3_laborint <- print.fig("LABORINT_ALL")
 fig3_laborintnone <- print.fig("R_LABORINTC6")
 fig3_laborintall <- collapse.fun(c('LABORINTC1', 'LABORINTC2', 'LABORINTC3', 
                                    'LABORINTC4', 'LABORINTC5'))
+
 fig3_augment <- fig_compile("AROM",data = filter(LTM_dsn, MODE2023 == "Vaginal birth" | LABCSEC == "Yes"))
+r_svysummary(include = "PITOCIN")
 
 # Position by doula 
 fig_3.position <- fig_compile("POSITION", others = c("DOULAC2"))
 
 # Intake restrictions 
-r_svysummary(by = "LABORPERMIT_A1")
+r_svysummary(include = "LABORPERMIT_A1")
 tabl_labperm <- fig_compile_2(c("LABORPERMIT_A1", "LABORPERMIT_A2"), 
                               others = "INSURANCE")
+
+r_svysummary(by = "LABORPERMIT_A1", include = "LABORINTC2" )
+r_svysummary(by = "LABORPERMIT_A2", include = "LABORINTC2" )
+
+fig3.drink <- fig_compile("LABORINTC2", "LABORPERMIT_A1")
+fig3.eat <- fig_compile("LABORINTC2", "LABORPERMIT_A2")
+
+# pcmc scores 
+r_svysummary(by = "RACE", include = "PCMC_SCORE_R")
+r_svysummary(include = c("PCMC_comms", 'PCMC_resp', "PCMC_supp"))
+r_svysummary(include = c("CUSTOMS_subopt"))
+
+# Cesarean rates for Cervical dilation cats
+r_svysummary(by = "VAGEXAM_5", include = "MODE2023")
+
+# EFM and Walking and Epidural
+r_svysummary(by = "FETALMONC1", include = "LABORWALK")
+r_svysummary(by = "PAINMEDSC1", include = "LABORWALK")
 
 # Customs by race
 r_svysummary(by = "RACE", include = "CUSTOMS")
@@ -102,6 +142,9 @@ r_svysummary(by = "MODE2023", include = "FEED_CONCORDANT", data = filter(LTM_dsn
 r_svysummary(by = "MODE2023", include = "FEED_CONCORDANT", data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Formula"))
 
 
+# CS by Doulas 
+r_svysummary(by = "DOULAC1", include = "MODE2023")
+r_svysummary(by = "DOULAC2", include = "MODE2023")
 
 # 5.4.	Value added situations?? 
 
@@ -145,5 +188,15 @@ r_svysummary(include = "FETALMON_ONLY")
 r_svysummary(by = "PAINMEDSC1", include = "LABORINTC4", 
              data = filter(LTM_dsn, 
                            MODE2023 == "Vaginal birth" | LABCSEC == "Yes"))
+
+# Those whose providers recommended against induction (32%) were less
+# likely to have an induction than those whose providers made no recommendation 
+# (46%), 
+
+r_svysummary(by = "INDUCE5", include = "MEDINDUCE", 
+             data = filter(LTM_dsn, INDUCE == "Yes"))
+             
+# less likely to have this elective procedure than those whose providers 
+# recommended having it (67%) (58.7%, 73.5%)
 
 

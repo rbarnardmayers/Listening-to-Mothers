@@ -1,21 +1,25 @@
 # Data Dictionary Application
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Helpful_Functions.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Data Cleaning.R")
+
 setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")
-LTM2 <- read.csv("LTM_clean.csv")
+# LTM3 <- read.csv("LTM_clean.csv")
+# LTM3 <- fread("LTM_clean.csv")
+LTM3 <- LTM2 %>% rename(PCMC_SCORE_R = PCMC_SCORE)
 
 # Data dictionary prep ----
 # Getting rid of columns with no conversion in dict
 
 dict3 <- dict3 %>% 
-  mutate(KEEP = case_when(variable %in% colnames(LTM2) ~ 1, TRUE ~ 0)) %>% 
+  mutate(KEEP = case_when(variable %in% colnames(LTM3) ~ 1, TRUE ~ 0)) %>% 
   subset(KEEP == 1) %>% 
   select(-c(KEEP))
 
-LTM_include <- LTM2 %>% select(dict3$variable)
+LTM_include <- LTM3 %>% select(dict3$variable)
 
 # 
-LTM2 <- LTM2 %>% 
-  select(c(setdiff(colnames(LTM2), colnames(LTM_include)), MDID))
+LTM3 <- LTM3 %>% 
+  select(c(setdiff(colnames(LTM3), colnames(LTM_include)), MDID))
 
 # Apply dictionary recoding and labeling 
 LTM_include <- recode_vrs(data = LTM_include, 
@@ -28,7 +32,7 @@ LTM_include <- recode_vrs(data = LTM_include,
 # LTM_include <- LTM_include %>% replace(is.na(.), "Missing")
 
 # Final dataset 
-LTM_final <- LTM2 %>% 
+LTM_final <- LTM3 %>% 
   full_join(LTM_include, by = join_by(MDID))
 
 # Create a weight variable while waiting for final version of dataset ----
@@ -43,13 +47,13 @@ categorical <- LTM_final %>%
             DISABILITYCOND, Source,ends_with("O"), YEARBIRTH,
             ends_with("BIRTHYEAR"), starts_with("SCREEN"), starts_with("TRAP"),
             CURRWEIGHT_LBS,PREGWEIGHT_KG_2,PREGWEIGHT_LBS_2,
-            starts_with("FOLLOWUP"), UID2,RACE,
+            starts_with("FOLLOWUP"), UID2,RACE,PCMC_SCORE_R,
             starts_with("x"),contains("FLAG"), starts_with("F2_"),ends_with("O"),
             starts_with("F3_"),  starts_with("F1_"),starts_with("X"),
             PREG_INT,PREPREG_WEIGHT_B1,LEARNED2,
             NUMB_BIRTH,HEIGHT_FEET,HEIGHT_INCHES,CURRWEIGHT_KG,
             BIRTHWEIGHT_LBS,BIRTHWEIGHT_OZ,BIRTHWEIGHT_G,AGECHECK,
-            DISABLEYRS,MODE_ALL,GESTAGE_WEEKS,GESTAGE,
+            DISABLEYRS,MODE_ALL,GESTAGE_WEEKS,GESTAGE,PCMC_comms, PCMC_resp, PCMC_supp,
             PREG_INT, HEIGHT_FEET,HEIGHT_INCHES, HEIGHT,
             PREPREG_WEIGHT_A1,PREGCONDITIONC11,DUEDATE_M, DUEDATE_Y,
             DUEDATE_D, BIRTHDATE_D, BIRTHDATE_M,LEARNED1,BIRTHWEIGHT_LBSOZ,
@@ -60,16 +64,17 @@ categorical <- LTM_final %>%
             WEAN, ZIP, FAMSIZE1, FAMSIZE2, INCOME, IMMIGRATION))  %>% colnames()
 
 # Factor categorical variables and reorder values----
-for(i in categorical){
-  LTM_final[[i]] <- refac.fun(i)
-}
+# for(i in categorical){
+#   LTM_final[[i]] <- refac.fun(i)
+# }
 
 # Convert continuous variables into numeric class ----
 continuous <- LTM_final %>% 
   select(c(AGE,YEARBIRTH,GESTAGE,GESTAGE_WEEKS,starts_with("SUM_"),
            NUMB_BIRTH,BIRTHWEIGHT,PPVISIT,LEARNED2,AGE_ATBIRTH,
+           PCMC_comms, PCMC_resp, PCMC_supp,
            DISABLEYRS,MODE_ALL,MEDINDUCE4,MEDINDUCE5,LEARNED1,GESTAGE_R_cont,
-           PREG_WEIGHT, PREPREG_WEIGHT, HEIGHT, BMI,WEIGHTGAIN_R,
+           PREG_WEIGHT, PREPREG_WEIGHT, HEIGHT, BMI,WEIGHTGAIN_R,PCMC_SCORE_R,
            VAGEXAM, LABORLENGTH, DAYSHOSP, BABYHOSP, PPVISIT, BIRTHWEIGHT_LBSOZ,
            PPVISITTIME1, PPVISITTIME2, EXCLUSIVEBF, WEAN, FAMSIZE1, FAMSIZE2, INCOME )) %>% 
   colnames()
@@ -91,12 +96,12 @@ for (i in seq_len(nrow(dict2))) {
   }
 }
 
+# for(i in categorical){
+#     LTM_final[i] <- lapply(LTM_final[i], function(x)  gsub("I’d prefer not to answer", "Missing", x))  
+# }
+# 
 for(i in categorical){
-    LTM_final[i] <- lapply(LTM_final[i], function(x)  gsub("I’d prefer not to answer", "Missing", x))  
-}
-
-for(i in categorical){
-  LTM_final[i] <- lapply(LTM_final[i], function(x)  gsub("Missing", NA, x))  
+  LTM_final[i] <- lapply(LTM_final[i], function(x)  gsub("Missing", NA, x))
 }
 
 

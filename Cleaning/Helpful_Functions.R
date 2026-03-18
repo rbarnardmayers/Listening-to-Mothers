@@ -12,6 +12,16 @@ library(openxlsx)
 library(naniar)
 library(gtsummary)
 library(labelled)
+library(readr)
+library(data.table)
+
+# Convert missing to NA ----
+convert.miss <- function(dat, vars, val){
+  for(i in vars){
+    dat[[i]] <- na_if(dat[[i]], val)
+  }
+  return(dat)
+}
 
 # Convert columns to numeric ----
 convert.fun <- function(dat, vars){
@@ -51,6 +61,14 @@ rev.likert <- function(col, dat = LTM2){
   return(dat[,col])
 }
 
+# Recode PCMC scores ---- 
+pcmc.score <- function(col, dat = LTM2){
+  dat[,col] <- ifelse(dat[,col] == 1, 0, 
+                      ifelse(dat[,col] == 2, 1, 
+                             ifelse(dat[,col] == 3, 2, 
+                                    ifelse(dat[,col] == 4, 3, NA))))
+  return(dat[,col])
+}
 
 # Refactor categorical so that missing is the last category shown ----
 refac.fun <- function(col, vars = c("Missing"), dat = LTM_final){

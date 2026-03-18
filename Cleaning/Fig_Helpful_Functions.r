@@ -5,6 +5,7 @@ library(ggplot2)
 library(srvyr)
 library(readxl)
 library(tidyr)
+library(readr)
 library(rlang)
 library(purrr)
 library(phdcocktail)
@@ -171,15 +172,18 @@ fig_compile_2 <- function(cols, others = c("RACE", "INSURANCE", "URBANICITY2"), 
 }
 
 r_svysummary <- function(by = NULL, include, data = LTM_dsn){
-    tbl_svysummary(data = data, 
-                   missing = "no",
-                   by = by, 
-                   include = include, 
-                   statistic = list(all_categorical() ~ "{p}%", 
-                                    all_continuous() ~ "{mean}, {median}"),
-                   digits = list(all_categorical() ~ 4, 
-                                 all_continuous() ~ 1),
-                   missing_stat = "{p_miss}") %>% 
+  tbl_svysummary(data = data, 
+                 missing = "no",
+                 by = by, 
+                 include = include, 
+                 statistic = list(all_categorical() ~ "{p}%", 
+                                  # all_continuous() ~ "{min}, {p25}, {median}, {p75}, {max}"),
+                                  all_continuous() ~ "{min},{mean} , {max}"),
+                                  # all_continuous() ~ "{mean}"),
+                 
+                 digits = list(all_categorical() ~ 4, 
+                               all_continuous() ~ 1),
+                 missing_stat = "{p_miss}") %>% 
     add_ci(style_fun = list(all_categorical() ~
                               label_style_sigfig(scale = 1000)
     ))

@@ -6,6 +6,8 @@ LTM <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Data_FINAL.cs
 LTM1 <- LTM %>% 
   mutate(MDID = as.character(MDID))
 
+miss_vars <- dict2[dict2$missing == 99999,"variable"] %>% subset(!is.na(variable)) 
+
 # Identify text response columns ending for other ----
 # Don't want to convert these columns to numeric
 ends_o <- LTM1[str_ends(colnames(LTM1), "O")]  %>% colnames()
@@ -44,9 +46,10 @@ for(i in sn_cols){
                                  ifelse(LTM_keep[[i]] == 99999, NA, 1)))
 }
 
+
 # merge the text columns back in with the numeric ones
-LTM1 <- LTM_ignore %>% 
-  full_join(LTM_keep, join_by(MDID))
+LTM1 <- LTM_keep %>% 
+  full_join(LTM_ignore, join_by(MDID))
 
 # Recode variables ----
 LTM1$BOTHER_R1 <- rev.likert("BOTHER_A1", dat = LTM1)
@@ -54,6 +57,15 @@ LTM1$BOTHER_R2 <- rev.likert("BOTHER_A2", dat = LTM1)
 LTM1$BOTHER_R3 <- rev.likert("BOTHER_A3", dat = LTM1)
 LTM1$BOTHER_R4 <- rev.likert("BOTHER_A4", dat = LTM1)
 
+# Convert missing ----
+LTM1 <- convert.miss(LTM1, c('RESPECT', 'KNOWLEDGE', 'HEARD', 
+                             'DECISIONS', 'CONSENT', 'INFORMED',
+                             'TIMELINESS', 'TRUST', 'FEEDING',
+                             'SAFE', 'DISCRIMINATION', 'NEGLECT'), 99)
+LTM1 <- convert.miss(LTM1, c("TIMELINESS"), 97)
+LTM1 <- convert.miss(LTM1, miss_vars$variable, 99999)
+
+# All data ----
 LTM2 <- LTM1 %>% 
   mutate(
     PARITY = case_when(NUMB_BIRTH == 1 ~ "Nulliparous",
@@ -63,7 +75,6 @@ LTM2 <- LTM1 %>%
     DUEDATE_M = as.numeric(DUEDATE_M),
     DUEDATE_D = as.numeric(DUEDATE_D),
     DUEDATE = as.Date(paste0(DUEDATE_M,"/", DUEDATE_D, "/",DUEDATE_Y), "m%/%d/%Y"),
-    
     YEARBIRTH = as.numeric(YEARBIRTH),
     BIRTHDATE_M = as.numeric(BIRTHDATE_M),
     BIRTHDATE_D = as.numeric(BIRTHDATE_D),
@@ -109,6 +120,8 @@ LTM2 <- LTM1 %>%
     PROVIDER2 = case_when(PROVIDER == 1 ~ "OB",
                           PROVIDER == 4 ~ "Midwife",
                           PROVIDER %in% c(5,6) ~ "Other"),
+    LABORWALK_NO = case_when(LABORWALK == 1 | LABORWALK == 3 ~ 0, 
+                             LABORWALK == 2 ~ 1),
     BMI = PREPREG_WEIGHT *703 / HEIGHT^2, 
     DOULA = case_when(DOULAC1 == 1 ~ "Yes", 
                       DOULAC2 == 1 ~ "Yes", 
@@ -143,6 +156,8 @@ LTM2 <- LTM1 %>%
     BIRTHWEIGHT = case_when(!is.na(BIRTHWEIGHT_LBS) ~ BIRTHWEIGHT_LBSOZ*453.592,
                             TRUE ~ BIRTHWEIGHT_G), 
     BIRTHWEIGHT = as.numeric(BIRTHWEIGHT),
+    BIRTHWEIGHT_4500 = case_when(BIRTHWEIGHT >= 4500 ~ 1, 
+                                 TRUE ~ 0),
     PROVIDER2 =case_when(PROVIDER %in% c(1)  ~ "OB",
                          PROVIDER == 4 ~ "Midwife",
                          PROVIDER %in% c(5,6) ~ "Other"), 
@@ -336,10 +351,15 @@ LTM2 <- LTM1 %>%
                         MODE2023 == 1 ~ 1), 
     NEITHER_REC = case_when(BIGBABY2 == 1 | BIGBABY2 == 2 ~ 0, 
                             BIGBABY2 == 97 ~ 1),
+    PLANNED_INDUCED = case_when(MEDINDUCE == 1 ~ 1, # induced 
+                                CSECTIONTYPE == 1 ~ 1, # planned cesarean 
+                                MEDINDUCE != 1 & CSECTIONTYPE != 1 ~ 0), # no induction and not planned cesarean
     OTHERSUPPORT_ONLY = case_when(OTHERSUPPORTC1 == 1 & OTHERSUPPORTC2 == 0 ~ "Spouse",
                                   OTHERSUPPORTC1 == 0 & OTHERSUPPORTC2 == 1 ~ "Family", 
                                   OTHERSUPPORTC1 == 1 & OTHERSUPPORTC2 == 1 ~ "Both",
                                   OTHERSUPPORTC3 == 1 ~ "Neither"),
+    DENIED = case_when(LABORPERMIT_A1 == 3 | LABORPERMIT_A2 == 3 ~ 1,
+                       LABORPERMIT_A1 < 3 & LABORPERMIT_A2 < 3 ~ 0),
     COMPOSITE = case_when(xGESTAGE == 1 & BW_CAT %in% c(3,4)~ "Preterm & Normal Birthweight", 
                           xGESTAGE == 1 & BW_CAT %in% c(1,2)~ "Preterm & Low Birthweight", 
                           xGESTAGE > 1 & BW_CAT %in% c(3,4)~ "Term & Normal Birthweight", 
@@ -353,9 +373,9 @@ LTM2 <- LTM1 %>%
                             DOULAC1 == 0 & DOULAC2 == 0 & DOULAC3 == 1 ~ "postpartum only",
                             DOULAC1 == 0 & DOULAC2 == 0 & DOULAC3 == 0 ~ "No Doula"), 
     RHOSPFEEDC7 = case_when(HOSPFEEDC7 == 1 ~ 0, 
-                           HOSPFEEDC7 == 0 ~ 1),
+                            HOSPFEEDC7 == 0 ~ 1),
     RHOSPFEEDC6 = case_when(HOSPFEEDC6 == 1 ~ 0, 
-                           HOSPFEEDC6 == 0 ~ 1), 
+                            HOSPFEEDC6 == 0 ~ 1), 
     LABORINTC1 = case_when(LABORINTC1 > 1 ~ NA, 
                            TRUE ~ LABORINTC1),
     LABORINTC2 = case_when(LABORINTC2 > 1 ~ NA, 
@@ -370,17 +390,55 @@ LTM2 <- LTM1 %>%
                            TRUE ~ LABORINTC6),
     LABORINTC7 = case_when(LABORINTC7 > 1 ~ NA, 
                            TRUE ~ LABORINTC7),
+    PITOCIN = case_when(LABORINTC3 == 1 ~ 1, 
+                        MEDINDUCE1C4 == 1 ~ 1, 
+                        TRUE ~ 0),
+    BLADDER = case_when(LABORINTC4 == 1 | CSECTIONINTC2 == 1 ~ 1, 
+                        TRUE ~ 0),
+    IV_DRIP = case_when(CSECTIONINTC1 == 1 | LABORINTC2 == 1 ~ 1, 
+                        TRUE ~ 0),
     R_LABORINTC6 = case_when(LABORINTC6 == 1 & FETALMONC1 == 1 ~ 0, 
                              LABORINTC6 == 1 & FETALMONC1 != 1 ~ 1, 
                              LABORINTC6 == 0 ~ 0),
-    AROM = case_when(LABORINTC1 == 1 & LABORINTC3 == 1 ~ "Both", 
-                     LABORINTC1 == 0 & LABORINTC3 == 1 ~ "Pit Only",
-                     LABORINTC1 == 1 & LABORINTC3 == 0 ~ "AROM only", 
-                     LABORINTC1 == 0 & LABORINTC3 == 0 ~ "Neither"), 
+    AROM_ANY = case_when(LABORINTC1 == 1 & MEDINDUCE1C1 == 1 ~ "AROM Induction", 
+                         LABORINTC1 == 0 & MEDINDUCE1C1 == 1 ~ "AROM Augmentation",
+                         LABORINTC1 == 1 & MEDINDUCE1C1 == 0 ~ "AROM Induction",
+                         MEDINDUCE1C1 == 0 & LABORINTC1 == 0 ~ "No AROM"),
+    VAGEXAM2 = case_when(VAGEXAM == 99999 ~ NA, 
+                         VAGEXAM >= 8 & VAGEXAM <= 10 ~ "8",
+                         TRUE ~ factor(VAGEXAM)),
+    VAGEXAM_4 = case_when(VAGEXAM <= 4 ~ "≤ 4", 
+                          VAGEXAM > 4 & VAGEXAM <= 10 ~ "5+"),
+    VAGEXAM_5 = case_when(VAGEXAM <= 5 ~ 1, 
+                          VAGEXAM > 5 & VAGEXAM <= 10 ~ 0),
+    AROM_LABOR = case_when(LABORINTC1 == 1 & LABORINTC3 == 1 ~ "Both", 
+                           LABORINTC1 == 0 & LABORINTC3 == 1 ~ "Pit Only",
+                           LABORINTC1 == 1 & LABORINTC3 == 0 ~ "AROM only", 
+                           LABORINTC1 == 0 & LABORINTC3 == 0 ~ "Neither"), 
     FETALMON_ONLY = case_when(FETALMONC1 == 1 & FETALMONC2 == 1 ~ "Both", 
                               FETALMONC1 == 1 & FETALMONC2 == 0 ~ "EFM", 
                               FETALMONC1 == 0 & FETALMONC2 == 1 ~ "Doppler",
-                              FETALMONC1 == 1 & FETALMONC2 == 1 ~ "Neither")) %>% 
+                              FETALMONC1 == 1 & FETALMONC2 == 1 ~ "Neither"),
+    DISCRIMINATION_R = case_when(DISCRIMINATION == 1 ~ 4, 
+                                 DISCRIMINATION == 2 ~ 3, 
+                                 DISCRIMINATION == 3 ~ 2, 
+                                 DISCRIMINATION == 4 ~ 1),
+    NEGLECT_R = case_when(NEGLECT == 1 ~ 4, 
+                          NEGLECT == 2 ~ 3, 
+                          NEGLECT == 3 ~ 2,
+                          NEGLECT == 4 ~ 1),
+    CUM_IND = case_when(MEDINDUCE == 2 ~ 0, 
+                        MEDINDUCE == 1 ~ 1),
+    CUM_EPI = case_when(PAINMEDSC1 == 1 ~ 1, 
+                        TRUE ~ 0), 
+    CUM_AUG = case_when(LABORINTC1 == 1 ~ 1, 
+                        LABORINTC3 == 1 ~ 1, 
+                        TRUE ~ 0), 
+    CUM_ASS = case_when(VAGASSIST == 1 ~ 1, 
+                        VAGASSIST == 2 ~ 1,
+                        TRUE ~ 0), 
+    CUM_CES = case_when(MODE2023 == 2 ~ 1, 
+                        TRUE ~ 0)) %>% 
   rename(MDE2023 = MODE2023, 
          SONEEDC11 = SOCIALNEEDC11,
          SONEEDC10 = SOCIALNEEDC10, 
@@ -395,10 +453,6 @@ LTM2 <- LTM1 %>%
   mutate(MODE_ALL = sum(across(starts_with("MODE")), na.rm = T),
          SUM_SOCIALNEED =sum(across(starts_with("SOCIALNEED")), na.rm = T),
          SUM_HOSPFEED = sum(across(starts_with("HOSPFEED")), na.rm = T),
-         SUM_RESPECT = sum(RESPECT, KNOWLEDGE, HEARD, 
-                           DECISIONS, CONSENT, INFORMED,
-                           TIMELINESS, TRUST, FEEDING,
-                           SAFE, DISCRIMINATION, NEGLECT, na.rm = T),
          SUM_SNNEEDS = sum(across(starts_with("SN")), na.rm = T),
          SDM = sum(SDM_1,SDM_2,SDM_3,SDM_4, na.rm = T), 
          SUM_ANX = sum(BOTHER_R1, BOTHER_R2, na.rm = T), 
@@ -408,7 +462,10 @@ LTM2 <- LTM1 %>%
                             DRUGFREEC5,DRUGFREEC6,DRUGFREEC7,DRUGFREEC8,
                             DRUGFREEC9,DRUGFREEC10), # including other
          SUM_LABORINT = sum(LABORINTC1, LABORINTC2, LABORINTC3, 
-                            LABORINTC4, LABORINTC5, FETALMONC1))  
+                            LABORINTC4, LABORINTC5, FETALMONC1, LABORWALK_NO, 
+                            VAGEXAM_5, DENIED), 
+         CUM_INT = sum(across(starts_with("CUM_"))) # Induction, epidural, augmentation, assisted, cesarean
+  )
 
 LTM2 <- LTM2 %>% 
   mutate(VBAC = case_when(MODE_ALL > 0 & MDE2023 == 1 ~ 1,
@@ -421,6 +478,7 @@ LTM2 <- LTM2 %>%
                          TRUE ~ SDM), 
          SDM_dich = case_when(SDM == 0 ~ 0, 
                               SDM > 0 ~ 1),
+         # SUM_PCMC = case_when(SUM_PCMC == 12),
          R_PHQ_ANX = case_when(SUM_ANX < 3 ~ 0, 
                                SUM_ANX >= 3 ~ 1),
          R_PHQ_DEP = case_when(SUM_DEP < 3 ~ 0, 
@@ -439,6 +497,8 @@ LTM2 <- LTM2 %>%
                                       MEDS_DEP_ANX == 1 & R_PHQ_ANX == 1 ~ 0, 
                                       R_PHQ_ANX == 0 ~ NA,
                                       R_PHQ_DEP == 0 ~ NA),
+         MIDWIFE_DOULA = case_when(BIRTHATTEND2 == "Midwife" & DOULAC2 == 1 ~ "Midwife & Doula", 
+                                   BIRTHATTEND2 != "Midwife" & DOULAC2 != 1 ~ "No Midwife & No Doula"), 
          MDID = as.numeric(MDID),
          SUM_HOSPFEED = case_when(SUM_HOSPFEED > 10 ~ NA, 
                                   TRUE ~ SUM_HOSPFEED),
@@ -457,47 +517,55 @@ LTM2 <- LTM2 %>%
          HOSPFEEDC6 = HSPFEEDC6,
          HOSPFEEDC7 = HSPFEEDC7)
 
+# Scoring for PCMC ----
+PCMC <- c('RESPECT', 'KNOWLEDGE', 'HEARD',
+              'DECISIONS', 'CONSENT', 'INFORMED',
+              'TRUST', 'FEEDING', 'SAFE')
+for(i in PCMC){
+  LTM2[,paste0(i, "_pcmc")] <- pcmc.score(i)
+}
+
+LTM2 <- LTM2 %>%
+  mutate(CUSTOMS_subopt = case_when(CUSTOMS == 1 ~ 1, 
+                                    CUSTOMS == 2 ~ 1, 
+                                    CUSTOMS == 3 ~ 1, 
+                                    CUSTOMS == 4 ~ 0, 
+                                    CUSTOMS == 97 ~ 0), 
+         CUSTOMS_pcmc = case_when(CUSTOMS == 1 ~ 0, 
+                             CUSTOMS == 2 ~ 1, 
+                             CUSTOMS == 3 ~ 2, 
+                             CUSTOMS == 4 ~ 3, 
+                             CUSTOMS == 97 ~ 2), 
+         TIMELINESS_pcmc = case_when(TIMELINESS == 1 ~ 0, 
+                                     TIMELINESS == 2 ~ 1, 
+                                     TIMELINESS == 3 ~ 2, 
+                                     TIMELINESS == 4 ~ 3, 
+                                     TIMELINESS == 97 ~ 2),
+         DISCRIMINATION_pcmc = case_when(DISCRIMINATION == 1 ~ 3, 
+                                         DISCRIMINATION == 2 ~ 2,
+                                         DISCRIMINATION == 3 ~ 1, 
+                                         DISCRIMINATION == 4 ~ 0),
+         NEGLECT_pcmc = case_when(NEGLECT == 1 ~ 3, 
+                                  NEGLECT == 2 ~ 2,
+                                  NEGLECT == 3 ~ 1, 
+                                  NEGLECT == 4 ~ 0)) %>%
+  rowwise() %>%
+  mutate(PCMC_SCORE = sum(across(ends_with("_pcmc"))), 
+         PCMC_resp = sum(RESPECT_pcmc, KNOWLEDGE_pcmc, CUSTOMS_pcmc, 
+                         DISCRIMINATION_pcmc, NEGLECT_pcmc, na.rm = T), 
+         PCMC_comms = sum(HEARD_pcmc, DECISIONS_pcmc, 
+                          CONSENT_pcmc, INFORMED_pcmc, na.rm = T), 
+         PCMC_supp = sum(as.numeric(TIMELINESS_pcmc),TRUST_pcmc,SAFE_pcmc, FEEDING_pcmc, na.rm = T))
+
+# Changing 0 back to 2 for data dictionary application ----
 for(i in sn_cols){
   LTM2[[i]] <- ifelse(LTM2[[i]] == 0, 2, LTM2[[i]])
 }
 
-
-# Recoding missing values ----
-missing_d <- dict2 %>% 
-  select(c("missing", "variable")) %>% 
-  mutate(missing = as.numeric(missing)) %>% 
-  subset(!is.na(missing)) %>%
-  mutate(KEEP = case_when(startsWith(variable, "x") ~ 0, TRUE ~ 1)) %>% 
-  subset(KEEP == 1)
-
-missing_99 <- missing_d %>% subset(missing == 99)
-missing_999 <- missing_d %>% subset(missing == 999)
-missing_99999 <- missing_d %>% subset(missing == 99999)
-missing_999999999999 <- missing_d %>% subset(missing == 999999999999)
-
-LTM_99 <- LTM2 %>% 
-  select(c(missing_99$variable, MDID))  %>% 
-  replace_with_na_all(condition = ~.x ==  99) 
-
-LTM_999 <- LTM2 %>% 
-  select(c(missing_999$variable, MDID)) %>% 
-  replace_with_na_all(condition = ~.x ==  999) 
-
-LTM_99999 <- LTM2 %>% 
-  select(c(missing_99999$variable, MDID)) %>% 
-  replace_with_na_all(condition = ~.x ==  99999) 
-
-LTM_999999999999 <- LTM2 %>% 
-  select(c(missing_999999999999$variable, MDID)) %>% 
-  replace_with_na_all(condition = ~.x ==  999999999999) 
-
-LTM3 <- LTM2 %>% 
-  select(-c(missing_d$variable)) %>%
-  full_join(LTM_99, join_by(MDID)) %>% 
-  full_join(LTM_999, join_by(MDID)) %>% 
-  full_join(LTM_99999, join_by(MDID)) %>% 
-  full_join(LTM_999999999999, join_by(MDID))
-
 # Exporting ----
-setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")
-write.csv(LTM3, "LTM_clean.csv")
+LTM2 <- as.data.frame(LTM2)
+
+# setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")
+# write.csv(LTM2, "LTM_clean.csv")
+
+
