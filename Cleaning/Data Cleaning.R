@@ -376,6 +376,8 @@ LTM2 <- LTM1 %>%
                             HOSPFEEDC7 == 0 ~ 1),
     RHOSPFEEDC6 = case_when(HOSPFEEDC6 == 1 ~ 0, 
                             HOSPFEEDC6 == 0 ~ 1), 
+    RHOSPFEEDC4 = case_when(HOSPFEEDC4 == 1 ~ 0, 
+                            HOSPFEEDC4 == 0 ~ 1), 
     LABORINTC1 = case_when(LABORINTC1 > 1 ~ NA, 
                            TRUE ~ LABORINTC1),
     LABORINTC2 = case_when(LABORINTC2 > 1 ~ NA, 
@@ -405,7 +407,7 @@ LTM2 <- LTM1 %>%
                          LABORINTC1 == 1 & MEDINDUCE1C1 == 0 ~ "AROM Induction",
                          MEDINDUCE1C1 == 0 & LABORINTC1 == 0 ~ "No AROM"),
     VAGEXAM2 = case_when(VAGEXAM == 99999 ~ NA, 
-                         VAGEXAM >= 8 & VAGEXAM <= 10 ~ "8",
+                         VAGEXAM >= 7 & VAGEXAM <= 10 ~ "7",
                          TRUE ~ factor(VAGEXAM)),
     VAGEXAM_4 = case_when(VAGEXAM <= 4 ~ "≤ 4", 
                           VAGEXAM > 4 & VAGEXAM <= 10 ~ "5+"),
@@ -445,10 +447,12 @@ LTM2 <- LTM1 %>%
          HSPFEEDC8 = HOSPFEEDC8,
          HSPFEEDC11 = HOSPFEEDC11,
          HSPFEEDC12 = HOSPFEEDC12, 
+         HSPFEEDC4 = HOSPFEEDC4, 
          HSPFEEDC6 = HOSPFEEDC6,
          HSPFEEDC7 = HOSPFEEDC7, 
+         HOSPFEEDC4 = RHOSPFEEDC4,
          HOSPFEEDC6 = RHOSPFEEDC6,
-         HOSPFEEDC6 = RHOSPFEEDC6) %>%
+         HOSPFEEDC7 = RHOSPFEEDC7) %>%
   rowwise() %>% 
   mutate(MODE_ALL = sum(across(starts_with("MODE")), na.rm = T),
          SUM_SOCIALNEED =sum(across(starts_with("SOCIALNEED")), na.rm = T),
@@ -502,25 +506,28 @@ LTM2 <- LTM2 %>%
          MDID = as.numeric(MDID),
          SUM_HOSPFEED = case_when(SUM_HOSPFEED > 10 ~ NA, 
                                   TRUE ~ SUM_HOSPFEED),
+         RHOSPFEEDC11 = case_when(SUM_HOSPFEED == 0 ~ 1,
+                                  SUM_HOSPFEED > 0 ~ 0),
          SUM_SNNEEDS = case_when(SUM_SNNEEDS > 10 ~ NA, 
                                  TRUE ~ SUM_SNNEEDS), 
          CAT_SNNEEDS = case_when(SUM_SNNEEDS == 0 ~ 0, SUM_SNNEEDS > 0 ~ 1), 
          LABORINT_ALL = case_when(SUM_LABORINT == 6 ~ 1, 
                                   SUM_LABORINT < 6 ~ 0)) %>%
-  select(-c(HOSPFEEDC6, HOSPFEEDC6)) %>%
+  select(-c(HOSPFEEDC6, HOSPFEEDC7,HOSPFEEDC4)) %>%
   rename(MODE2023 = MDE2023,
          SOCIALNEEDC11 = SONEEDC11,
          SOCIALNEEDC10 = SONEEDC10, 
          HOSPFEEDC8 = HSPFEEDC8,
          HOSPFEEDC11 = HSPFEEDC11,
          HOSPFEEDC12 = HSPFEEDC12, 
+         HOSPFEEDC4 = HSPFEEDC4,
          HOSPFEEDC6 = HSPFEEDC6,
          HOSPFEEDC7 = HSPFEEDC7)
 
 # Scoring for PCMC ----
 PCMC <- c('RESPECT', 'KNOWLEDGE', 'HEARD',
-              'DECISIONS', 'CONSENT', 'INFORMED',
-              'TRUST', 'FEEDING', 'SAFE')
+          'DECISIONS', 'CONSENT', 'INFORMED',
+          'TRUST', 'FEEDING', 'SAFE')
 for(i in PCMC){
   LTM2[,paste0(i, "_pcmc")] <- pcmc.score(i)
 }
@@ -532,10 +539,10 @@ LTM2 <- LTM2 %>%
                                     CUSTOMS == 4 ~ 0, 
                                     CUSTOMS == 97 ~ 0), 
          CUSTOMS_pcmc = case_when(CUSTOMS == 1 ~ 0, 
-                             CUSTOMS == 2 ~ 1, 
-                             CUSTOMS == 3 ~ 2, 
-                             CUSTOMS == 4 ~ 3, 
-                             CUSTOMS == 97 ~ 2), 
+                                  CUSTOMS == 2 ~ 1, 
+                                  CUSTOMS == 3 ~ 2, 
+                                  CUSTOMS == 4 ~ 3, 
+                                  CUSTOMS == 97 ~ 2), 
          TIMELINESS_pcmc = case_when(TIMELINESS == 1 ~ 0, 
                                      TIMELINESS == 2 ~ 1, 
                                      TIMELINESS == 3 ~ 2, 
@@ -555,7 +562,13 @@ LTM2 <- LTM2 %>%
                          DISCRIMINATION_pcmc, NEGLECT_pcmc, na.rm = T), 
          PCMC_comms = sum(HEARD_pcmc, DECISIONS_pcmc, 
                           CONSENT_pcmc, INFORMED_pcmc, na.rm = T), 
-         PCMC_supp = sum(as.numeric(TIMELINESS_pcmc),TRUST_pcmc,SAFE_pcmc, FEEDING_pcmc, na.rm = T))
+         PCMC_supp = TIMELINESS_pcmc+TRUST_pcmc+SAFE_pcmc+FEEDING_pcmc)
+
+LTM2 <- LTM2 %>% 
+  mutate(PCMC_SCORE = 100*round(PCMC_SCORE/39,2), 
+         PCMC_resp = 100*round(PCMC_resp/15,2),
+         PCMC_comms = 100*round(PCMC_comms/12,2),
+         PCMC_supp = 100*round(PCMC_supp/12,2))
 
 # Changing 0 back to 2 for data dictionary application ----
 for(i in sn_cols){

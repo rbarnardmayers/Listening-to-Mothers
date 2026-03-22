@@ -30,9 +30,26 @@ fig_3.23 <- fig_compile_2(c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC
                             "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC9",
                             "HOSPFEEDC10", "HOSPFEEDC11"), others = "FEED1WEEK_ONLY") %>% 
   subset(Var != "Not selected")
-r_svysummary(by = "PLANNEDFEED_ONLY", include = c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC4",
-                                                  "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC8",
-                                                  'HOSPFEEDC9', "HOSPFEEDC10", "HOSPFEEDC11"))
+r_svysummary(by = "PLANNEDFEED_ONLY", 
+             include = c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC4",
+                         "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC8",
+                         'HOSPFEEDC9', "HOSPFEEDC10", "RHOSPFEEDC11"))
+
+
+r_svysummary(by = "FEED1WEEK_ONLY",
+             include = c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC4",
+                         "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC8",
+                         'HOSPFEEDC9', "HOSPFEEDC10", "RHOSPFEEDC11"))
+
+
+r_svysummary(by = "PLANNEDFEED_ONLY", 
+             include = c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC4",
+                         "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC8",
+                         'HOSPFEEDC9', "HOSPFEEDC10", "RHOSPFEEDC11"), 
+             data = filter(LTM_dsn, PARITY == "Nulliparous"))
+
+
+
 # Babies of those who planned mixed feeding more frequently (48%) were given
 # formula or water supplements than those who planned exclusive breastfeeding 
 # (25%) (n.s. or p < 0.05?). Respondents who planned mixed feeding (54%) were 
@@ -42,7 +59,7 @@ r_svysummary(by = "PLANNEDFEED_ONLY", include = c("HOSPFEEDC1", "HOSPFEEDC2", "H
 
 
 fig.3.23b <- fig_compile("SUM_HOSPFEED", others = "FEED1WEEK_ONLY")
-r_svysummary(by = "PLANNEDFEED_ONLY", include = "FEED1WEEK_ONLY")
+LTM_dsn %>% tbl_svysummary(by = "PLANNEDFEED_ONLY", include = "FEED1WEEK_ONLY")
 
 
 # NICU and gestage
@@ -108,12 +125,21 @@ fig3.drink <- fig_compile("LABORINTC2", "LABORPERMIT_A1")
 fig3.eat <- fig_compile("LABORINTC2", "LABORPERMIT_A2")
 
 # pcmc scores 
-r_svysummary(by = "RACE", include = "PCMC_SCORE_R")
+r_svysummary(by = "RACE", 
+             include = "PCMC_SCORE_R")
 r_svysummary(include = c("PCMC_comms", 'PCMC_resp', "PCMC_supp"))
 r_svysummary(include = c("CUSTOMS_subopt"))
 
+r_svysummary(include = c('RESPECT', 'KNOWLEDGE', 'HEARD',
+                         'DECISIONS', 'CONSENT', 'INFORMED',
+                         'TRUST', 'FEEDING', 'SAFE', 'TIMELINESS',
+                         'DISCRIMINATION_pcmc', 'NEGLECT_pcmc'))
+# CHAPTER 4 
+
+
 # Cesarean rates for Cervical dilation cats
 r_svysummary(by = "VAGEXAM_5", include = "MODE2023")
+r_svysummary(by = "VAGEXAM2", include = "MODE2023")
 
 # EFM and Walking and Epidural
 r_svysummary(by = "FETALMONC1", include = "LABORWALK")
@@ -195,7 +221,7 @@ r_svysummary(by = "PAINMEDSC1", include = "LABORINTC4",
 
 r_svysummary(by = "INDUCE5", include = "MEDINDUCE", 
              data = filter(LTM_dsn, INDUCE == "Yes"))
-             
+
 # less likely to have this elective procedure than those whose providers 
 # recommended having it (67%) (58.7%, 73.5%)
 

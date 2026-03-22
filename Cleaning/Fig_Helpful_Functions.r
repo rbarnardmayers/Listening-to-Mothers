@@ -178,14 +178,16 @@ r_svysummary <- function(by = NULL, include, data = LTM_dsn){
                  include = include, 
                  statistic = list(all_categorical() ~ "{p}%", 
                                   # all_continuous() ~ "{min}, {p25}, {median}, {p75}, {max}"),
-                                  all_continuous() ~ "{min},{mean} , {max}"),
-                                  # all_continuous() ~ "{mean}"),
+                                  # all_continuous() ~ "{min},{mean} , {max}"),
+                                  all_continuous() ~ "{mean}"),
                  
                  digits = list(all_categorical() ~ 4, 
                                all_continuous() ~ 1),
                  missing_stat = "{p_miss}") %>% 
     add_ci(style_fun = list(all_categorical() ~
-                              label_style_sigfig(scale = 1000)
+                              label_style_sigfig(digits = 4),
+                            all_continuous() ~ 
+                              label_style_sigfig(digits = 4)
     ))
 }
 
