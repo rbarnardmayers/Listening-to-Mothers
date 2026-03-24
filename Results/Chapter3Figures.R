@@ -23,6 +23,10 @@ fig_3_5 <- fig_compile("BIRTHATTEND2")
 # Physiologic childbirth
 fig_3_21 <- fig_compile("phys_cb", others = c("RACE", "INSURANCE","BIRTHATTEND2" ,'DOULAC2', 'DOULA', 'MIDWIFE_DOULA'))
 
+# Feeding
+fig_2.27 <- fig_compile("PLANNEDFEED_ONLY", others = c("RACE", "INSURANCE", "URBANICITY2"))
+r_svysummary(by = "RACE", include = "PLANNEDFEED_ONLY")
+
 # fig_3.23 <- collapse.2by2(c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC4",
 #                             "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC9",
 #                             "HOSPFEEDC10"))
@@ -48,7 +52,18 @@ r_svysummary(by = "PLANNEDFEED_ONLY",
                          'HOSPFEEDC9', "HOSPFEEDC10", "RHOSPFEEDC11"), 
              data = filter(LTM_dsn, PARITY == "Nulliparous"))
 
+# feeding exclus. BF at 1 week by each hosp feed cat
+LTM_dsn %>% 
+  filter(PLANNEDFEED_ONLY == "Breastmilk") %>%
+  tbl_svysummary(by = "FEED1WEEK_ONLY",
+             include = c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC4",
+                         "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC8",
+                         'HOSPFEEDC9', "HOSPFEEDC10", "RHOSPFEEDC11"), 
+             percent = "row")
 
+r_svysummary(by = "HOSPFEEDC10", include = "FEED1WEEK_ONLY", 
+             data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Breastmilk"))
+# 
 
 # Babies of those who planned mixed feeding more frequently (48%) were given
 # formula or water supplements than those who planned exclusive breastfeeding 

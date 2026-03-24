@@ -11,9 +11,7 @@ r_svysummary(by = "INSURANCE",
              include = "xMODE2", 
              data = filter(LTM_dsn, xMODE2 %in% c("Cesarean Repeat", "VBAC")))
 
-
 # Pie chart VBAC interest 
-
 r_svysummary(include = "VBACINTEREST")
 r_svysummary(by = "VBACINTEREST", include = "VBACCHOICE")
 r_svysummary(include = c("VBACACCESSC1", "VBACACCESSC2","VBACACCESSC3"), 
@@ -36,4 +34,29 @@ r_svysummary(by = "MEDINDUCE",
 # VBAC Effort by success
 r_svysummary(by = "VBACCHOICE",
              include = "VBACEFFORT")
+
+# Doula and Midwife by outcomes
+r_svysummary(include = c("CSECTIONTYPE", "CUM_ASS"))
+r_svysummary( include = c("xMODE2"), data = filter(LTM_dsn, xMODE2 %in% c("VBAC", "Cesarean Repeat")))
+
+r_svysummary(by = "TRI_DOULA", include = c("CSECTIONTYPE", "CUM_ASS"))
+r_svysummary(by = "TRI_DOULA", include = c("xMODE2"), data = filter(LTM_dsn, xMODE2 %in% c("VBAC", "Cesarean Repeat")))
+
+r_svysummary(by = "DOULAC1", include = c("CSECTIONTYPE", "CUM_ASS"))
+r_svysummary(by = "DOULAC1", include = c("xMODE2"), data = filter(LTM_dsn, xMODE2 %in% c("VBAC", "Cesarean Repeat")))
+
+r_svysummary(by = "DOULAC2", include = c("CSECTIONTYPE", "CUM_ASS"))
+r_svysummary(by = "DOULAC2", include = c("xMODE2"), data = filter(LTM_dsn, xMODE2 %in% c("VBAC", "Cesarean Repeat")))
+
+r_svysummary(by = "PROVIDER2", include = c("CSECTIONTYPE", "CUM_ASS"))
+r_svysummary(by = "PROVIDER2", include = c("xMODE2"), data = filter(LTM_dsn, xMODE2 %in% c("VBAC", "Cesarean Repeat")))
+
+
+# Assisted Vaginal
+fig.47 <- fig_compile("ASSISTED")
+fig.472 <- fig_compile("ASSISTED", 
+                       # others = c("PARITY"))
+                       # others = c("PROVIDER2"))
+                       others = c("BIRTHATTEND2"))
+
 

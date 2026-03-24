@@ -439,6 +439,10 @@ LTM2 <- LTM1 %>%
     CUM_ASS = case_when(VAGASSIST == 1 ~ 1, 
                         VAGASSIST == 2 ~ 1,
                         TRUE ~ 0), 
+    ASSISTED = case_when(VAGASSIST == 1 ~ "Assisted", 
+                        VAGASSIST == 2 ~ "Assisted",
+                        VAGASSIST == 3 ~ "Unassisted",
+                        VAGASSIST == 99 ~ "PNTA"), 
     CUM_CES = case_when(MODE2023 == 2 ~ 1, 
                         TRUE ~ 0)) %>% 
   rename(MDE2023 = MODE2023, 
@@ -503,6 +507,8 @@ LTM2 <- LTM2 %>%
                                       R_PHQ_DEP == 0 ~ NA),
          MIDWIFE_DOULA = case_when(BIRTHATTEND2 == "Midwife" & DOULAC2 == 1 ~ "Midwife & Doula", 
                                    BIRTHATTEND2 != "Midwife" & DOULAC2 != 1 ~ "No Midwife & No Doula"), 
+         TRI_DOULA = case_when(DOULAC1 == 1 & DOULAC2 == 1 & PROVIDER == 4 ~ 1, 
+                               TRUE ~ 0),
          MDID = as.numeric(MDID),
          SUM_HOSPFEED = case_when(SUM_HOSPFEED > 10 ~ NA, 
                                   TRUE ~ SUM_HOSPFEED),
@@ -513,13 +519,16 @@ LTM2 <- LTM2 %>%
          CAT_SNNEEDS = case_when(SUM_SNNEEDS == 0 ~ 0, SUM_SNNEEDS > 0 ~ 1), 
          LABORINT_ALL = case_when(SUM_LABORINT == 6 ~ 1, 
                                   SUM_LABORINT < 6 ~ 0)) %>%
-  select(-c(HOSPFEEDC6, HOSPFEEDC7,HOSPFEEDC4)) %>%
+  # select(-c(HOSPFEEDC6, HOSPFEEDC7,HOSPFEEDC4)) %>%
   rename(MODE2023 = MDE2023,
          SOCIALNEEDC11 = SONEEDC11,
          SOCIALNEEDC10 = SONEEDC10, 
          HOSPFEEDC8 = HSPFEEDC8,
          HOSPFEEDC11 = HSPFEEDC11,
          HOSPFEEDC12 = HSPFEEDC12, 
+         RHOSPFEEDC4 = HOSPFEEDC4,
+         RHOSPFEEDC6 = HOSPFEEDC6,
+         RHOSPFEEDC7 = HOSPFEEDC7,
          HOSPFEEDC4 = HSPFEEDC4,
          HOSPFEEDC6 = HSPFEEDC6,
          HOSPFEEDC7 = HSPFEEDC7)
