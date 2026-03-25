@@ -1,0 +1,66 @@
+# OLD Table Runs ----
+overall <- r_svy6()
+colnames(overall) <- c("Characteristics", "Overall", "95_Overall")
+overall <- overall %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))
+
+# Impact whiteness 
+impact_w <- r_svy6(by_var = "IMPACT_WHITE")
+colnames(impact_w) <- c("Characteristics", 
+                        "BlackWhite", "95_BW", 
+                        "Multi_NoWhite", "95_MNW",
+                        "White Alone", "95_WA",
+                        "WhiteCombi_NoBlack", "95_WCNB")
+impact_w <- impact_w %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))
+
+# Impact Black, 
+impact_b <- r_svy6(by_var = "IMPACT_BLACK")
+colnames(impact_b) <- c("Characteristics", 
+                        "BlackAlone", "95_BA", 
+                        "BlackCombi_NoWhite", "95_BCNW",
+                        "BlackWhite", "95_BW",
+                        "Multi_NoBlack", "95_MNB")
+impact_b <- impact_b %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))
+
+# ALONE RESULTS 
+impact_alone <- r_svy6(by_var = "RACEALONE")
+colnames(impact_alone) <- c("Characteristics", 
+                            "AIAN", "95_AIAN", 
+                            'Asian', '95_Asian',
+                            'Black', "95_Black", 
+                            "Latine", "95_Latine", 
+                            'MENA', "95_MENA",
+                            "NHPI", "95_NHPI", 
+                            "White", "95_White")
+impact_alone <- impact_alone %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))
+
+# Multi comparison 
+col_balone <- impact_alone[,c("Characteristics", "Black", "95_Black")]
+
+col_multi <- r_svy6(by_var = "MULTIRACIAL1")
+colnames(col_multi) <- c("Characteristics", "Multiracial", "95_Multi", "Other", "95_O")
+col_multi <- col_multi[,c("Characteristics", "Multiracial", "95_Multi")]
+col_multi <- col_multi %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))
+
+col_mnb <- impact_b[,c("Characteristics", "Multi_NoBlack", "95_MNB")]
+
+col_mnw <-impact_w[,c("Characteristics", "Multi_NoWhite", "95_MNW")]
+
+# AFROLATINE/LATINEWHITE
+col_aflat <- r_svy6(by_var = "AFROLATINE")
+colnames(col_aflat) <- c("Characteristics", "Black + Latine","95_BL", "Other", "95_O")
+col_aflat <- col_aflat[,c("Characteristics", "Black + Latine", "95_BL")]
+col_aflat <- col_aflat %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))
+
+col_latw <- r_svy6(by_var = "LATINEWHITE")
+colnames(col_latw) <- c("Characteristics", "Other", "95_O", "White + Latine", "95_WL")
+col_latw <- col_latw[,c("Characteristics", "White + Latine", "95_WL")]
+col_latw <- col_latw %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))
+
+col_lat <- impact_alone[,c("Characteristics", "Latine", "95_Latine")]
+col_white <- impact_alone[,c("Characteristics", "White", "95_White")]
+
+# AIAN-NHPI-ASIAN
+impact_asian <- impact_alone %>% 
+  select(c("Characteristics", "AIAN", "95_AIAN", "NHPI", "95_NHPI",
+           'Asian', '95_Asian'))
+impact_asian <- impact_asian %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))

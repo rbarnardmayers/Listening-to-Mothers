@@ -50,7 +50,7 @@ categorical <- LTM_final %>%
             starts_with("FOLLOWUP"), UID2,RACE,PCMC_SCORE_R,
             starts_with("x"),contains("FLAG"), starts_with("F2_"),ends_with("O"),
             starts_with("F3_"),  starts_with("F1_"),starts_with("X"),
-            PREG_INT,PREPREG_WEIGHT_B1,LEARNED2,
+            PREG_INT,PREPREG_WEIGHT_B1,LEARNED2,SUM_SNNEEDS,
             NUMB_BIRTH,HEIGHT_FEET,HEIGHT_INCHES,CURRWEIGHT_KG,
             BIRTHWEIGHT_LBS,BIRTHWEIGHT_OZ,BIRTHWEIGHT_G,AGECHECK,
             DISABLEYRS,MODE_ALL,GESTAGE_WEEKS,GESTAGE,PCMC_comms, PCMC_resp, PCMC_supp,
@@ -72,7 +72,7 @@ categorical <- LTM_final %>%
 continuous <- LTM_final %>% 
   select(c(AGE,YEARBIRTH,GESTAGE,GESTAGE_WEEKS,starts_with("SUM_"),
            NUMB_BIRTH,BIRTHWEIGHT,PPVISIT,LEARNED2,AGE_ATBIRTH,
-           PCMC_comms, PCMC_resp, PCMC_supp,
+           PCMC_comms, PCMC_resp, PCMC_supp,SUM_SNNEEDS,
            DISABLEYRS,MODE_ALL,MEDINDUCE4,MEDINDUCE5,LEARNED1,GESTAGE_R_cont,
            PREG_WEIGHT, PREPREG_WEIGHT, HEIGHT, BMI,WEIGHTGAIN_R,PCMC_SCORE_R,
            VAGEXAM, LABORLENGTH, DAYSHOSP, BABYHOSP, PPVISIT, BIRTHWEIGHT_LBSOZ,
@@ -104,8 +104,9 @@ for(i in categorical){
   LTM_final[i] <- lapply(LTM_final[i], function(x)  gsub("Missing", NA, x))
 }
 
+LTM_final <- LTM_final %>% 
+  mutate(FINALWT = as.numeric(FINALWT))
 
-LTM_dsn <- LTM_final %>% 
-  mutate(FINALWT = as.numeric(FINALWT)) %>%
+LTM_dsn <- LTM_final %>%
   as_survey_design(weight = FINALWT, id = 1)
 

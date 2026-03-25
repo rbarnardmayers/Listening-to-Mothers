@@ -389,7 +389,16 @@ fig61$ITEM <- rep(c("SNMEAL","SNLIVE", "SNUTILITIES",
                     "SNTRANSPORT","SNCHILDCARE", "SNINCOME",
                     "SNDRUGS", "SNUNSAFE", "SNABUSE"), each = 2)
 
-fig62 <- fig_compile("SUM_SNNEEDS")
+fig62 <- fig_compile("SUM_SNNEEDS") %>% View()
+
+r_svysummary(by = "RACE", include = "SUM_SOCIALNEEDS")
+print.cont.groups("RACE", "SUM_SOCIALNEED")
+print.cont.groups("INCCAT2", "SUM_SOCIALNEED")
+
+aov.1 <- aov(SUM_SOCIALNEED~INCCAT2, 
+             data = LTM_final,
+             weights = FINALWT)
+t.rsul<- TukeyHSD(aov.1, "INCCAT2", conf.level = 0.95)
 
 # Other variables ----
 # limited to multips, 

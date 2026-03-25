@@ -1,5 +1,6 @@
 # Setup ----
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Chapter 6 Runs/Data Cleaning Chapter 6.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Chapter 6 Runs/Function.R")
 
 LTM_dsn <- LTM_6 %>% 
   mutate(FINALWT = as.numeric(FINALWT)) %>%
@@ -36,80 +37,78 @@ for(i in comp_cols){
 
 # Alone
 for(i in comp_cols){
-  dat <- data_comp_IW(i)
+  dat <- data_comp_alone(i)
   assign(paste0(i, "_tab_Alone"),dat)
 }  
 
+# AFROLATINE
 for(i in comp_cols){
-  dat <- data_comp_IW(i)
-  assign(paste0(i, "_tab_IW"),dat)
+  dat <- data_comp_AL(i)
+  assign(paste0(i, "_tab_AL"),dat)
 }   
-# Table Runs ----
-overall <- r_svy6()
-colnames(overall) <- c("Characteristics", "Overall", "95_Overall")
-overall <- overall %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))
 
-# Impact whiteness 
-impact_w <- r_svy6(by_var = "IMPACT_WHITE")
-colnames(impact_w) <- c("Characteristics", 
-                        "BlackWhite", "95_BW", 
-                        "Multi_NoWhite", "95_MNW",
-                        "White Alone", "95_WA",
-                        "WhiteCombi_NoBlack", "95_WCNB")
-impact_w <- impact_w %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))
+# LATINEWHITE
+for(i in comp_cols){
+  dat <- data_comp_LW(i)
+  assign(paste0(i, "_tab_LW"),dat)
+}   
 
-# Impact Black, 
-impact_b <- r_svy6(by_var = "IMPACT_BLACK")
-colnames(impact_b) <- c("Characteristics", 
-                        "BlackAlone", "95_BA", 
-                        "BlackCombi_NoWhite", "95_BCNW",
-                        "BlackWhite", "95_BW",
-                        "Multi_NoBlack", "95_MNB")
-impact_b <- impact_b %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))
+# Multi Comparison ----
+for(i in comp_cols){
+  top <- get(paste0(i, "_tab_Alone"))
+  top <- top[1:3,]
+  colnames(top) <- paste0("V", 1:ncol(top))
+  
+  row1 <- get(paste0(i, "_tab_Alone"))
+  row1 <- row1[row1[,1] == "Black",]
+  colnames(row1) <- colnames(top)
+  
+  row2 <- get(paste0(i, "_tab_AL"))
+  row2 <- row2[row2[,1] == "BlackLatine",]
+  colnames(row2) <- colnames(top)
+  
+  
+  row3 <- get(paste0(i, "_tab_Alone"))
+  row3 <- row3[row3[,1] == "Latine",]
+  colnames(row3) <- colnames(top)
+  
+  row4 <- get(paste0(i, "_tab_LW"))
+  row4 <- row4[row4[,1] == "WhiteLatine",]
+  colnames(row4) <- colnames(top)
+  
+  row5 <- get(paste0(i, "_tab_Alone"))
+  row5 <- row5[row5[,1] == "White",]
+  colnames(row5) <- colnames(top)
+  
+  dat <- rbind(top, row1, row2, row3, row4, row5)
+  assign(paste0(i, "_tab_Multi"),dat)
+}
 
-# ALONE RESULTS 
-impact_alone <- r_svy6(by_var = "RACEALONE")
-colnames(impact_alone) <- c("Characteristics", 
-                            "AIAN", "95_AIAN", 
-                            'Asian', '95_Asian',
-                            'Black', "95_Black", 
-                            "Latine", "95_Latine", 
-                            'MENA', "95_MENA",
-                            "NHPI", "95_NHPI", 
-                            "White", "95_White")
-impact_alone <- impact_alone %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))
+# Asian ----
+# AIANALONE 
+# NHPIALONE 
+# ASIANALONE 
+for(i in comp_cols){
+  top <- get(paste0(i, "_tab_Alone"))
+  top <- top[1:3,]
+  colnames(top) <- paste0("V", 1:ncol(top))
+  
+  row1 <- get(paste0(i, "_tab_Alone"))
+  row1 <- row1[row1[,1] == "AIAN",]
+  colnames(row1) <- colnames(top)
+  
+  row2 <- get(paste0(i, "_tab_Alone"))
+  row2 <- row2[row2[,1] == "NHPI",]
+  colnames(row2) <- colnames(top)
+  
+  row3 <- get(paste0(i, "_tab_Alone"))
+  row3 <- row3[row3[,1] == "Asian",]
+  colnames(row3) <- colnames(top)
+  
+  dat <- rbind(top, row1, row2, row3)
+  assign(paste0(i, "_tab_Asian"),dat)
+}
 
-# Multi comparison 
-col_balone <- impact_alone[,c("Characteristics", "Black", "95_Black")]
-
-col_multi <- r_svy6(by_var = "MULTIRACIAL1")
-colnames(col_multi) <- c("Characteristics", "Multiracial", "95_Multi", "Other", "95_O")
-col_multi <- col_multi[,c("Characteristics", "Multiracial", "95_Multi")]
-col_multi <- col_multi %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))
-
-col_mnb <- impact_b[,c("Characteristics", "Multi_NoBlack", "95_MNB")]
-
-col_mnw <-impact_w[,c("Characteristics", "Multi_NoWhite", "95_MNW")]
-
-# AFROLATINE/LATINEWHITE
-col_aflat <- r_svy6(by_var = "AFROLATINE")
-colnames(col_aflat) <- c("Characteristics", "Black + Latine","95_BL", "Other", "95_O")
-col_aflat <- col_aflat[,c("Characteristics", "Black + Latine", "95_BL")]
-col_aflat <- col_aflat %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))
-
-col_latw <- r_svy6(by_var = "LATINEWHITE")
-colnames(col_latw) <- c("Characteristics", "Other", "95_O", "White + Latine", "95_WL")
-col_latw <- col_latw[,c("Characteristics", "White + Latine", "95_WL")]
-col_latw <- col_latw %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))
-
-col_lat <- impact_alone[,c("Characteristics", "Latine", "95_Latine")]
-col_white <- impact_alone[,c("Characteristics", "White", "95_White")]
-
-# AIAN-NHPI-ASIAN
-impact_asian <- impact_alone %>% 
-  select(c("Characteristics", "AIAN", "95_AIAN", "NHPI", "95_NHPI",
-           'Asian', '95_Asian'))
-impact_asian <- impact_asian %>% subset(!(Characteristics %in% c("Not selected", "Unknown")))
 
 # Exporting -----
 setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers/Chapter 6 Runs/Results")
@@ -119,28 +118,21 @@ IW_list <- mget(IW_names)
 names(IW_list) <- comp_cols
 write_xlsx(IW_list, path = "WhiteImpact_results.xlsx")
 
-
-# Impact White
+# Impact Black
 IB_names <- ls(pattern = "_tab_IB")
 IB_list <- mget(IB_names)
 names(IB_list) <- comp_cols
 write_xlsx(IB_list, path = "BlackImpact_results.xlsx")
 
-# 
-sheets_mul <- list('BlackAlone' = col_balone, 
-                   'Multi' = col_multi, 
-                   'Multi_NoBlack' = col_mnb,
-                   "Multi_NoWhite" = col_mnw) 
+# Multi
+MUL_names <- ls(pattern = "_tab_Multi")
+MUL_list <- mget(MUL_names)
+names(MUL_list) <- comp_cols
+write_xlsx(MUL_list, path = "Multi_results.xlsx")
 
-write.xlsx(sheets_mul, file = "Multi_results.xlsx")
-
-list_figs_afrol <- list(
-  "BlackAlone" = col_balone, 
-  "AfroLatine" = col_aflat, 
-  "LatineWhite" = col_latw, 
-  "LatineAlone" = col_lat, 
-  "WhiteAlone" = col_white)
-
-write.xlsx(list_figs_afrol, file = "Afro_results.xlsx")
-write.xlsx(impact_alone, file = "Alone_results.xlsx")
+# Asian results
+AS_names <- ls(pattern = "_tab_Asian")
+AS_list <- mget(AS_names)
+names(AS_list) <- comp_cols
+write.xlsx(AS_list, file = "Asian_results.xlsx")
 
