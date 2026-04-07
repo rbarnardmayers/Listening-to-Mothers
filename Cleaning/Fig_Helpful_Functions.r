@@ -186,8 +186,21 @@ r_svysummary <- function(by = NULL, include, data = LTM_dsn){
                  missing_stat = "{p_miss}") %>% 
     add_ci(style_fun = list(all_categorical() ~
                               label_style_sigfig(digits = 4),
-                            all_continuous() ~ 
+                            all_continuous() ~
                               label_style_sigfig(digits = 4)
     ))
+}
+
+count_svysummary <- function(by = NULL, include, data = LTM_dsn){
+  tbl_svysummary(data = data, 
+                 missing = "no",
+                 by = by, 
+                 include = include, 
+                 statistic = list(all_categorical() ~ "{n}", 
+                                  all_continuous() ~ "{mean}"),
+                 
+                 digits = list(all_categorical() ~ 4, 
+                               all_continuous() ~ 1),
+                 missing_stat = "{p_miss}")
 }
 

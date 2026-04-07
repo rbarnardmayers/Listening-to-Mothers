@@ -2,6 +2,15 @@ setwd("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Listening-to-Mothers")
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Fig_Helpful_Functions.R")
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/ApplyDictionary.R")
 
+# Chapter 2 
+r_svysummary(by = "INCCAT2", include = "EMPLOYBEN")
+r_svysummary(by = "INCCAT2", include = "EMPLOYCHANGE1")
+
+# Social needs
+print.cont.groups("DISABILITY", "SUM_SOCIALNEED")
+r_svysummary(by = "MARRIED", "SUM_SOCIALNEED")
+# INCCAT2, DISABILITY, RACE, MARRIED,URBANICITY2
+
 # 3.1	GA vertical bars by gestational week or other viz to show how much we have deviated from a bell curve
 LTM_dsn %>%
   tbl_svysummary(include = GESTAGE_R,
@@ -40,7 +49,7 @@ r_svysummary(by = "PLANNEDFEED_ONLY",
                          'HOSPFEEDC9', "HOSPFEEDC10", "RHOSPFEEDC11"))
 
 
-r_svysummary(by = "FEED1WEEK_ONLY",
+r_svysummary(by = "PLANNEDFEED_ONLY",
              include = c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC4",
                          "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC8",
                          'HOSPFEEDC9', "HOSPFEEDC10", "RHOSPFEEDC11"))
@@ -52,18 +61,28 @@ r_svysummary(by = "PLANNEDFEED_ONLY",
                          'HOSPFEEDC9', "HOSPFEEDC10", "RHOSPFEEDC11"), 
              data = filter(LTM_dsn, PARITY == "Nulliparous"))
 
+r_svysummary(by = "PLANNEDFEED_ONLY", 
+             include = "HOSPFEEDC8", 
+             data = filter(LTM_dsn, MODE2023 == "Vaginal birth"))
+# CS: 6 (0.0297, 0.1220)
+# V: 2 (0.0129, 0.0295)
+
+
 # feeding exclus. BF at 1 week by each hosp feed cat
 LTM_dsn %>% 
   filter(PLANNEDFEED_ONLY == "Breastmilk") %>%
   tbl_svysummary(by = "FEED1WEEK_ONLY",
-             include = c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC4",
-                         "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC8",
-                         'HOSPFEEDC9', "HOSPFEEDC10", "RHOSPFEEDC11"), 
-             percent = "row")
+                 include = c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC4",
+                             "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC8",
+                             'HOSPFEEDC9', "HOSPFEEDC10", "RHOSPFEEDC11"), 
+                 percent = "row")
 
-r_svysummary(by = "HOSPFEEDC10", include = "FEED1WEEK_ONLY", 
+r_svysummary(by = "HOSPFEED2", 
+             include = "FEED1WEEK_ONLY", 
              data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Breastmilk"))
 # 
+r_svysummary(by = "RACE",
+             include = "OTHERSUPPORT_ONLY")
 
 # Babies of those who planned mixed feeding more frequently (48%) were given
 # formula or water supplements than those who planned exclusive breastfeeding 
@@ -71,11 +90,10 @@ r_svysummary(by = "HOSPFEEDC10", include = "FEED1WEEK_ONLY",
 # more frequently given free formula samples, coupons, or offers than those who 
 # planned exclusive breastfeeding (38%) (n.s. or p < 0.05?).
 
-
-
 fig.3.23b <- fig_compile("SUM_HOSPFEED", others = "FEED1WEEK_ONLY")
 LTM_dsn %>% tbl_svysummary(by = "PLANNEDFEED_ONLY", include = "FEED1WEEK_ONLY")
 
+r_svysummary(include = "LEARNED2_R")
 
 # NICU and gestage
 r_svysummary(by = "ANYNICU", include = "xGESTAGE_R")
@@ -101,7 +119,8 @@ fig_3_10 <- fig_compile("DEC_MAKE", others = c("RACE", "BIRTHATTEND2", "PARITY",
 fig_3pain <- fig_compile_2(c("PAINMEDSC1", "PAINMEDSC2", "PAINMEDSC3", 
                              "PAINMEDSC4", "PAINMEDSC5", "PAINMEDSC6", "PAINMEDSC7"), 
                            others = "INSURANCE", 
-                           data = filter(LTM_dsn, MODE2023 == "Vaginal birth")) %>% select(c("Var", "prop")) %>% 
+                           data = filter(LTM_dsn, MODE2023 == "Vaginal birth")) %>% 
+  select(c("Var", "prop")) %>% 
   subset(Var != "Not selected")
 
 fig_3painany <- fig_compile("PAINMEDSANY", 
@@ -115,8 +134,12 @@ r_svysummary(include = "AROM_ANY")
 r_svysummary(by = "AROM_ANY", include = "MODE2023")
 r_svysummary(include = "BLADDER")
 
-
-# Labor int ----
+r_svysummary(by = "CSECTIONTYPE", 
+             include = c("PAINMEDSC1", "PAINMEDSC2", "PAINMEDSC3", 
+                         "PAINMEDSC4", "PAINMEDSC5", "PAINMEDSC6", "PAINMEDSC7"),
+             data = filter(LTM_dsn, MODE2023 == "Cesarean birth (c-section)"))
+  
+  # Labor int ----
 fig3_laborint <- print.fig("LABORINT_ALL")
 fig3_laborintnone <- print.fig("R_LABORINTC6")
 fig3_laborintall <- collapse.fun(c('LABORINTC1', 'LABORINTC2', 'LABORINTC3', 
@@ -149,6 +172,12 @@ r_svysummary(include = c('RESPECT', 'KNOWLEDGE', 'HEARD',
                          'DECISIONS', 'CONSENT', 'INFORMED',
                          'TRUST', 'FEEDING', 'SAFE', 'TIMELINESS',
                          'DISCRIMINATION_pcmc', 'NEGLECT_pcmc'))
+
+# Doula rates table 3.1
+
+r_svysummary(by = "DOULA", 
+             include = c("DOULAC1", "DOULAC2", "DOULAC3"))
+
 # CHAPTER 4 
 
 
@@ -161,65 +190,18 @@ r_svysummary(by = "FETALMONC1", include = "LABORWALK")
 r_svysummary(by = "PAINMEDSC1", include = "LABORWALK")
 
 # Customs by race
-r_svysummary(by = "RACE", include = "CUSTOMS")
-# 
-# 5.3.	Concordant BF by race, insurance
-fig_5.3a <- fig_compile("FEED_CONCORDANT", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Breastmilk"))
-fig_5.3b <- fig_compile("FEED_CONCORDANT", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Formula"))
+fig_compile("CUSTOMS_subopt", 
+            others = c("RACE", "INSURANCE", "DISABILITY")) %>% View()
 
-fig_5.3a <- fig_5.3a %>% subset(FEED_CONCORDANT == 1) %>% mutate(Group = "Breast")
-fig_5.3b <- fig_5.3b %>% subset(FEED_CONCORDANT == 1) %>% mutate(Group = "Formula")
+fig_compile("CUSTOMS2", 
+            others = c("RACE", "INSURANCE", "DISABILITY"), 
+            ) %>% View()
 
-fig_5.3 <- rbind(fig_5.3a, fig_5.3b)
+fig_compile("CUSTOMS2", 
+            others = c("DISABILITY")) %>% View()
 
-# checking stat sig
-r_svysummary(by = "RACE", include = "FEED_CONCORDANT", data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Breastmilk"))
-r_svysummary(by = "RACE", include = "FEED_CONCORDANT", data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Formula"))
-
-r_svysummary(by = "INSURANCE", include = "FEED_CONCORDANT", data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Breastmilk"))
-r_svysummary(by = "INSURANCE", include = "FEED_CONCORDANT", data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Formula"))
-
-r_svysummary(by = "MODE2023", include = "FEED_CONCORDANT", data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Breastmilk"))
-r_svysummary(by = "MODE2023", include = "FEED_CONCORDANT", data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Formula"))
-
-
-# CS by Doulas 
-r_svysummary(by = "DOULAC1", include = "MODE2023")
-r_svysummary(by = "DOULAC2", include = "MODE2023")
-
-# 5.4.	Value added situations?? 
-
-# 5.5.	Hospfeed 
-
-r_svysummary(by = "SUM_HOSPFEED", include = "BFGOAL")
-
-# 5.11.	Received help by screened for PHQ4 by race and insurance
-fig_5.11a <- fig_compile("PP_MSUPPORT_ANY", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PHQ4_PPPSYCH %in% c("Mild (3-5)", "Moderate (6-8)", "Severe (9-12)")))
-fig_5.11b <- fig_compile("PP_MSUPPORT_ANY", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PHQ4_PPPSYCH == "Normal (0-2)"))
-fig_5.11c <- fig_compile("PP_MSUPPORT_ANY", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PHQ4_PPPSYCH == "Mild (3-5)"))
-fig_5.11d <- fig_compile("PP_MSUPPORT_ANY", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PHQ4_PPPSYCH == "Moderate (6-8)"))
-fig_5.11e <- fig_compile("PP_MSUPPORT_ANY", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PHQ4_PPPSYCH == "Severe (9-12)"))
-
-fig_5.11a <- fig_5.11a %>% subset(PP_MSUPPORT_ANY == 1) %>% mutate(Group = "Any")
-fig_5.11b <- fig_5.11b %>% subset(PP_MSUPPORT_ANY == 1) %>% mutate(Group = "Normal")
-fig_5.11c <- fig_5.11c %>% subset(PP_MSUPPORT_ANY == 1) %>% mutate(Group = "Mild")
-fig_5.11d <- fig_5.11d %>% subset(PP_MSUPPORT_ANY == 1) %>% mutate(Group = "Moderate")
-fig_5.11e <- fig_5.11e %>% subset(PP_MSUPPORT_ANY == 1) %>% mutate(Group = "Severe")
-
-fig_5.11 <- rbind(fig_5.11a, fig_5.11b, fig_5.11c, fig_5.11d, fig_5.11e)
-
-r_svysummary(by = "RACE", include ="PP_MSUPPORT_ANY", data = filter(LTM_dsn, PHQ4_PPPSYCH %in% c("Mild (3-5)", "Moderate (6-8)", "Severe (9-12)")))
-
-
-# 5.12.	Social needs postpartum by race and insurance
-fig_5.12 <- fig_compile_2(c("SNABUSE", "SNCHILDCARE", "SNDRUGS", "SNINCOME", 
-                            "SNLIVE", "SNMEAL", "SNTRANSPORT", "SNUNSAFE", 
-                            "SNUTILITIES")) 
-fig_5.12 <- fig_compile("SUM_SNNEEDS")
-
-r_svysummary(by = "RACE", include = "CAT_SNNEEDS")
-
-# 5.13.	Continuing social needs byt counts, race and insurance
+r_svysummary(by = "DISABILITY", 
+             include = c("CUSTOMS2", "CUSTOMS_subopt"))
 
 
 # Looking at fetal monitoring
@@ -239,5 +221,17 @@ r_svysummary(by = "INDUCE5", include = "MEDINDUCE",
 
 # less likely to have this elective procedure than those whose providers 
 # recommended having it (67%) (58.7%, 73.5%)
+
+# medinduce 2 
+r_svysummary(include = c("MEDINDUCE1C1","MEDINDUCE1C2","MEDINDUCE1C3",
+                         "MEDINDUCE1C4","MEDINDUCE1C5","MEDINDUCE1C6",
+                         "MEDINDUCE1C7"),
+             data = filter(LTM_dsn, 
+                           MODE2023 == "Vaginal birth" & MEDINDUCE2 == "No"))
+
+r_svysummary(include = "CSECTIONTYPE",
+             data = filter(LTM_dsn, 
+                           MODE2023 == "Vaginal birth" & MEDINDUCE2 == "No"))
+
 
 

@@ -115,24 +115,24 @@ setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers/Chapter 6 Runs/Results")
 # Impact White
 IW_names <- ls(pattern = "_tab_IW")
 IW_list <- mget(IW_names)
-names(IW_list) <- comp_cols
+names(IW_list) <- IW_names
 write_xlsx(IW_list, path = "WhiteImpact_results.xlsx")
 
 # Impact Black
 IB_names <- ls(pattern = "_tab_IB")
 IB_list <- mget(IB_names)
-names(IB_list) <- comp_cols
+names(IB_list) <- IB_names
 write_xlsx(IB_list, path = "BlackImpact_results.xlsx")
 
 # Multi
 MUL_names <- ls(pattern = "_tab_Multi")
 MUL_list <- mget(MUL_names)
-names(MUL_list) <- comp_cols
+names(MUL_list) <- MUL_names
 write_xlsx(MUL_list, path = "Multi_results.xlsx")
 
 # Asian results
 AS_names <- ls(pattern = "_tab_Asian")
 AS_list <- mget(AS_names)
-names(AS_list) <- comp_cols
+names(AS_list) <- AS_names
 write.xlsx(AS_list, file = "Asian_results.xlsx")
 
