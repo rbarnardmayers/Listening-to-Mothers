@@ -1,7 +1,5 @@
 # Data Dictionary Application
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Helpful_Functions.R")
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Data Cleaning.R")
-
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/PlannedRecodes.R")
 setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")
 # LTM3 <- read.csv("LTM_clean.csv")
 # LTM3 <- fread("LTM_clean.csv")
@@ -100,9 +98,9 @@ for (i in seq_len(nrow(dict2))) {
 #     LTM_final[i] <- lapply(LTM_final[i], function(x)  gsub("I’d prefer not to answer", "Missing", x))  
 # }
 # 
-for(i in categorical){
-  LTM_final[i] <- lapply(LTM_final[i], function(x)  gsub("Missing", NA, x))
-}
+# for(i in categorical){
+#   LTM_final[i] <- lapply(LTM_final[i], function(x)  gsub("Missing", NA, x))
+# }
 
 LTM_final <- LTM_final %>% 
   mutate(FINALWT = as.numeric(FINALWT))

@@ -34,16 +34,27 @@ r_svysummary(by = "xMODE1", include = "PPVISIT2")
 # mode of birth for reporting in text
 
 # Mental Health 
-fig_compile("PP_MSUPPORT_ONLY") %>% View()
-r_svysummary(by = "URBANICITY2", 
-             include = "PP_MSUPPORT_ONLY")
+fig_compile("PP_MSUPPORT_ONLY", 
+            data = filter(LTM_dsn, PHQ4_PPDEP == "Positive screen for depression" |
+                            PHQ4_PPANX == "Positive screen for anxiety")) %>% 
+  t() %>% 
+  View()
+
+r_svysummary(by = "RACE", 
+             include = "PP_MSUPPORT_ONLY",
+             data = filter(LTM_dsn, PHQ4_PPDEP == "Positive screen for depression" |
+                             PHQ4_PPANX == "Positive screen for anxiety"))
 
 fig_compile("PP_UNMET_NEEDS") %>% View()
 r_svysummary(by = "URBANICITY2", 
-             include = "PP_UNMET_NEEDS")
+             include = "PP_UNMET_NEEDS", 
+             data = filter(LTM_dsn, PHQ4_PPDEP == "Positive screen for depression" |
+                             PHQ4_PPANX == "Positive screen for anxiety"))
+
+r_svysummary(include = "PHQ4_PPANX")
 
 # Breastfeeding postpartm ONLY
-r_svysummary(include = "PLANNEDFEED_ONLY")
+r_svysummary(include = "PLANNEDFEEDC1")
 
 r_svysummary(by = "PLANNEDFEED_ONLY", include = "FEED1WEEK_ONLY")
 r_svysummary(by = "FEED1WEEK_ONLY", include = "BF_3MONTH", 
@@ -51,19 +62,75 @@ r_svysummary(by = "FEED1WEEK_ONLY", include = "BF_3MONTH",
 
 
 # Breastfeeding postpartm ANY
+fig_compile(maincol = "FEED1WEEK_ONLY", 
+            others = c("RACE", "INSURANCE", "BIRTHATTEND2", 
+                       "xMODE2")) %>% View()
+
+r_svysummary(by = "RACE", 
+             include = "FEED1WEEKC2")
+
+r_svysummary(by = "PLANNEDFEED_ONLY", 
+             include = "FEED1WEEK_ONLY")
+
+r_svysummary(by = "DISABILITY", 
+            include = "FEED1WEEK_ONLY")
+
 r_svysummary(include = "PLANNEDFEEDC1")
+
+r_svysummary(include = "WEAN")
+r_svysummary(by = "MODE2023",
+             include = "WEAN")
+
+# FLOW CHARTS
+count_svysummary(include = "PLANNEDFEED_ONLY")
+count_svysummary(include = "FEED1WEEK_ONLY")
+count_svysummary(include = "EXCL_BF_3MONTH")
+count_svysummary(include = "EXCL_BF_6MONTH", 
+                 data = filter(LTM_dsn, EXCL_BF_3MONTH == 1))
+
+
+count_svysummary(by = "PLANNEDFEED_ONLY", 
+                 include = "FEED1WEEK_ONLY")
+
+count_svysummary(by = "FEED1WEEK_ONLY", 
+                 include = "EXCL_BF_3MONTH", 
+                 data = filter(LTM_dsn, PLANNEDFEED_ONLY == "UNKNOWN"))
+
+count_svysummary(by = "FEED1WEEK_ONLY", 
+                 include = "EXCL_BF_6MONTH", 
+                 data = filter(LTM_dsn, PLANNEDFEED_ONLY == "UNKNOWN" & 
+                                 EXCL_BF_3MONTH == 1))
+
+count_svysummary(include = "PLANNEDFEEDC1")
+count_svysummary(include = "FEED1WEEKC1")
+count_svysummary(include = "ANY_BF_3MONTH")
+count_svysummary(include = "ANY_BF_6MONTH")
 
 count_svysummary(by = "PLANNEDFEEDC1", 
                  include = "FEED1WEEKC1")
-# 2692930.4600/3396402
-# 168797.8900/3396402
-# 88575.3600/3396402
+
 count_svysummary(by = "FEED1WEEKC1", 
-                 include = "BF_3MONTH", 
+                 include = "ANY_BF_3MONTH", 
              data = filter(LTM_dsn, PLANNEDFEEDC1 == "Not selected"))
 
-# 1005913.7600/3396402
-12442.9/3396402
+count_svysummary(by = "FEED1WEEKC1", 
+                 include = "ANY_BF_6MONTH", 
+                 data = filter(LTM_dsn, 
+                               PLANNEDFEEDC1 == "Breast milk"))
+
+
+
+r_svysummary(by = "xMODE2", 
+             include = "EXCLUSIVEBF")
+
+r_svysummary(by = "EMPLOYCAT", 
+             include = "EXCLUSIVEBF")
+
+r_svysummary(by = "xMODE2", 
+             include = "BF_MONTHS")
+
+r_svysummary(by = "EMPLOYCAT", 
+             include = "EXCLUSIVEBF")
 
 
 # Depression trajectory
@@ -157,30 +224,13 @@ r_svysummary(by = "DOULAC2", include = "MODE2023")
 
 r_svysummary(by = "SUM_HOSPFEED", include = "BFGOAL")
 
-# 5.11.	Received help by screened for PHQ4 by race and insurance
-fig_5.11a <- fig_compile("PP_MSUPPORT_ANY", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PHQ4_PPPSYCH %in% c("Mild (3-5)", "Moderate (6-8)", "Severe (9-12)")))
-fig_5.11b <- fig_compile("PP_MSUPPORT_ANY", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PHQ4_PPPSYCH == "Normal (0-2)"))
-fig_5.11c <- fig_compile("PP_MSUPPORT_ANY", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PHQ4_PPPSYCH == "Mild (3-5)"))
-fig_5.11d <- fig_compile("PP_MSUPPORT_ANY", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PHQ4_PPPSYCH == "Moderate (6-8)"))
-fig_5.11e <- fig_compile("PP_MSUPPORT_ANY", others = c("RACE", "INSURANCE", "MODE2023"), data = filter(LTM_dsn, PHQ4_PPPSYCH == "Severe (9-12)"))
-
-fig_5.11a <- fig_5.11a %>% subset(PP_MSUPPORT_ANY == 1) %>% mutate(Group = "Any")
-fig_5.11b <- fig_5.11b %>% subset(PP_MSUPPORT_ANY == 1) %>% mutate(Group = "Normal")
-fig_5.11c <- fig_5.11c %>% subset(PP_MSUPPORT_ANY == 1) %>% mutate(Group = "Mild")
-fig_5.11d <- fig_5.11d %>% subset(PP_MSUPPORT_ANY == 1) %>% mutate(Group = "Moderate")
-fig_5.11e <- fig_5.11e %>% subset(PP_MSUPPORT_ANY == 1) %>% mutate(Group = "Severe")
-
-fig_5.11 <- rbind(fig_5.11a, fig_5.11b, fig_5.11c, fig_5.11d, fig_5.11e)
-
-r_svysummary(by = "RACE", include ="PP_MSUPPORT_ANY", data = filter(LTM_dsn, PHQ4_PPPSYCH %in% c("Mild (3-5)", "Moderate (6-8)", "Severe (9-12)")))
-
 
 # 5.12.	Social needs postpartum by race and insuranc
 
 fig_5.12 <- fig_compile_2(c("SNABUSE", "SNCHILDCARE", "SNDRUGS", "SNINCOME", 
                             "SNLIVE", "SNMEAL", "SNTRANSPORT", "SNUNSAFE", 
                             "SNUTILITIES")) 
-fig_5.12 <- fig_compile("SUM_SNNEEDS")
+ fig_compile("CAT_SNNEEDS") %>% View()
 # SUM_SOCIALNEED
 r_svysummary(by = "RACE", include = "CAT_SNNEEDS")
 r_svysummary(include = c("SNABUSE", "SNCHILDCARE", "SNDRUGS", "SNINCOME", 

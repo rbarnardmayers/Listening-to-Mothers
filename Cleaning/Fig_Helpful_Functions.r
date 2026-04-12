@@ -4,6 +4,7 @@ library(stringr)
 library(ggplot2)
 library(srvyr)
 library(readxl)
+library(survey)
 library(tidyr)
 library(readr)
 library(rlang)
@@ -171,24 +172,32 @@ fig_compile_2 <- function(cols, others = c("RACE", "INSURANCE", "URBANICITY2"), 
   return(fig)
 }
 
-r_svysummary <- function(by = NULL, include, data = LTM_dsn){
-  tbl_svysummary(data = data, 
-                 missing = "no",
-                 by = by, 
-                 include = include, 
-                 statistic = list(all_categorical() ~ "{p}%", 
-                                  # all_continuous() ~ "{min}, {p25}, {median}, {p75}, {max}"),
-                                  # all_continuous() ~ "{min},{mean} , {max}"),
-                                  all_continuous() ~ "{mean}"),
-                 
-                 digits = list(all_categorical() ~ 4, 
-                               all_continuous() ~ 1),
-                 missing_stat = "{p_miss}") %>% 
-    add_ci(style_fun = list(all_categorical() ~
-                              label_style_sigfig(digits = 4),
-                            all_continuous() ~
-                              label_style_sigfig(digits = 4)
-    ))
+r_svysummary <- function(by = NULL, include, data = LTM_dsn, add_p = TRUE){
+  t <- tbl_svysummary(data = data, 
+                      missing = "no",
+                      by = by, 
+                      include = include, 
+                      statistic = list(all_categorical() ~ "{p}%", 
+                                       # all_continuous() ~ "{min}, {p25}, {median}, {p75}, {max}"),
+                                       # all_continuous() ~ "{min},{mean} , {max}"),
+                                       all_continuous() ~ "{mean}"),
+                      
+                      digits = list(all_categorical() ~ 4, 
+                                    all_continuous() ~ 1),
+                      missing_stat = "{p_miss}")
+  if(!is.null(by)){
+    t <- t %>% 
+      add_p() %>%
+      add_ci(style_fun = list(all_categorical() ~
+                                label_style_sigfig(digits = 4),
+                              all_continuous() ~
+                                label_style_sigfig(digits = 4)))} else {
+                                  t <- t %>% 
+                                    add_ci(style_fun = list(all_categorical() ~
+                                                              label_style_sigfig(digits = 4),
+                                                            all_continuous() ~
+                                                              label_style_sigfig(digits = 4))) }
+  return(t)
 }
 
 count_svysummary <- function(by = NULL, include, data = LTM_dsn){

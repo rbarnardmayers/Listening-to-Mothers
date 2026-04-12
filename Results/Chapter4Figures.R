@@ -8,16 +8,31 @@ r_svysummary(include = "BIRTHATTEND")
 r_svysummary(by = "xMODE1",
              include = "BIRTHATTEND")
 
+# Table 4.1
+count_svysummary(by = "xMODE2", 
+                 include = "CSECTIONTYPE")
+
 # Table 4.2
 r_svysummary(by = "DOULAC2", 
              include = c("xMODE1", "xMODE2"))
 
 # Planned vs. Unplanned not a repeat
-r_svysummary(include = "CSECTIONTYPE", data = filter(LTM_dsn, xMODE2 == "Cesarean Primary"))
-r_svysummary(include = "CSECTIONTYPE", data = filter(LTM_dsn, xMODE2 == "Cesarean Repeat"))
+count_svysummary(include = "CSECTIONTYPE", 
+             data = filter(LTM_dsn,
+                          xMODE2 == "Cesarean Primary"))
+# planned: 158061.7800/3396402
+# unplanned: 452065.5700/3396402
+
+count_svysummary(include = "CSECTIONTYPE", 
+             data = filter(LTM_dsn, 
+                           xMODE2 == "Cesarean Repeat"))
+# planned: 331157.8600/3396402
+# unplanned: 112156.7700/3396402
+r_svysummary(by = "xMODE2", 
+             include = "CSECTIONTYPE")
 
 # VBAC rates by race and insurance 
-r_svysummary(by = "BIRTHATTEND2", 
+r_svysummary(by = "PROVIDER2", 
              include = "xMODE2", 
              data = filter(LTM_dsn, xMODE2 %in% c("Cesarean Repeat", "VBAC")))
 
@@ -40,6 +55,10 @@ r_svysummary(by = "BIRTHATTEND",
 r_svysummary(by = "MEDINDUCE", 
              include = "UNPLANNEDREASON", 
              data = filter(LTM_dsn, CSECTIONTYPE == "Unplanned"))
+
+# Planned reason
+r_svysummary(include = "PLANNEDC", 
+             data = filter(LTM_dsn, CSECTIONTYPE == "Planned ahead of time and scheduled before you went into labor"))
 
 # VBAC Effort by success
 r_svysummary(by = "VBACCHOICE",
@@ -69,7 +88,6 @@ r_svysummary(by = "DOULAC2", include = c("xMODE2"), data = filter(LTM_dsn, xMODE
 r_svysummary(by = "PROVIDER2", include = c("CSECTIONTYPE", "CUM_ASS"))
 r_svysummary(by = "PROVIDER2", include = c("xMODE2"), data = filter(LTM_dsn, xMODE2 %in% c("VBAC", "Cesarean Repeat")))
 
-
 # Assisted Vaginal
 fig.47 <- fig_compile("ASSISTED")
 fig.472 <- fig_compile("ASSISTED", 
@@ -77,11 +95,22 @@ fig.472 <- fig_compile("ASSISTED",
                        # others = c("PROVIDER2"))
                        others = c("BIRTHATTEND2"))
 
-
+r_svysummary(by = "RACE", 
+             include = "PAINMEDSC7", 
+             data = filter(LTM_dsn, xMODE1 == "Vaginal all"))
 # Big baby 
+r_svysummary(by = "BIGBABY1", 
+             include = "xMODE1")
+
 r_svysummary(by = "BIGBABY1",
              include = "MODE2023", 
              data = filter(LTM_dsn, PARITY == "Nulliparous"))
+
+r_svysummary(by = "BIGBABY2", 
+             include = "MODE2023")
+
+r_svysummary(include = "CSECTIONTYPE", 
+             data = filter(LTM_dsn, BIGBABY2 == "Yes, a C-section"))
 
 r_svysummary(by = "MODE2023",
              include = "MACROSOMIC", 

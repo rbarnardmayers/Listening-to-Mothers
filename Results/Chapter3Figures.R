@@ -6,6 +6,13 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/ApplyDictionary.
 r_svysummary(by = "INCCAT2", include = "EMPLOYBEN")
 r_svysummary(by = "INCCAT2", include = "EMPLOYCHANGE1")
 
+r_svysummary(by = "RACE", 
+             include = "MSUPPORT_ONLY",
+             data = filter(LTM_dsn, PHQ4_PREG_ANX == "Positive screen for anxiety" | PHQ4_PREG_DEP == "Positive screen for depression"))
+
+fig_compile("MSUPPORT_ONLY", data = filter(LTM_dsn, PHQ4_PREG_ANX == "Positive screen for anxiety" | PHQ4_PREG_DEP == "Positive screen for depression")) %>% 
+  View()
+
 # Social needs
 print.cont.groups("DISABILITY", "SUM_SOCIALNEED")
 r_svysummary(by = "MARRIED", "SUM_SOCIALNEED")
@@ -43,11 +50,24 @@ fig_3.23 <- fig_compile_2(c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC
                             "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC9",
                             "HOSPFEEDC10", "HOSPFEEDC11"), others = "FEED1WEEK_ONLY") %>% 
   subset(Var != "Not selected")
-r_svysummary(by = "PLANNEDFEED_ONLY", 
-             include = c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC4",
-                         "HOSPFEEDC5", "HOSPFEEDC6", "HOSPFEEDC7", "HOSPFEEDC8",
-                         'HOSPFEEDC9', "HOSPFEEDC10", "RHOSPFEEDC11"))
 
+
+#They were more likely to achieve their intention if they were helped to get started 
+# breastfeeding as soon after birth as they and their newborn were ready, if their 
+# babies were not given formula or water supplements in the hospital, and if 
+# they were not given formula samples, coupons, or offers
+r_svysummary(by = "HOSPFEEDC4", 
+             include = "FEED1WEEK_ONLY",
+             data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Breastmilk"))
+# Among those who intended to exclusively BF...
+# 83% who experienced help exclusively fed at 1 week 
+# 72% who did not experience help exclusively fed at 1 week (p < 0.05)
+
+# 89% of those who did not have their baby get formula to supplement exclusively fed at 1 week
+# 58% of those whose baby did get formula or water (p < 0.05)
+
+# 88% of those who did not get free formula samples exclusively breastfed 
+# 70% of those who did get free samples (p < 0.05)
 
 r_svysummary(by = "PLANNEDFEED_ONLY",
              include = c("HOSPFEEDC1", "HOSPFEEDC2", "HOSPFEEDC3", "HOSPFEEDC4",
@@ -166,7 +186,8 @@ fig3.eat <- fig_compile("LABORINTC2", "LABORPERMIT_A2")
 r_svysummary(by = "RACE", 
              include = "PCMC_SCORE_R")
 r_svysummary(include = c("PCMC_comms", 'PCMC_resp', "PCMC_supp"))
-r_svysummary(include = c("CUSTOMS_subopt"))
+r_svysummary(by = "DISABILITY", include = c("CUSTOMS"))
+r_svysummary(by = 'RACE', include = c("CUSTOMS_subopt"))
 
 r_svysummary(include = c('RESPECT', 'KNOWLEDGE', 'HEARD',
                          'DECISIONS', 'CONSENT', 'INFORMED',
