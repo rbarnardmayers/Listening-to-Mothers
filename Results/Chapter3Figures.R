@@ -13,6 +13,10 @@ r_svysummary(by = "RACE",
 fig_compile("MSUPPORT_ONLY", data = filter(LTM_dsn, PHQ4_PREG_ANX == "Positive screen for anxiety" | PHQ4_PREG_DEP == "Positive screen for depression")) %>% 
   View()
 
+r_svysummary(by = "DISABILITY",
+             include = "PREPREG_UNMET_NEEDS",
+             data = filter(LTM_dsn, PHQ4_PREG_ANX == "Positive screen for anxiety" | PHQ4_PREG_DEP == "Positive screen for depression"))
+
 # Social needs
 print.cont.groups("DISABILITY", "SUM_SOCIALNEED")
 r_svysummary(by = "MARRIED", "SUM_SOCIALNEED")
@@ -30,7 +34,7 @@ fig_3_2 <- fig_compile("GOLDENHOUR", others = c("RACE", "INSURANCE", "MODE2023",
 fig_3_3 <- fig_compile("SKIN", others = c("RACE", "MODE2023", "BIRTHATTEND", "LANGSIMP")) 
 
 # 3.4	 NICU: entire time, part time (segmented or stacked bars? Percentage of babies in NICU part-time or throughout with low-risk characteristics (Could be segmented or stacked (pairs) bars) 
-fig_3_4 <- fig_compile("NICU", others = c("xBABYHOSP", "BW_CAT", "xGESTAGE"))
+fig_compile("NICU", others = c("xBABYHOSP", "BW_CAT", "xGESTAGE")) %>% View()
 # maybe no maternal complications,
 
 # 3.5	 BIRTHATTEND: best to be parallel to 2.3 (prenatal provider: has doctor, midwife, other
@@ -116,10 +120,21 @@ LTM_dsn %>% tbl_svysummary(by = "PLANNEDFEED_ONLY", include = "FEED1WEEK_ONLY")
 r_svysummary(include = "LEARNED2_R")
 
 # NICU and gestage
-r_svysummary(by = "ANYNICU", include = "xGESTAGE_R")
+r_svysummary(by = "ANYNICU", 
+             include = "xGESTAGE_R")
+# xGESTAGE_R, BW_CAT, 
+
+# not having paid time off and likelihood of using telehealth rather than in 
+# person (if sample size permits)
+
+r_svysummary(by = "EMPLOYBEN", 
+             include = "CAREMODEC2", 
+             data = filter(LTM_dsn, EMPLOYBEN %in% c("Yes", "No", "I don't know")))
 
 # planned birth 
 LTM_dsn %>% tbl_svysummary(include = "PLANNED_INDUCED")
+
+# Vag assist
 
 ##### FLOWCHART ####
 # No prior CS, term (37 – 41) birth
@@ -170,6 +185,9 @@ r_svysummary(include = "PITOCIN")
 
 # Position by doula 
 fig_3.position <- fig_compile("POSITION", others = c("DOULAC2"))
+r_svysummary(by = "DOULAC2",
+             include = "POSITION",
+             data = filter(LTM_dsn, MODE2023 == "Vaginal birth"))
 
 # Intake restrictions 
 r_svysummary(include = "LABORPERMIT_A1")
@@ -186,8 +204,16 @@ fig3.eat <- fig_compile("LABORINTC2", "LABORPERMIT_A2")
 r_svysummary(by = "RACE", 
              include = "PCMC_SCORE_R")
 r_svysummary(include = c("PCMC_comms", 'PCMC_resp', "PCMC_supp"))
-r_svysummary(by = "DISABILITY", include = c("CUSTOMS"))
-r_svysummary(by = 'RACE', include = c("CUSTOMS_subopt"))
+
+r_svysummary(by = "DISABILITY", 
+             include = c("CUSTOMS"), 
+             data = filter(LTM_dsn, CUSTOMS %in% c("No, never", "Yes, a few times", 
+                                                   "Yes, all the time", "Yes, most of the time")))
+
+r_svysummary(by = 'DISABILITY', 
+             include = c("CUSTOMS_subopt"), 
+             data = filter(LTM_dsn, CUSTOMS %in% c("No, never", "Yes, a few times", 
+                                                   "Yes, all the time", "Yes, most of the time")))
 
 r_svysummary(include = c('RESPECT', 'KNOWLEDGE', 'HEARD',
                          'DECISIONS', 'CONSENT', 'INFORMED',

@@ -3,7 +3,6 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/ApplyDictionary.
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Helpful_Functions.R")
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Fig_Helpful_Functions.R")
 
-
 # PP Doula support by race, insurance, urbanicity, and political views
 fig_compile("DOULAC3", 
             others = c("RACE", "INSURANCE", "URBANICITY2", "POLIT2")) %>% View()
@@ -46,7 +45,7 @@ r_svysummary(by = "RACE",
                              PHQ4_PPANX == "Positive screen for anxiety"))
 
 fig_compile("PP_UNMET_NEEDS") %>% View()
-r_svysummary(by = "URBANICITY2", 
+r_svysummary(#by = "URBANICITY2", 
              include = "PP_UNMET_NEEDS", 
              data = filter(LTM_dsn, PHQ4_PPDEP == "Positive screen for depression" |
                              PHQ4_PPANX == "Positive screen for anxiety"))
@@ -134,7 +133,7 @@ r_svysummary(by = "EMPLOYCAT",
 
 
 # Depression trajectory
-r_svysummary(include = "PREPREG_MHCONDC1")
+count_svysummary(include = "PREPREG_MHCONDC1")
 count_svysummary(by = "PREPREG_MHCONDC1", 
                  include = "PHQ4_PREG_DEP")
 
@@ -146,7 +145,7 @@ count_svysummary(by = "PREPREG_MHCONDC1",
 count_svysummary(by = "PHQ4_PREG_DEP", 
                  include = "PHQ4_PPDEP", 
                  data = filter(LTM_dsn, 
-                               PREPREG_MHCONDC1 != "Not selected"))
+                               PREPREG_MHCONDC1 == "Not selected"))
 # 265043.9100/3396402
 # 108532.0400/3396402
 # 85765.6700/3396402
@@ -163,7 +162,7 @@ count_svysummary(by = "PHQ4_PREG_DEP",
 # 1969211.1100/3396402
 
 # Anxiety trajectory
-r_svysummary(include = "PREPREG_MHCONDC2")
+count_svysummary(include = "PREPREG_MHCONDC2")
 count_svysummary(by = "PREPREG_MHCONDC2", 
                  include = "PHQ4_PREG_ANX")
 
@@ -175,7 +174,7 @@ count_svysummary(by = "PREPREG_MHCONDC2",
 count_svysummary(by = "PHQ4_PREG_ANX", 
                  include = "PHQ4_PPANX", 
                  data = filter(LTM_dsn, 
-                               PREPREG_MHCONDC2 != "Not selected"))
+                               PREPREG_MHCONDC2== "Not selected"))
 # 571347.3200/3396402
 # 246626.4000/3396402
 # 182312.9600/3396402

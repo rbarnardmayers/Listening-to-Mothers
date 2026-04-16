@@ -3,6 +3,10 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/ApplyDictionary.
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Helpful_Functions.R")
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Fig_Helpful_Functions.R")
 
+# For carol 
+r_svysummary(include = "NUM_CS",
+            data = filter(LTM_dsn, PRIOR_C == 1))
+
 # Birth attendant
 r_svysummary(include = "BIRTHATTEND")
 r_svysummary(by = "xMODE1",
@@ -12,9 +16,10 @@ r_svysummary(by = "xMODE1",
 count_svysummary(by = "xMODE2", 
                  include = "CSECTIONTYPE")
 
-# Table 4.2
-r_svysummary(by = "DOULAC2", 
-             include = c("xMODE1", "xMODE2"))
+r_svysummary(include = "CSECTIONTYPE_R2")
+r_svysummary(by = "PROVIDER2",
+                 include = "CSECTIONTYPE_R2")
+
 
 # Planned vs. Unplanned not a repeat
 count_svysummary(include = "CSECTIONTYPE", 
@@ -36,8 +41,34 @@ r_svysummary(by = "PROVIDER2",
              include = "xMODE2", 
              data = filter(LTM_dsn, xMODE2 %in% c("Cesarean Repeat", "VBAC")))
 
+r_svysummary(include = "CSECTIONTYPE")
+# Planned cesarean subgroups and any significance
+# RE
+# Prenatal provider
+# (no data but a Q about birth attendant: pre-recode, how is this 11% mw?)
+# Parity
+# 
+# Unplanned cesarean subgroups and any significance
+# RE
+# Prenatal provider
+# Birth attendant
+# Prenatal doula
+# Birth doula
+# Parity
+# Relationship
+r_svysummary(by = "RACE", 
+             include = "CSECTIONTYPE")
+
+fig_compile(maincol = "CSECTIONTYPE", 
+            others = c("RACE", "INSURANCE", "PROVIDER2",
+                       "BIRTHATTEND2", "DOULAC1",
+                       "PARITY", "MARRIED")) %>% 
+  View()
+
 # Pie chart VBAC interest 
-r_svysummary(include = "VBACINTEREST")
+r_svysummary(include = "VBACINTEREST", 
+             data = filter(LTM_dsn, 
+                           xMODE2 == "Cesarean Repeat"))
 r_svysummary(by = "VBACINTEREST", include = "VBACCHOICE")
 r_svysummary(include = c("VBACACCESSC1", "VBACACCESSC2","VBACACCESSC3"), 
              data = filter(LTM_dsn, VBACINTEREST == "Yes" & VBACCHOICE == "No"))
@@ -51,8 +82,12 @@ r_svysummary(by = "INSURANCE",
 r_svysummary(by = "BIRTHATTEND", 
              include = "CSECTIONTYPE")
 
+r_svysummary(by = "PROVIDER2",
+             include = "MODE2023", 
+             data = filter(LTM_dsn, MODE2023 == "Vaginal birth" | LABCSEC == "Yes"))
+
 # Unplanned Reason by induction
-r_svysummary(by = "MEDINDUCE", 
+r_svysummary(#by = "MEDINDUCE", 
              include = "UNPLANNEDREASON", 
              data = filter(LTM_dsn, CSECTIONTYPE == "Unplanned"))
 
@@ -117,11 +152,22 @@ r_svysummary(by = "MODE2023",
              data = filter(LTM_dsn, BIGBABY2 == "Yes, a C-section"))
 
 # TABLES ----
-# practices during labor
-r_svysummary(by = "CSECTIONTYPE_R", 
-             include = c('BIRTHATTEND2', 'DOULAC2', 'VAGEXAM_5', 'FETALMONC1', 
-                         'MEDINDUCE', 'LABORWALK'), 
-             data = filter(LTM_dsn, MODE2023 == "Vaginal birth" | LABCSEC == "Yes"))
+# Table 4.1 
+count_svysummary(by = "xMODE2", 
+                 include = "CSECTIONTYPE")
+count_svysummary(by = "xMODE2", 
+                 include = "VAGASSIST")
+
+# Table 4.2
+r_svysummary(by = "SUM_LABORSTUFF", 
+             include = "CSECTIONTYPE_R")
+
+LTM_final %>% 
+  subset(SUM_LABORSTUFF %in% c("5", "6", "7")) %>% 
+   select(c(DOULAC1, DOULAC2, FETALMONC2_R, VAGEXAM_5, 
+            LABORWALK_R, LABORPERMIT_A1_R, LABORPERMIT_A2_R,
+            PROVIDER_R, SUM_LABORSTUFF,UNPLANNEDREASON)) %>%
+  View()
 
 # BIRTHATTEND2, DOULAC2, VAGEXAM_5, FETALMONC1, MEDINDUCE, LABORWALK
 

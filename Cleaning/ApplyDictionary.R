@@ -1,5 +1,6 @@
 # Data Dictionary Application
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/PlannedRecodes.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Dates.R")
 setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")
 # LTM3 <- read.csv("LTM_clean.csv")
 # LTM3 <- fread("LTM_clean.csv")
@@ -38,7 +39,7 @@ LTM_final <- LTM3 %>%
 
 # Create list of categorical variables by excluding numeric ----
 categorical <- LTM_final %>%
-  select(-c(HEIGHT,MDID, AGE, YEARBIRTH, WEIGHTGAIN_R,AGE_ATBIRTH,
+  select(-c(HEIGHT,MDID, AGE, YEARBIRTH, WEIGHTGAIN_R,AGE_ATBIRTH,BIRTHDATE_D,
             DOULA3, INDUCE6, REPEATCSEC,#GESTAGE, DUEDATE, BIRTHDATE,BIRTHDATE_Y,
             MEDINDUCE4, MEDINDUCE5, #WENTWELL, DIDNTGOWELL, AIAN,
             ANYTHINGELSE,GESTAGE_R_cont,starts_with("SUM_"),
@@ -70,7 +71,7 @@ categorical <- LTM_final %>%
 continuous <- LTM_final %>% 
   select(c(AGE,YEARBIRTH,GESTAGE,GESTAGE_WEEKS,starts_with("SUM_"),
            NUMB_BIRTH,BIRTHWEIGHT,PPVISIT,LEARNED2,AGE_ATBIRTH,
-           PCMC_comms, PCMC_resp, PCMC_supp,SUM_SNNEEDS,
+           PCMC_comms, PCMC_resp, PCMC_supp,SUM_SNNEEDS,BIRTHDATE_D,
            DISABLEYRS,MODE_ALL,MEDINDUCE4,MEDINDUCE5,LEARNED1,GESTAGE_R_cont,
            PREG_WEIGHT, PREPREG_WEIGHT, HEIGHT, BMI,WEIGHTGAIN_R,PCMC_SCORE_R,
            VAGEXAM, LABORLENGTH, DAYSHOSP, BABYHOSP, PPVISIT, BIRTHWEIGHT_LBSOZ,

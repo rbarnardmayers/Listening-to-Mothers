@@ -27,4 +27,8 @@ LTM2 <- LTM2 %>%
                                      TRUE ~ PLANNEDC),
          CSECTIONTYPE_R = case_when(CSECTIONTYPE == 2 ~ "Unplanned C-section", 
                                     CSECTIONTYPE == 1 | CSECTIONTYPE == 95 ~ "Not Unplanned C-section",
-                                    MODE2023 == 1 ~ "Vaginal birth"))
+                                    MODE2023 == 1 ~ "Vaginal birth"), 
+         CSECTIONTYPE_R2 = case_when(CSECTIONTYPE == 2 ~ "Unplanned C-section", 
+                                     CSECTIONTYPE == 1 ~ "Planned C-section",
+                                     CSECTIONTYPE == 95 ~ "Other",
+                                     MODE2023 == 1 ~ "Vaginal birth"))
