@@ -1,4 +1,5 @@
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Helpful_Functions.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Helpful_Functions.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 1/Cleaning/SetUp.R")
 
 # Data Read in &  Get rid of identifying information ----
 LTM <- read.csv("/Users/rubybarnard-mayers/Documents/2025-2026/LTM/Data_FINAL.csv") 
@@ -28,7 +29,8 @@ LTM_keep <- LTM1 %>%
   select(-c(all_of(ignores)), MDID)
 
 # Create list of column names to convert to numeric
-tochange <- LTM_keep %>% select(-c(MDID, LastConnectionDate)) %>%
+tochange <- LTM_keep %>% 
+  select(-c(MDID, LastConnectionDate)) %>%
   colnames()
 
 # Convert all columns to numeric
@@ -138,7 +140,7 @@ LTM2 <- LTM1 %>%
     LEARNED1 = case_when(LEARNED1 == 99 ~ NA, 
                          is.na(LEARNED1) ~ NA,
                          TRUE ~ as.numeric(LEARNED1)), 
-    LEARNED2_R = case_when(LEARNED2 < 4 ~ "Less than 4 weeks",
+    LEARNED2_R = case_when(LEARNED2 < 4 & LEARNED2 > 1 ~ "Less than 4 weeks",
                            LEARNED2 < 7 ~ "4 to 6 weeks", 
                            LEARNED2 < 9 ~ "7 to 8 weeks", 
                            LEARNED2 < 12 ~ "9 to 11 weeks", 
@@ -162,7 +164,7 @@ LTM2 <- LTM1 %>%
                                  TRUE ~ 0),
     MACROSOMIC = case_when(BW_CAT == 4 ~ "Macro", 
                            BW_CAT < 4 ~ "Not Macro"),
-    PROVIDER2 =case_when(PROVIDER %in% c(1)  ~ "OB",
+    PROVIDER2 =case_when(PROVIDER %in% c(1,2,3)  ~ "OB",
                          PROVIDER == 4 ~ "Midwife",
                          PROVIDER %in% c(5,6) ~ "Other"), 
     BIRTHATTEND2 =case_when(BIRTHATTEND %in% c(1)  ~ "OB",
@@ -495,9 +497,7 @@ LTM2 <- LTM1 %>%
     CUSTOMS2 = case_when(CUSTOMS > 90 ~ NA, 
                          TRUE ~ CUSTOMS),
     FETALMONC2_R = case_when(FETALMONC2 == 1 & FETALMONC1 == 0 ~ 1, 
-                             FETALMONC2 == 1 & FETALMONC1 == 1 ~ 0,
-                             FETALMONC2 == 0 & FETALMONC1 == 1 ~ 0,
-                             FETALMONC2 == 0 & FETALMONC1 == 0 ~ 0),
+                             TRUE ~ 0),
     LABORWALK_R = case_when(LABORWALK == 1 ~ 1, 
                             TRUE ~ 0), 
     LABORPERMIT_A1_R = case_when(LABORPERMIT_A1 == 1 ~ 1, 
@@ -539,22 +539,24 @@ LTM2 <- LTM1 %>%
   )
 
 LTM2 <- LTM2 %>% 
-  mutate(VAGEXAM_5 = case_when(VAGEXAM_5 == 0 ~ "Early Labor", 
+  mutate(SUM_LABORSTUFF = case_when(SUM_LABORSTUFF > 4 ~ 4, 
+                                    TRUE ~ SUM_LABORSTUFF),
+         VAGEXAM_5 = case_when(VAGEXAM_5 == 0 ~ "Early Labor", 
                                VAGEXAM_5 == 1 ~ "Active Labor"), 
-         VBAC = case_when(MODE_ALL > 0 & MODE2023 == 1 ~ 1,
-                          MODE_ALL > 0 & MODE2023 == 2 ~ 0,
-                          MODE_ALL == 0 ~ 0),
-         NUM_CS = case_when(MODE_ALL == 1 ~ 1, 
+         VBAC = case_when(xMODE2 == 2 ~ 1,
+                          xMODE2 != 2 ~ 0),
+         NUM_CS = case_when(MODE_ALL == 0 & MODE2023 == 2 ~ 1, 
+                            MODE_ALL == 1 & xMODE2 == 3 ~ 1, 
                             MODE_ALL == 2 ~ 2, 
                             MODE_ALL >= 3 ~ 3),
          PRIOR_C = case_when(xMODE2 == 4 ~ 1, 
                              xMODE2 == 2 ~ 1, 
                              xMODE2 == 1 ~ 0, 
                              xMODE2 == 3 ~ 0),
-         SDM = case_when(is.na(SDM_1)~NA,
-                         is.na(SDM_2)~NA,
-                         is.na(SDM_3)~NA,
-                         is.na(SDM_4)~NA, 
+         SDM = case_when(is.na(SDM_1) ~ NA,
+                         is.na(SDM_2) ~ NA,
+                         is.na(SDM_3) ~ NA,
+                         is.na(SDM_4) ~ NA, 
                          TRUE ~ SDM), 
          SDM_dich = case_when(SDM == 0 ~ 0, 
                               SDM > 0 ~ 1),
@@ -583,7 +585,7 @@ LTM2 <- LTM2 %>%
                                   TRUE ~ SUM_HOSPFEED),
          SUM_HOSPFEED = as.numeric(SUM_HOSPFEED),
          HOSPFEED2 = case_when(SUM_HOSPFEED == 0 | SUM_HOSPFEED == 1 ~ "0-1", 
-                               SUM_HOSPFEED ==2 | SUM_HOSPFEED == 3 ~ "2-3",
+                               SUM_HOSPFEED == 2 | SUM_HOSPFEED == 3 ~ "2-3",
                                SUM_HOSPFEED == 4 | SUM_HOSPFEED == 5 ~ "4-5", 
                                SUM_HOSPFEED == 6 | SUM_HOSPFEED == 7 ~ "6-7", 
                                SUM_HOSPFEED == 8 | SUM_HOSPFEED == 9 ~ "8-9"),

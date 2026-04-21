@@ -178,7 +178,7 @@ fig_compile_2 <- function(cols, others = c("RACE", "INSURANCE", "URBANICITY2"), 
 
 r_svysummary <- function(by = NULL, include, data = LTM_dsn, add_p = TRUE){
   t <- tbl_svysummary(data = data, 
-                      missing = "no",
+                      missing = "ifany",
                       by = by, 
                       include = include, 
                       statistic = list(all_categorical() ~ "{p}%", 
@@ -188,7 +188,8 @@ r_svysummary <- function(by = NULL, include, data = LTM_dsn, add_p = TRUE){
                       
                       digits = list(all_categorical() ~ 4, 
                                     all_continuous() ~ 1),
-                      missing_stat = "{p_miss}")
+                      missing_stat = "{p_miss}"
+                      )
   if(!is.null(by)){
     t <- t %>% 
       add_p() %>%

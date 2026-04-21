@@ -1,7 +1,7 @@
 # Data Dictionary Application
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/PlannedRecodes.R")
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Dates.R")
-setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 1/Cleaning/PlannedRecodes.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 1/Cleaning/Dates.R")
+setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 1")
 # LTM3 <- read.csv("LTM_clean.csv")
 # LTM3 <- fread("LTM_clean.csv")
 LTM3 <- LTM2 %>% rename(PCMC_SCORE_R = PCMC_SCORE)
@@ -78,6 +78,7 @@ continuous <- LTM_final %>%
            PPVISITTIME1, PPVISITTIME2, EXCLUSIVEBF, WEAN, FAMSIZE1, FAMSIZE2, INCOME )) %>% 
   colnames()
 # BABY_SURVEYAGE_MONTHS, GESTAGE
+
 for(i in continuous){
   LTM_final[[i]] <- as.numeric(LTM_final[[i]])
 }

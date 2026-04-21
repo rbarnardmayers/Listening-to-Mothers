@@ -35,4 +35,6 @@ LTM2 <- LTM2 %>%
                                         TRUE ~ as.character(LastConnectionDate)),
          SURVEYDATE = as.Date(LastConnectionDate, "%Y%m%d"), 
          TIME_SINCE_BIRTH = difftime(SURVEYDATE, BIRTHDATE, units = "weeks"),
-         TIME_SINCE_BIRTH = as.numeric(TIME_SINCE_BIRTH))
+         TIME_SINCE_BIRTH = as.numeric(TIME_SINCE_BIRTH), 
+         MONTH_3 = case_when(TIME_SINCE_BIRTH >= 12 ~ 1, TRUE ~ 0), 
+         MONTH_6 = case_when(TIME_SINCE_BIRTH >= 24 ~ 1, TRUE ~ 0))

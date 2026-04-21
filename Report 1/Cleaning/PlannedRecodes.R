@@ -1,6 +1,6 @@
 # Recoding Planned and Unplanned
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Data Cleaning.R")
-setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 1/Cleaning/Data Cleaning.R")
+setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 1/Cleaning")
 
 types <- read.csv("CSECTIONTYPES.csv") %>% 
   mutate(CSECTIONTYPE_M = case_when(CSECTIONTYPE_M == 3 ~ 95, 
