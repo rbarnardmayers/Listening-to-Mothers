@@ -186,7 +186,7 @@ r_svysummary <- function(by = NULL, include, data = LTM_dsn, add_p = TRUE){
                                        # all_continuous() ~ "{min},{mean} , {max}"),
                                        all_continuous() ~ "{mean}"),
                       
-                      digits = list(all_categorical() ~ 4, 
+                      digits = list(all_categorical() ~ 0, 
                                     all_continuous() ~ 1),
                       missing_stat = "{p_miss}"
                       )

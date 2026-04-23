@@ -32,51 +32,52 @@ r_svysummary(by = "RACE",
 count_svysummary(include = "PLANNEDFEED_ONLY")
 count_svysummary(include = "FEED1WEEK_ONLY")
 count_svysummary(include = "EXCL_BF_3MONTH", 
-                 data = filter(LTM_dsn, MONTH_3 == 1))
+                 data = filter(LTM_dsn, FEED1WEEK_ONLY == "Breastmilk" & MONTH_3 == 1))
 count_svysummary(include = "EXCL_BF_6MONTH", 
                  data = filter(LTM_dsn, EXCL_BF_3MONTH == 1 & MONTH_6 == 1))
-
 
 count_svysummary(by = "PLANNEDFEED_ONLY", 
                  include = "FEED1WEEK_ONLY")
 
 count_svysummary(by = "FEED1WEEK_ONLY", 
                  include = "EXCL_BF_3MONTH", 
-                 data = filter(LTM_dsn, PLANNEDFEED_ONLY == "UNKNOWN"))
+                 data = filter(LTM_dsn, PLANNEDFEED_ONLY == "UNKNOWN" & MONTH_3 == 1))
 
 count_svysummary(by = "FEED1WEEK_ONLY", 
                  include = "EXCL_BF_6MONTH", 
-                 data = filter(LTM_dsn, PLANNEDFEED_ONLY == "UNKNOWN" & 
-                                 EXCL_BF_3MONTH == 1))
-# Average duration of EXCL_BF among those feeding at 1 week
-
+                 data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Breastmilk" & 
+                                 EXCL_BF_3MONTH == 1 & MONTH_6 == 1))
 
 # Figure 5.7
 count_svysummary(include = "PLANNEDFEEDC1")
 count_svysummary(include = "FEED1WEEKC1")
-count_svysummary(include = "ANY_BF_3MONTH")
-count_svysummary(include = "ANY_BF_6MONTH")
+count_svysummary(include = "ANY_BF_3MONTH", 
+                 data = filter(LTM_dsn, MONTH_3 == 1))
+count_svysummary(include = "ANY_BF_6MONTH", 
+                 data = filter(LTM_dsn, MONTH_6 == 1))
 
 count_svysummary(by = "PLANNEDFEEDC1", 
                  include = "FEED1WEEKC1")
 
 count_svysummary(by = "FEED1WEEKC1", 
                  include = "ANY_BF_3MONTH", 
-                 data = filter(LTM_dsn, PLANNEDFEEDC1 == "Not selected"))
+                 data = filter(LTM_dsn, PLANNEDFEEDC1 == "Breast milk" & 
+                                 MONTH_3 == 1))
 
 count_svysummary(by = "FEED1WEEKC1", 
                  include = "ANY_BF_6MONTH", 
                  data = filter(LTM_dsn, 
-                               PLANNEDFEEDC1 == "Breast milk"))
+                               PLANNEDFEEDC1 == "Breast milk" & 
+                                 MONTH_6 == 1 & ANY_BF_3MONTH == 1))
 
 # Figure 5.8
 # RACE, INSURANCE, xMODE2
 r_svysummary(#by = "INSURANCE", 
-             include = "EXCLUSIVEBF",
-             data = filter(LTM_dsn, FEED1WEEK_ONLY == "Breastmilk" &
-                             (CURRENTFEEDC2 == "Formula" | 
-                                CURRENTFEEDC3 == "Other liquids (e.g., cow’s milk, juice)" | 
-                                CURRENTFEEDC4 == "Solid food")))
+  include = "EXCLUSIVEBF",
+  data = filter(LTM_dsn, FEED1WEEK_ONLY == "Breastmilk" &
+                  (CURRENTFEEDC2 == "Formula" | 
+                     CURRENTFEEDC3 == "Other liquids (e.g., cow’s milk, juice)" | 
+                     CURRENTFEEDC4 == "Solid food")))
 
 # Figure 5.9
 # RACE, INSURANCE, MODE2023
@@ -181,12 +182,20 @@ r_svysummary(by = "RACE",
              include = "PP_UNMET_NEEDS")
 
 # Figure 5.19
-r_svysummary(include = c("SNABUSE", "SNCHILDCARE", "SNDRUGS", "SNINCOME", 
-                         "SNLIVE", "SNMEAL", "SNTRANSPORT", "SNUNSAFE", 
-                         "SNUTILITIES"), 
-             data = filter(LTM_dsn, SUM_SOCIALNEED > 0))
+count_svysummary(include = c("SNABUSE", "SNCHILDCARE", "SNDRUGS", "SNINCOME", 
+                             "SNLIVE", "SNMEAL", "SNTRANSPORT", "SNUNSAFE", 
+                             "SNUTILITIES"))
 
 # Figure 5.20
 # RACE, INSURANCE, URBANICITY2
 r_svysummary(include = "CAT_SNNEEDS")
+
+
+
+# Checking number of cesareans ----
+LTM_final %>% subset(xMODE2 == "Cesarean Repeat") %>% 
+  select(c(NUM_CS, NUMB_BIRTH,MODE_ALL, RMODE, RMODE2,RMODE3, RMODE4, 
+           RMODE5, RMODE6, RMODE7, RMODE8, RMODE9, RMODE10, RMODE11)) %>% 
+  View() 
+
 
