@@ -1,26 +1,27 @@
 # Setup ----
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Chapter 6 Runs/Data Cleaning Chapter 6.R")
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Chapter 6 Runs/Function.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 1/Chapter 6 Runs/Data Cleaning Chapter 6.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 1/Chapter 6 Runs/Function.R")
 
 LTM_dsn <- LTM_6 %>% 
   mutate(FINALWT = as.numeric(FINALWT)) %>%
   as_survey_design(weight = FINALWT, id = 1)
 
-comp_cols <- c('PREG_INT',paste0('PREPREG_MHCONDC',1:7),
-               paste0('MENTALSUPPORT1C',1:6),'PROVIDER','PROVIDER2',
-               'PROVIDERCHOICE','CARETYPE1','BOTHER_A1','BOTHER_A2',
-               'BOTHER_A3', 'BOTHER_A4','PHQ4_PREG_ANX','PHQ4_PREG_DEP',
-               'PHQ4_PREG_PSYCH','MENTALSUPPORT',paste0('PREGCONDITIONC', 1:11),
-               'INDUCE','DEC_MAKE','INDUCE7','xMODE1','xMODE2','xMODE3',
-               'CSECTIONTYPE','VBACCHOICE','VBACINTEREST',
-               'EPIST','EPISTCHOICE','POSITIONCHOICE','RESPECT','KNOWLEDGE',
-               'CUSTOMS','HEARD','DECISIONS','CONSENT','INFORMED','TIMELINESS',
-               'NEGLECT','TRUST','SAFE','NPCMC_SC','DISCRIMINATION',
-               paste0("DISCRIMINATION1C",1:19),'xPPVISITTIME1','PPBOTHER_A1',
-               'PPBOTHER_A2','PPBOTHER_A3','PPBOTHER_A4','PHQ4_PPANX',
-               'PHQ4_PPDEP','PHQ4_PPPSYCH','PPTHERAPY',
-               paste0("PPMEDSC",1:6), paste0('SOCIALNEEDC',1:11))
-
+# comp_cols <- c('PREG_INT',paste0('PREPREG_MHCONDC',1:7),
+#                paste0('MENTALSUPPORT1C',1:6),'PROVIDER','PROVIDER2',
+#                'PROVIDERCHOICE','CARETYPE1','BOTHER_A1','BOTHER_A2',
+#                'BOTHER_A3', 'BOTHER_A4','PHQ4_PREG_ANX','PHQ4_PREG_DEP',
+#                'PHQ4_PREG_PSYCH','MENTALSUPPORT',paste0('PREGCONDITIONC', 1:11),
+#                'INDUCE','DEC_MAKE','INDUCE7','xMODE1','xMODE2','xMODE3',
+#                'CSECTIONTYPE','VBACCHOICE','VBACINTEREST',
+#                'EPIST','EPISTCHOICE','POSITIONCHOICE','RESPECT','KNOWLEDGE',
+#                'CUSTOMS','HEARD','DECISIONS','CONSENT','INFORMED','TIMELINESS',
+#                'NEGLECT','TRUST','SAFE','NPCMC_SC','DISCRIMINATION',
+#                paste0("DISCRIMINATION1C",1:19),'xPPVISITTIME1','PPBOTHER_A1',
+#                'PPBOTHER_A2','PPBOTHER_A3','PPBOTHER_A4','PHQ4_PPANX',
+#                'PHQ4_PPDEP','PHQ4_PPPSYCH','PPTHERAPY',
+#                paste0("PPMEDSC",1:6), paste0('SOCIALNEEDC',1:11))
+comp_cols <- c('DISCRIM_subopt','RESPECT_subopt',
+               'NEGLECT_subopt',"DISCRIMINATION1C1", "DISCRIMINATION1C3")
 # NEED TO FIGURE OUT OVERALL
 
 # Impact White
@@ -111,7 +112,7 @@ for(i in comp_cols){
 
 
 # Exporting -----
-setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers/Chapter 6 Runs/Results")
+setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 1/Chapter 6 Runs/Results/Additional")
 # Impact White
 IW_names <- ls(pattern = "_tab_IW")
 IW_list <- mget(IW_names)

@@ -20,6 +20,7 @@ library(writexl)
 # Convert missing to NA ----
 convert.miss <- function(dat, vars, val){
   for(i in vars){
+    dat[[i]] <- as.numeric(dat[[i]])
     dat[[i]] <- na_if(dat[[i]], val)
   }
   return(dat)

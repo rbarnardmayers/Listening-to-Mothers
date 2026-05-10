@@ -170,7 +170,11 @@ r_svysummary(by = "BIGBABY2",
 r_svysummary(by = "RACE", 
              include = c("PLANNEDFEED_ONLY"))
 
-# Figure 2.28
+# RACE, INSURANCE, URBANICITY2
+r_svysummary(by = "URBANICITY2", 
+             include = c("PLANNEDFEEDC1"))
+
+s# Figure 2.28
 r_svysummary(by = "BMI4_PREPREG", 
              include = "WEIGHT_REC_D")
 

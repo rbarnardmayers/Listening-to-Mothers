@@ -1,10 +1,12 @@
 # Dictionary 
-setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2")
-dict <- read_excel("Data_Dictionary2.xlsx", 
-                   sheet = "Values") 
-dict <- dict[1:6571,]
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Helpful_Functions.R")
 
-dict2 <-  read_excel("Data_Dictionary2.xlsx", 
+setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2")
+dict <- read_excel("Data_Dictionary_12.xlsx", 
+                   sheet = "Values") 
+dict <- dict[1:7370,]
+
+dict2 <-  read_excel("Data_Dictionary_12.xlsx", 
                      sheet = "Variable")
 
 colnames(dict) <- c("variable", "value", "value_label")

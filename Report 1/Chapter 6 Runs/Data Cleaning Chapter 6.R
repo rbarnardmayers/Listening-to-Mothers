@@ -1,9 +1,7 @@
 # Data Dictionary Application
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Helpful_Functions.R")
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Fig_Helpful_Functions.r")
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/Data Cleaning.R")
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Cleaning/ApplyDictionary.R")
-
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Helpful_Functions.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Fig_Helpful_Functions.r")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 1/Cleaning/ApplyDictionary.R")
 
 LTM_6 <- LTM_final %>% 
   mutate(MULTI_NOBLACK = case_when(RACE == "Multi" & 
@@ -28,5 +26,15 @@ LTM_6 <- LTM_final %>%
                                   MULTI_NOBLACK == "MULTI_NOBLACK" ~ "MULTI_NOBLACK"),
          IMPACT_BLACK = factor(IMPACT_BLACK, levels = c("BLACKALONE", "BLACKWHITE", 
                                                         "BLACKCOMBI_NOWHITE", "MULTI_NOBLACK")),
-  )
+         
+         DISCRIM_subopt = case_when(DISCRIMINATION == "No, never" ~ "Optimal", 
+                                    is.na(DISCRIMINATION) ~ NA, 
+                                    TRUE  ~ "Sub Optimal"),
+         RESPECT_subopt = case_when(RESPECT == "Yes, all the time" ~ "Optimal", 
+                                    is.na(RESPECT) ~ NA, 
+                                    TRUE  ~ "Sub Optimal"),
+         NEGLECT_subopt = case_when(NEGLECT == "No, never" ~ "Optimal", 
+                                    is.na(NEGLECT) ~ NA, 
+                                    TRUE  ~ "Sub Optimal")
+)
 

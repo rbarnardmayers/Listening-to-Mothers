@@ -59,14 +59,17 @@ r_svysummary(include = c("INDUCE1", "INDUCE2", "INDUCE3", "INDUCE4"),
 
 
 # Figure 3.12
-fig_compile("DEC_MAKE", others = c("RACE", "BIRTHATTEND2", "PARITY", 
-                                   "BIRTHCOUNTRY", "DISABILITY")) %>% 
+fig_compile("DEC_MAKE", 
+            others = c("RACE", "BIRTHATTEND2", "PARITY", 
+                                   "BIRTHCOUNTRY", "DISABILITY"), 
+            data = filter(LTM_dsn, INDUCE == "Yes")) %>% 
   View()
 
 # Figure 3.13
 # RACE, INSURANCE, PROVIDER
 r_svysummary(by = "RACE", 
-             include = "INDUCE5")
+             include = "INDUCE5",
+             data = filter(LTM_dsn, INDUCE == "Yes"))
 
 # Figure 3.14
 r_svysummary(by = "INDUCE5", 
