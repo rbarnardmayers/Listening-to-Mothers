@@ -181,12 +181,12 @@ r_svysummary <- function(by = NULL, include, data = LTM_dsn, add_p = TRUE){
                       missing = "ifany",
                       by = by, 
                       include = include, 
-                      statistic = list(all_categorical() ~ "{p}%", 
+                      statistic = list(all_categorical() ~ "{n_unweighted}; {p}%", 
                                        # all_continuous() ~ "{min}, {p25}, {median}, {p75}, {max}"),
                                        # all_continuous() ~ "{min},{mean} , {max}"),
                                        all_continuous() ~ "{mean}"),
                       
-                      digits = list(all_categorical() ~ 0, 
+                      digits = list(all_categorical() ~ 2, 
                                     all_continuous() ~ 1),
                       missing_stat = "{p_miss}"
                       )
@@ -218,3 +218,15 @@ count_svysummary <- function(by = NULL, include, data = LTM_dsn){
                  missing_stat = "{p_miss}")
 }
 
+raw_svysummary <- function(by = NULL, include, data = LTM_dsn){
+  tbl_svysummary(data = data, 
+                 missing = "no",
+                 by = by, 
+                 include = include, 
+                 statistic = list(all_categorical() ~ "{n_unweighted}", 
+                                  all_continuous() ~ "{mean}"),
+                 
+                 digits = list(all_categorical() ~ 0, 
+                               all_continuous() ~ 1),
+                 missing_stat = "{p_miss}")
+}

@@ -2,12 +2,12 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Fig_Helpful_Functions.r")
 
 # Figure 2.1 
 # RACE, INSURANCE, PARITY
-r_svysummary(by = "INSURANCE", 
+r_svysummary(by = "PARITY", 
              include = c("PREPREG_PHYSCONDC1", "PREPREG_PHYSCONDC2"))
 
 # Figure 2.2
 # RACE, INSURANCE, URBANICITY2
-r_svysummary(by = "RACE", 
+raw_svysummary(by = "RACE", 
              include = c("PREPREG_MHCONDC1", "PREPREG_MHCONDC2", 
                          "PREPREG_MHCONDC3", "PREPREG_MHCONDC4"))
 
@@ -28,7 +28,8 @@ r_svysummary(include = c("NOPRENATALC1", "NOPRENATALC2", "NOPRENATALC3",
 # Right now doctor, midiwfe, other.
 # Asking if want OB, Midwife, other
 # RACE, INSURANCE
-r_svysummary(include = "PROVIDER2", 
+r_svysummary(by = "INSURANCE", 
+             include = "PROVIDER2", 
              data = filter(LTM_dsn, !is.na(LEARNED2)))
 
 # Figure 2.6
@@ -45,15 +46,17 @@ r_svysummary(include = c("CARESETTINGC1", "CARESETTINGC2","CARESETTINGC3",
 
 # Figure 2.8
 # RACE, INSURANCE
-r_svysummary(by = "RACE", 
+r_svysummary(by = "INSURANCE", 
              include = "CARETYPE1",
               data = filter(LTM_dsn, !is.na(LEARNED2)))
 
 # Figure 2.9 
-# RACE, INSURANCE, URBANICITY
-r_svysummary(by = "RACE",
+# INSURANCE, URBANICITY
+r_svysummary(by = "INSURANCE",
              include = "CARETYPEPREF",
-             data = filter(LTM_dsn, CARETYPEC2 == 1))
+             data = filter(LTM_dsn, 
+                           CARETYPEC2 == "Group prenatal care together with others who were pregnant" & 
+                             CARETYPEC1 == "Prenatal office visits by myself"))
 
 # Figure 2.10 
 r_svysummary(include = c("WHYTELEC1", "WHYTELEC2", "WHYTELEC3", 
@@ -78,7 +81,7 @@ r_svysummary(include = c("DOULA1C1", "DOULA1C2", "DOULA1C3",
 
 # Figure 2.14
 # INSURANCE, URBANICITY, PARITY, POLIT2
-r_svysummary(by = "RACE",
+r_svysummary(by = "INSURANCE",
              include = "CURREDUC")
 
 # Figure 2.15
@@ -104,7 +107,7 @@ r_svysummary(by = "RACE",
 
 # Figure 2.19
 #RACE, INSURANCE, URBANICITY2
-r_svysummary(by = "RACE", 
+raw_svysummary(by = "RACE", 
              include = "MSUPPORT_ONLY", 
              data = filter(LTM_dsn, PHQ4_PREG_DEP == "Positive screen for depression" | 
                              PHQ4_PREG_ANX == "Positive screen for anxiety"))
@@ -125,7 +128,7 @@ r_svysummary(include = c('SOCIALNEEDC1', 'SOCIALNEEDC2', 'SOCIALNEEDC3',
 
 # Figure 2.22
 # RACE, URBANICITY2, DISABILITY, MARRIED, INCCAT2
-r_svysummary(by = "URBANICITY2", 
+r_svysummary(by = "INCCAT2", 
              include = "SUM_SOCIALNEED")
 
 # Figure 2.23
@@ -136,7 +139,7 @@ r_svysummary(by = "URBANICITY2",
 
 # Figure 2.24
 # RACE, INSURANCE, INCCAT2
-r_svysummary(by = "RACE", 
+r_svysummary(by = "INCCAT2", 
              include = "EMPLOYCHANGE1", 
              data = filter(LTM_dsn, EMPLOYCHANGE == "Yes, I needed some temporary workplace changes for a healthy pregnancy"))
 
@@ -174,8 +177,8 @@ r_svysummary(by = "RACE",
 r_svysummary(by = "URBANICITY2", 
              include = c("PLANNEDFEEDC1"))
 
-s# Figure 2.28
-r_svysummary(by = "BMI4_PREPREG", 
+# Figure 2.28
+raw_svysummary(by = "BMI4_PREPREG", 
              include = "WEIGHT_REC_D")
 
 

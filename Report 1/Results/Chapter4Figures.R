@@ -10,8 +10,8 @@ r_svysummary(by = "xMODE2", include = "CSECTIONTYPE")
 
 # Figure 4.3 
 # RACE, INSURANCE, PARITY, PROVIDER, BIRTHATTEND
-r_svysummary(#by = "RACE", 
-  include = "CSECTIONTYPE_R2")
+r_svysummary(by = "BIRTHATTEND2", 
+               include = "CSECTIONTYPE_R2")
 
 # Figure 4.4
 r_svysummary(include = "UNPLANNEDREASON")
@@ -27,7 +27,7 @@ r_svysummary(include = "PLANNEDC")
 
 # Figure 4.7
 # RACE, INSURANCE, PROVIDER, DOULAC1
-r_svysummary(by = "RACE", 
+r_svysummary(by = "DOULAC1", 
              include = "xMODE2", 
              data = filter(LTM_dsn, xMODE2 %in% c("Cesarean Repeat",
                                                   "VBAC")))
@@ -67,14 +67,14 @@ r_svysummary(include = "NUM_CS",
              data = filter(LTM_dsn, PRIOR_C == 1))
 
 # RACE, PROVIDER2
-r_svysummary(by = "RACE", 
-  include = "VBACINTEREST",
-  data = filter(LTM_dsn, 
-                xMODE2 == "Cesarean Repeat" & 
-                  VBACINTEREST %in% c("Yes", "No") &
-                  NUM_CS < 3))
+r_svysummary(by = "PROVIDER2", 
+             include = "VBACINTEREST",
+             data = filter(LTM_dsn, 
+                           xMODE2 == "Cesarean Repeat" & 
+                             VBACINTEREST %in% c("Yes", "No") &
+                             NUM_CS < 3))
 
-r_svysummary(by = "RACE", 
+raw_svysummary(by = "RACE", 
              include = "VBACCHOICE",
              data = filter(LTM_dsn, 
                            xMODE2 == "Cesarean Repeat" & 
@@ -104,11 +104,11 @@ r_svysummary(by = "VBACACCESSC3",
                              NUM_CS < 3))
 
 count_svysummary(by = "VBACEFFORT",
-             include = "LABORED",
-             data = filter(LTM_dsn, 
-                           xMODE2 == "Cesarean Repeat" & 
-                             VBACINTEREST == "Yes" & 
-                             NUM_CS < 3))
+                 include = "LABORED",
+                 data = filter(LTM_dsn, 
+                               xMODE2 == "Cesarean Repeat" & 
+                                 VBACINTEREST == "Yes" & 
+                                 NUM_CS < 3))
 # Any of the three: (12341.2300+19257.2600+13213.4500)/(19176+36081+14600)
 
 # TABLES ----

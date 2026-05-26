@@ -3,7 +3,7 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Fig_Helpful_Functions.r")
 
 # Figure 5.1
 # RACE, INSURANCE, URBANICITY2, POLIT2
-r_svysummary(by = "RACE",
+r_svysummary(by = "POLIT2",
              include = "DOULAC3")
 
 # Figure 5.2
@@ -12,7 +12,7 @@ r_svysummary(include = c("DOULA2C1", "DOULA2C2", "DOULA2C3",
 
 # Figure 5.3
 # RACE, INSURANCE
-r_svysummary(by = "RACE",
+r_svysummary(by = "INSURANCE",
              include = "PPVISIT2")
 
 # Figure 5.4
@@ -22,9 +22,14 @@ fig_compile_2(c("VISITTOPIC_A1", "VISITTOPIC_A2", "VISITTOPIC_A3",
   subset(!Var %in% c("I’m not sure", "I’d prefer not to answer")) %>% 
   View()
 
+raw_svysummary(by = "INSURANCE", 
+               include = c("VISITTOPIC_A1", "VISITTOPIC_A2", "VISITTOPIC_A3", 
+                           "VISITTOPIC_A4", "VISITTOPIC_A5", "VISITTOPIC_A6",
+                           "VISITTOPIC_A7"), 
+               data = filter(LTM_dsn, PPVISIT >= 1))
 # Figure 5.5
 # RACE, INSURANCE, BIRTHATTEND, xMODE2
-r_svysummary(by = "RACE", 
+raw_svysummary(by = "xMODE2", 
              include = "FEED1WEEK_ONLY")
 
 # Figure 5.6
@@ -41,7 +46,7 @@ count_svysummary(by = "PLANNEDFEED_ONLY",
 
 count_svysummary(by = "FEED1WEEK_ONLY", 
                  include = "EXCL_BF_3MONTH", 
-                 data = filter(LTM_dsn, PLANNEDFEED_ONLY == "UNKNOWN" & MONTH_3 == 1))
+                 data = filter(LTM_dsn, PLANNEDFEED_ONLY == "Breastmilk" & MONTH_3 == 1))
 
 count_svysummary(by = "FEED1WEEK_ONLY", 
                  include = "EXCL_BF_6MONTH", 
@@ -72,7 +77,7 @@ count_svysummary(by = "FEED1WEEKC1",
 
 # Figure 5.8
 # RACE, INSURANCE, xMODE2
-r_svysummary(#by = "INSURANCE", 
+r_svysummary(by = "RACE", 
   include = "EXCLUSIVEBF",
   data = filter(LTM_dsn, FEED1WEEK_ONLY == "Breastmilk" &
                   (CURRENTFEEDC2 == "Formula" | 
@@ -86,7 +91,7 @@ r_svysummary(by = "INSURANCE",
 
 # Figure 5.10
 # RACE, INSURANCE, PARITY, MODE2023, URBANICITY2
-r_svysummary(by = "RACE", 
+r_svysummary(by = "URBANICITY2", 
              include = "EXCLBFGOAL")
 
 # Figure 5.11
@@ -139,7 +144,7 @@ count_svysummary(by = "PREPREG_MHCONDC1",
 count_svysummary(by = "PHQ4_PREG_DEP", 
                  include = "PHQ4_PPDEP", 
                  data = filter(LTM_dsn, 
-                               PREPREG_MHCONDC1 == "Not selected"))
+                               PREPREG_MHCONDC1 != "Not selected"))
 # 265043.9100/3396402
 # 108532.0400/3396402
 # 85765.6700/3396402
@@ -148,7 +153,7 @@ count_svysummary(by = "PHQ4_PREG_DEP",
 count_svysummary(by = "PHQ4_PREG_DEP", 
                  include = "PHQ4_PPDEP", 
                  data = filter(LTM_dsn, 
-                               PREPREG_MHCONDC1 == "Not selected"))
+                               PREPREG_MHCONDC1 != "Not selected"))
 
 # 176540.9000/3396402
 # 172546.5100/3396402
@@ -173,12 +178,12 @@ r_svysummary(by = "RACE",
 
 # Figure 5.17
 # RACE, INSURANCE, URBANICITY2
-r_svysummary(by = "RACE", 
+r_svysummary(by = "URBANICITY2", 
              include = "PP_MSUPPORT_ONLY")
 
 # Figure 5.18
-# RACE, INSURANCE, URBANICITY
-r_svysummary(by = "RACE", 
+# RACE, INSURANCE, URBANICITY2
+r_svysummary(by = "INSURANCE", 
              include = "PP_UNMET_NEEDS")
 
 # Figure 5.19
@@ -189,7 +194,6 @@ count_svysummary(include = c("SNABUSE", "SNCHILDCARE", "SNDRUGS", "SNINCOME",
 # Figure 5.20
 # RACE, INSURANCE, URBANICITY2
 r_svysummary(include = "CAT_SNNEEDS")
-
 
 
 # Checking number of cesareans ----

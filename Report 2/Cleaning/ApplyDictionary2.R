@@ -9,7 +9,8 @@ dict3 <- dict3 %>%
   subset(KEEP == 1) %>% 
   select(-c(KEEP))
 
-LTM_include <- LTM2 %>% select(dict3$variable)
+LTM_include <- LTM2 %>% 
+  select(dict3$variable)
 
 # 
 LTM3 <- LTM2 %>% 

@@ -11,10 +11,18 @@ fig_compile("GOLDENHOUR",
                                   "BIRTHATTEND", "LANGSIMP")) %>% 
   View()
 
+raw_svysummary(by = "MODE2023",
+               include = "GOLDENHOUR")
+
 # Figure 3.3	
 fig_compile("SKIN",
             others = c("RACE", "MODE2023", "BIRTHATTEND", "LANGSIMP")) %>% 
   View()
+
+raw_svysummary(by = "LANGSIMP",
+               include = "SKIN", 
+               data = filter(LTM_dsn, GOLDENHOUR == "In my arms or on my chest" | 
+                               GOLDENHOUR == "In arms or on chest of my partner/spouse"))
 
 # Figure 3.4	
 fig_compile("ANYNICU", 
@@ -35,7 +43,7 @@ r_svysummary(by = "MODE2023",
 # Figure 3.7
 # RACE, INSURANCE, PROVIDER2, MODE2023
 r_svysummary(by = "INSURANCE", 
-             include = "BIRTHATTEND")
+             include = "BIRTHATTEND2")
 
 # Figure 3.8 
 # DOULA VENN DIAGRAM
@@ -43,10 +51,9 @@ r_svysummary(include = "DOULA_CAROL")
 r_svysummary(include = "DOULA_CAROL", 
              data = filter(LTM_dsn, DOULA == "Yes"))
 
-
 # Figure 3.9
 # RACE, INSURANCE, URBANICITY2, PROVIDER2
-r_svysummary(by = "RACE", 
+r_svysummary(by = "PROVIDER2", 
              include = "DOULAC2")
 
 # Figure 3.10
@@ -67,7 +74,7 @@ fig_compile("DEC_MAKE",
 
 # Figure 3.13
 # RACE, INSURANCE, PROVIDER
-r_svysummary(by = "RACE", 
+r_svysummary(by = "PROVIDER2", 
              include = "INDUCE5",
              data = filter(LTM_dsn, INDUCE == "Yes"))
 
@@ -108,7 +115,7 @@ r_svysummary(include = c('DRUGFREEC1', 'DRUGFREEC2', 'DRUGFREEC3', 'DRUGFREEC4',
 
 # Figure 3.21
 # RACE, PARITY, BIRTHATTEND2, DOULAC2, 
-r_svysummary(by = "RACE", 
+r_svysummary(by = "DOULAC2", 
              include = "DRUGFREEC11", 
              data = filter(LTM_dsn, MODE2023 == "Vaginal birth"))
 
@@ -184,7 +191,6 @@ r_svysummary(include = c(paste0("DISCRIMINATION1C", rep(1:17))),
                                                           "Yes, all the time")))
 
 # Figure 3.35
-
 r_svysummary(by = "DISABILITY", 
              include = c("CUSTOMS"), 
              data = filter(LTM_dsn, CUSTOMS %in% c("No, never", "Yes, a few times", 

@@ -1,0 +1,110 @@
+library(readxl)
+Data_Dictionary2 <- read_excel("Data_Dictionary2.xlsx")
+
+col_othes <- Data_Dictionary2 %>% 
+  mutate(keep = case_when(str_ends(Variable, "O") ~ 1, 
+                          TRUE ~ 0)) %>% 
+  subset(keep == 1)
+col_othes <- col_othes$Variable
+
+setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Others")
+# PREPREG_PHYSCONDC3O ----
+LTM_final %>% 
+  subset(PREPREG_PHYSCONDC3O != "") %>% 
+  select(c(PREPREG_PHYSCONDC1, PREPREG_PHYSCONDC2, 
+           PREPREG_PHYSCONDC3O,
+           MDID)) %>%
+  View()
+
+#CARESETTING ----
+LTM_final %>% 
+  subset(CARESETTINGC8O != "") %>%
+  select(c(CARESETTINGC1,CARESETTINGC2,CARESETTINGC3,CARESETTINGC4,
+           CARESETTINGC5,CARESETTINGC6,CARESETTINGC7,CARESETTINGC8O,
+           MDID)) %>%
+  View()
+
+# PREGCONDITION ----
+LTM_final %>% 
+  subset(PREGCONDITIONC9O != "") %>% 
+  select(c("PREGCONDITIONC1","PREGCONDITIONC2","PREGCONDITIONC3",
+           "PREGCONDITIONC4","PREGCONDITIONC5","PREGCONDITIONC6",
+           "PREGCONDITIONC7", "PREGCONDITIONC8", "PREGCONDITIONC9",
+           "PREGCONDITIONC9O", "MDID")) %>% 
+  View()
+# 601453 should be recoded to gestational diabetes
+# 601453 i think should be hypertension
+# 203461 should be hyperemisis gravidarum 
+# 202442 should be anemia
+
+# MISTRUSTC8O ----
+mistr <- LTM_final %>% 
+  subset(MISTRUSTC8O != "") %>% 
+  select(c("MISTRUSTC1","MISTRUSTC2","MISTRUSTC3",
+           "MISTRUSTC4","MISTRUSTC5","MISTRUSTC6",
+           "MISTRUSTC7", "MISTRUSTC8O", "MISTRUSTC8",
+           "MISTRUSTC9", "MDID")) #%>% 
+  #View()
+write.csv(mistr, "MISTRUST.csv")
+
+# HOSPSAFEC16O ----
+hospsa <- LTM_final %>% 
+  subset(HOSPSAFEC16O != "") %>% 
+  select(c("HOSPSAFEC1","HOSPSAFEC2","HOSPSAFEC3",
+           "HOSPSAFEC4","HOSPSAFEC5","HOSPSAFEC6",
+           "HOSPSAFEC7","HOSPSAFEC8","HOSPSAFEC9",
+           "HOSPSAFEC10","HOSPSAFEC11","HOSPSAFEC12",
+           "HOSPSAFEC13","HOSPSAFEC14","HOSPSAFEC15",
+           "HOSPSAFEC16O", 'HOSPSAFEC16', "MDID")) #%>% 
+  #View()
+
+write.csv(hospsa, "HOSPSAFE.csv")
+
+# CSECTFEELC10O ----
+csecfeel <- LTM_final %>% 
+  subset(CSECTFEELC10O != "") %>% 
+  select(c("CSECTFEELC1","CSECTFEELC2","CSECTFEELC3",
+           "CSECTFEELC4","CSECTFEELC5","CSECTFEELC6",
+           "CSECTFEELC7","CSECTFEELC8","CSECTFEELC9",
+           "CSECTFEELC10O","CSECTFEELC10", "MDID")) #%>% 
+ # View()
+write.csv(csecfeel, "CSECTFEEL.csv")
+
+# LACKSAFEC16O ----
+lacks <- LTM_final %>% 
+  subset(LACKSAFEC16O != "") %>% 
+  select(c("LACKSAFEC1","LACKSAFEC2","LACKSAFEC3",
+           "LACKSAFEC4","LACKSAFEC5","LACKSAFEC6",
+           "LACKSAFEC7","LACKSAFEC8","LACKSAFEC9",
+           "LACKSAFEC10","LACKSAFEC11","LACKSAFEC12",
+           "LACKSAFEC13","LACKSAFEC14","LACKSAFEC15",
+           "LACKSAFEC16O","LACKSAFEC16", "MDID")) #%>% 
+  #View()
+write.csv(lacks, "LACKSAFE.csv")
+
+# BCOFFEREDC4O
+bcoff <- LTM_final %>% 
+  subset(BCOFFEREDC4O != "") %>% 
+  select(c("BCOFFEREDC1","BCOFFEREDC2","BCOFFEREDC3",
+           "BCOFFEREDC4O","BCOFFEREDC4","MDID")) #%>% 
+  #View()
+write.csv(bcoff, "BCOFFERED.csv")
+
+# Old export ----
+names_others <- LTM_final %>% 
+  select(all_of(col_othes)) %>% 
+  select(-c(LABORWALK_NO, 
+            REMAINPTO, CURRBENO, WICVALUE_OEO))%>% colnames()
+
+names_others2 <- c()
+for(i in names_others){
+  names_others2 <- c(names_others2, str_sub(i, end = -2))
+}
+
+names_all <- c(names_others, names_others2)
+names_all <- sort(names_all)
+
+others <- LTM_final %>% 
+  select(c(all_of(names_all), MDID))
+
+write.csv(others, "all_others.csv")
