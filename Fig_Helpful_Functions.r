@@ -176,12 +176,14 @@ fig_compile_2 <- function(cols, others = c("RACE", "INSURANCE", "URBANICITY2"), 
   return(fig)
 }
 
-r_svysummary <- function(by = NULL, include, data = LTM_dsn, add_p = TRUE){
+r_svysummary <- function(by = NULL, include, data = LTM_dsn){
   t <- tbl_svysummary(data = data, 
                       missing = "ifany",
                       by = by, 
                       include = include, 
-                      statistic = list(all_categorical() ~ "{n_unweighted}; {p}%", 
+                      statistic = list(#all_categorical() ~ "{p}%", 
+                                       # all_categorical() ~ "{N_unweighted}; {p}%", 
+                                       all_categorical() ~ "{n_unweighted}; {p}%", 
                                        # all_continuous() ~ "{min}, {p25}, {median}, {p75}, {max}"),
                                        # all_continuous() ~ "{min},{mean} , {max}"),
                                        all_continuous() ~ "{mean}"),

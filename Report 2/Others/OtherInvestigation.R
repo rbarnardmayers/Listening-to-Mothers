@@ -43,8 +43,8 @@ mistr <- LTM_final %>%
   select(c("MISTRUSTC1","MISTRUSTC2","MISTRUSTC3",
            "MISTRUSTC4","MISTRUSTC5","MISTRUSTC6",
            "MISTRUSTC7", "MISTRUSTC8O", "MISTRUSTC8",
-           "MISTRUSTC9", "MDID")) #%>% 
-  #View()
+           "MISTRUSTC9", "MDID")) %>% 
+  View()
 write.csv(mistr, "MISTRUST.csv")
 
 # HOSPSAFEC16O ----
@@ -90,21 +90,23 @@ bcoff <- LTM_final %>%
   #View()
 write.csv(bcoff, "BCOFFERED.csv")
 
-# Old export ----
-names_others <- LTM_final %>% 
-  select(all_of(col_othes)) %>% 
-  select(-c(LABORWALK_NO, 
-            REMAINPTO, CURRBENO, WICVALUE_OEO))%>% colnames()
+# INTENDLOCALE 
 
-names_others2 <- c()
-for(i in names_others){
-  names_others2 <- c(names_others2, str_sub(i, end = -2))
-}
+intendl <- LTM_final %>% 
+  subset(INTENDLOCALEO != "") %>% 
+  select(c("INTENDLOCALE","MDID")) #%>% 
+#View()
+write.csv(intendl, "INTENDLOCALE.csv")
 
-names_all <- c(names_others, names_others2)
-names_all <- sort(names_all)
 
-others <- LTM_final %>% 
-  select(c(all_of(names_all), MDID))
+# COUNSELBARR
+counselb <- LTM_final %>% 
+  subset(COUNSELBARRC8O != "") %>% 
+  select(c('COUNSELBARRC1', 'COUNSELBARRC2', 'COUNSELBARRC3',
+           'COUNSELBARRC4', 'COUNSELBARRC5', 'COUNSELBARRC6',
+           'COUNSELBARRC7',"COUNSELBARRC8","COUNSELBARRC8O", 
+           "MDID")) 
+write.csv(counselb, "COUNSELBARR.csv")
 
-write.csv(others, "all_others.csv")
+
+

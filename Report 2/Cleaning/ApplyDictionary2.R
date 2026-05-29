@@ -1,20 +1,20 @@
 # Data Dictionary Application
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/Data_Cleaning_2.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/Data_Cleaning_3.R")
 
 # Data dictionary prep ----
 # Getting rid of columns with no conversion in dict
 dict3 <- dict3 %>% 
-  mutate(KEEP = case_when(variable %in% colnames(LTM2) ~ 1, 
+  mutate(KEEP = case_when(variable %in% colnames(LTM3) ~ 1, 
                           TRUE ~ 0)) %>% 
   subset(KEEP == 1) %>% 
   select(-c(KEEP))
 
-LTM_include <- LTM2 %>% 
+LTM_include <- LTM3 %>% 
   select(dict3$variable)
 
 # 
-LTM3 <- LTM2 %>% 
-  select(c(setdiff(colnames(LTM2), colnames(LTM_include)), MDID))
+LTM4 <- LTM3 %>% 
+  select(c(setdiff(colnames(LTM3), colnames(LTM_include)), MDID))
 
 # Apply dictionary recoding and labeling 
 LTM_include <- recode_vrs(data = LTM_include, 
@@ -22,20 +22,21 @@ LTM_include <- recode_vrs(data = LTM_include,
                           vrs = colnames(LTM_include))
 
 # Final dataset 
-LTM_final <- LTM3 %>% 
+LTM_final <- LTM4 %>% 
   full_join(LTM_include, by = join_by(MDID))
-
-# Create list of categorical variables by excluding numeric ----
-categorical <- LTM_final %>%
-  select(-c( 
-    # continuous variables
-    ))  %>% colnames()
 
 # Convert continuous variables into numeric class ----
 continuous <- LTM_final %>% 
   select(c(
     # Continuous variables
+    PPDISTANCE, YEARBIRTH, BIRTHDATE_D,
+    TIME_SINCE_BIRTH, DAYSHOSP
   )) %>% 
+  colnames()
+
+# Create list of categorical variables by excluding numeric ----
+categorical <- LTM_final %>%
+  select(-c(all_of(continuous)), BIRTHDATE, SURVEYDATE) %>% 
   colnames()
 
 for(i in continuous){

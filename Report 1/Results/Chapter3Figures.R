@@ -191,7 +191,7 @@ r_svysummary(include = c(paste0("DISCRIMINATION1C", rep(1:17))),
                                                           "Yes, all the time")))
 
 # Figure 3.35
-r_svysummary(by = "DISABILITY", 
+r_svysummary(by = "URBANICITY2", 
              include = c("CUSTOMS"), 
              data = filter(LTM_dsn, CUSTOMS %in% c("No, never", "Yes, a few times", 
                                                    "Yes, all the time", "Yes, most of the time")))
