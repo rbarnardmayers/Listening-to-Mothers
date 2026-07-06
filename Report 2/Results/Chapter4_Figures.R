@@ -44,8 +44,8 @@ r_svysummary(include = "IDEALLEAVE1",
 
 # CURREMPLOY
 # EMPLOYBABYAGE
-# RACE, MODE1INDEX, INSURANCE
-r_svysummary(by = "INSURANCE",
+# RACE, MODE1INDEX, INSURANCE RESPONSIBTIER
+r_svysummary(by = "RESPONSIBTIER",
              include = "EMPLOYBABYAGE_R", 
              data = filter(LTM_dsn, 
                            CURREMPLOY %in% c("Yes, for someone else",

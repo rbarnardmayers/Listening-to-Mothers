@@ -10,7 +10,7 @@ dict3 <- dict3 %>%
   select(-c(KEEP))
 
 LTM_include <- LTM3 %>% 
-  select(dict3$variable)
+  select(c(dict3$variable, MDID))
 
 # 
 LTM4 <- LTM3 %>% 
@@ -29,14 +29,9 @@ LTM_final <- LTM4 %>%
 continuous <- LTM_final %>% 
   select(c(
     # Continuous variables
-    PPDISTANCE, YEARBIRTH, BIRTHDATE_D,
-    TIME_SINCE_BIRTH, DAYSHOSP
+    PPDISTANCE, YEARBIRTH, BIRTHDATE_D, TIME_SINCE_BIRTH, DAYSHOSP, INTERVAL,
+    HOSPDISTANCE, STDLEAVE1
   )) %>% 
-  colnames()
-
-# Create list of categorical variables by excluding numeric ----
-categorical <- LTM_final %>%
-  select(-c(all_of(continuous)), BIRTHDATE, SURVEYDATE) %>% 
   colnames()
 
 for(i in continuous){

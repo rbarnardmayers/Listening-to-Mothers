@@ -94,7 +94,7 @@ write.csv(bcoff, "BCOFFERED.csv")
 
 intendl <- LTM_final %>% 
   subset(INTENDLOCALEO != "") %>% 
-  select(c("INTENDLOCALE","MDID")) #%>% 
+  select(c("INTENDLOCALE","INTENDLOCALEO","MDID")) #%>% 
 #View()
 write.csv(intendl, "INTENDLOCALE.csv")
 
@@ -108,5 +108,27 @@ counselb <- LTM_final %>%
            "MDID")) 
 write.csv(counselb, "COUNSELBARR.csv")
 
+# INSURANCE 
+insurrcur <- LTM_final %>% 
+  subset(INSURCURRC5O != "") %>% 
+  select(c('INSURCURRC1', 'INSURCURRC2', 'INSURCURRC3',
+           'INSURCURRC4',"INSURCURRC5","INSURCURRC5O", "DISABILITY",
+           "MDID")) 
+write.csv(insurrcur, "INSURCURR.csv")
 
+# CTJUDGEC19O 
+LTM_final %>% 
+  subset(CTJUDGEC19O != "") %>% 
+  select(c('CTJUDGEC1', 'CTJUDGEC2', 'CTJUDGEC3', 'CTJUDGEC4', 'CTJUDGEC5', 
+           'CTJUDGEC6', 'CTJUDGEC7', 'CTJUDGEC8', 'CTJUDGEC9', 'CTJUDGEC10',
+           'CTJUDGEC11', 'CTJUDGEC12', 'CTJUDGEC13', 'CTJUDGEC14', 'CTJUDGEC15', 
+           'CTJUDGEC16', 'CTJUDGEC17', 'CTJUDGEC18', 'CTJUDGEC19', 'CTJUDGEC19O',
+           "MDID"))  %>% View()
+
+LTM_final %>% 
+  subset(JUDGEEFFECTC11O != "") %>% 
+  select(c('JUDGEEFFECTC1', 'JUDGEEFFECTC2', 'JUDGEEFFECTC3', 'JUDGEEFFECTC4', 
+           'JUDGEEFFECTC5', 'JUDGEEFFECTC6', 'JUDGEEFFECTC7', 'JUDGEEFFECTC8', 
+           'JUDGEEFFECTC9', 'JUDGEEFFECTC10', 'JUDGEEFFECTC11',
+           'JUDGEEFFECTC11O' ,"MDID"))  %>% View()
 

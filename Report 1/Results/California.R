@@ -1,88 +1,14 @@
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/SetUp.R")
-setwd("~/Documents/2025-2026/LTM")
+setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers/California")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Fig_Helpful_Functions.r")
 
-# Data Read in &  Get rid of identifying information ----
-LTM <- read.csv("Data_FINAL12.csv") %>% 
-  mutate(MDID2 = as.numeric(MDID2)) %>% 
-  subset(!is.na(MDID2))
+CA_Q1 <- read_xlsx("LTM_CA_Q1.xlsx")
+datadict_CAQ1 <- read.xlsx("LTM_CA_Q1_DataDictionary.xlsx")
 
-LTM1 <- LTM %>% 
-  mutate(MDID = as.character(MDID)) %>% 
-  select(-c(MDID2, MDID1))
-
-
-miss_vars <- dict2[dict2$missing == 99999,"variable"] %>% subset(!is.na(variable)) 
-
-# Create dataset of just text responses and MDID (so we can merge back) ----
-# Don't want to convert these columns to numeric
-ends_o <- LTM1[str_ends(colnames(LTM1), "O")]  %>% colnames()
-
-LTM_ignore <- LTM1 %>% 
-  select(c(all_of(ends_o), MDID, DOULA3, INDUCE6,
-           ResLanguage,xResLanguage, ELSE, ANYTHINGELSE, DISABILITYCOND 
-           #, other vars we don't want
-  )) 
-
-# List of columns that are text only 
-ignores <- LTM_ignore %>% 
-  select(-c(MDID)) %>% 
-  colnames() 
-
-# Create dataset of the numeric columns to convert----
-LTM_keep <- LTM1 %>% 
-  select(-c(all_of(ignores)), MDID)
-
-sn_cols <- LTM_keep %>% 
-  select(starts_with("SN")) %>% 
-  colnames()
-
-for(i in sn_cols){
-  LTM_keep[[i]] <- ifelse(LTM_keep[[i]] == 2, 0, 
-                          ifelse(LTM_keep[[i]] == 99, NA, 
-                                 ifelse(LTM_keep[[i]] == 99999, NA, 1)))
-}
-
-# Create list of column names to convert to numeric
-tochange <- LTM_keep %>% 
-  select(-c(MDID, LastConnectionDate, xLastConnectionDate)) %>%
-  colnames()
-
-# Convert all columns in LTM_keep to numeric
-for(i in tochange){
-  LTM_keep[[i]] <- as.numeric(LTM_keep[[i]])
-}
-
-# Complete dataset
-LTM1 <- LTM_keep %>% 
-  full_join(LTM_ignore, join_by(MDID))
-
-
-# Recode variables ----
-LTM1$BOTHER_R1 <- rev.likert("BOTHER_A1", dat = LTM1)
-LTM1$BOTHER_R2 <- rev.likert("BOTHER_A2", dat = LTM1)
-LTM1$BOTHER_R3 <- rev.likert("BOTHER_A3", dat = LTM1)
-LTM1$BOTHER_R4 <- rev.likert("BOTHER_A4", dat = LTM1)
-
-# Convert missing 
-LTM1 <- convert.miss(LTM1, c('RESPECT', 'KNOWLEDGE', 'HEARD', 
-                             'DECISIONS', 'CONSENT', 'INFORMED',
-                             'TIMELINESS', 'TRUST', 'FEEDING',
-                             'SAFE', 'DISCRIMINATION', 'NEGLECT'), 99)
-LTM1 <- convert.miss(LTM1, c("TIMELINESS"), 97)
-LTM1 <- convert.miss(LTM1, miss_vars$variable, 99999)
-LTM1 <- convert.miss(LTM1, c('THREATC1', 'SHOUTC1', 'SHAREPRIVC1',
-                           'FORCEDC1', 'WHOPRIVC1', 'WITHHELDC1',
-                           'IGNOREC1', 'PABUSEC1', 'THREATC2', 'SHOUTC2',
-                           'SHAREPRIVC2', 'FORCEDC2', 'WHOPRIVC2', 
-                           'WITHHELDC2', 'IGNOREC2', 'PABUSEC2', 'THREATC3', 
-                           'SHOUTC3', 'SHAREPRIVC3', 'FORCEDC3', 'WHOPRIVC3', 
-                           'WITHHELDC3', 'IGNOREC3', 'PABUSEC3'), 99999)
-# Creating new variables ----
-
-LTM2 <- LTM1 %>% 
+CA_Q1 <- CA_Q1 %>% 
   mutate(PARITY = case_when(NUMB_BIRTH == 1 ~ "Nulliparous",
                             NUMB_BIRTH > 1 ~ "Multiparous",
                             TRUE ~ "Missing"),
+         
          GESTAGE_F = case_when(GESTAGE_WEEKS < 27 ~ 1, GESTAGE_WEEKS > 43 ~ 1, TRUE ~ 0), 
          GESTAGE_R = case_when(GESTAGE_F == 1 ~ NA, 
                                GESTAGE_F == 0 ~ GESTAGE_WEEKS),
@@ -115,8 +41,8 @@ LTM2 <- LTM1 %>%
          MARRIED = case_when(RELATIONSHIP == 1 ~ "Married",
                              RELATIONSHIP == 2 ~ "Committed Partner", 
                              RELATIONSHIP == 3 | RELATIONSHIP == 4 ~ "Separated/Single"),
-         RACE = case_when(RACEALONE == 5 ~ "AIAN-NHPI",
-                          RACEALONE == 7 ~ "AIAN-NHPI",
+         RACE = case_when(RACEALONE == 5 ~ "AIAN",
+                          RACEALONE == 7 ~ "AIAN",
                           is.na(RACEALONE) ~ "Multi",
                           RACEALONE == 1 ~ "White",
                           RACEALONE == 2 ~ "Latina",
@@ -125,7 +51,7 @@ LTM2 <- LTM1 %>%
                           RACEALONE == 6 ~ "MENA"),
          INSURANCE = case_when(INSURCAT == 1 ~ "Private",
                                INSURCAT == 2 ~ "Medicaid"),
-         PROVIDER_R = case_when(PROVIDER == 1 ~ "OB",
+         PROVIDER2 = case_when(PROVIDER == 1 ~ "OB",
                                PROVIDER == 4 ~ "Midwife",
                                PROVIDER %in% c(5,6) ~ "Other"),
          LABORWALK_NO = case_when(LABORWALK == 1 | LABORWALK == 3 ~ 0, 
@@ -173,17 +99,14 @@ LTM2 <- LTM1 %>%
                                       TRUE ~ 0),
          MACROSOMIC = case_when(BW_CAT == 4 ~ "Macro", 
                                 BW_CAT < 4 ~ "Not Macro"),
-         BIRTHATTEND_R =case_when(BIRTHATTEND %in% c(1)  ~ "OB",
+         BIRTHATTEND2 =case_when(BIRTHATTEND %in% c(1)  ~ "OB",
                                  BIRTHATTEND == 4 ~ "Midwife",
-                                 BIRTHATTEND %in% c(2,3,5,6) ~ "Other"),
-         BIRTHATTEND_R2 = case_when(BIRTHATTEND %in% c(1,2,3) ~ "Doctor",
-                                   BIRTHATTEND == 4 ~ "Midwife", 
-                                   BIRTHATTEND == 5 ~ "Nurse",
-                                   BIRTHATTEND == 6 ~ "Other"),
-         # PPVISIT2 = case_when(PPVISIT >= 4 ~ 4,
-         #                      TRUE ~ PPVISIT),
-         # PPVISIT_8 = case_when(PPVISIT >= 8 ~ 1, 
-         #                       PPVISIT < 8 ~ 0),
+                                 BIRTHATTEND %in% c(5,6) ~ "Other"), 
+         PPVISIT_CA = case_when(PPVISIT == 99 ~ NA,
+                                PPVISIT >= 3 ~ 3,
+                              TRUE ~ PPVISIT),
+         PPVISIT_8 = case_when(PPVISIT >= 8 ~ 1, 
+                               PPVISIT < 8 ~ 0),
          MEDINDUCE4 = case_when(MEDINDUCE4 >= 999 ~ NA, 
                                 TRUE ~ MEDINDUCE4),
          LABORLENGTH = case_when(LABORLENGTH >= 999 ~ NA, 
@@ -265,9 +188,9 @@ LTM2 <- LTM1 %>%
                              MODE14 == 2 ~ 1),
          VBACEFFORT2 = case_when(VBACEFFORT %in% c(1,2,3) ~ "Tried Something", 
                                  VBACEFFORT == 97 ~ "Tried Nothing"),
-         ANYLABOR = case_when(MODE1INDEX == 1 ~ "Labored", 
-                              MODE1INDEX == 2 & LABCSEC == 1 ~ "Labored", 
-                              MODE1INDEX == 2 & LABCSEC == 2 ~ "No Labor"),
+         ANYLABOR = case_when(MODE2023 == 1 ~ "Labored", 
+                              MODE2023 == 2 & LABCSEC == 1 ~ "Labored", 
+                              MODE2023 == 2 & LABCSEC == 2 ~ "No Labor"),
          PAINMEDSANY = case_when(PAINMEDSC1 == 1 ~ 1, 
                                  PAINMEDSC2 == 1 ~ 1, 
                                  PAINMEDSC3 == 1 ~ 1,
@@ -279,7 +202,7 @@ LTM2 <- LTM1 %>%
                              PAINMEDSANY == 1 ~ "No",
                              EPIST == 1 ~ "No",
                              xGESTAGE == 1 ~ "No",
-                             MODE1INDEX == 2 ~ "No",
+                             MODE2023 == 2 ~ "No",
                              LABORINTC3 == 1 ~ "No",
                              LABORINTC1 == 1 ~ "No",
                              TRUE ~ "Yes"),
@@ -350,27 +273,27 @@ LTM2 <- LTM1 %>%
                                          MSUPPORT_ANY == 0 & PREPREG_MHCONDC2 == 1 ~ 1, 
                                          MSUPPORT_ANY == 1 & PREPREG_MHCONDC1 == 1 ~ 0, 
                                          MSUPPORT_ANY == 1 & PREPREG_MHCONDC2 == 1 ~ 0),
-         # PPMEDS_ANY = case_when(PPMEDSC1 == 1 ~ 1,
-         #                        PPMEDSC2 == 1 ~ 1,
-         #                        PPMEDSC3 == 1 ~ 1,
-         #                        PPMEDSC4 == 1 ~ 1,
-         #                        PPMEDSC5 == 1 ~ 0),
-         # PPMEDS_DEP_ANX = case_when(PPMEDSC1 == 1 ~ 1,
-         #                            PPMEDSC2 == 1 ~ 1,
-         #                            PPMEDSC5 == 1 ~ 0, 
-         #                            PPMEDSC3 == 1 ~ 0, 
-         #                            PPMEDSC4 == 1 ~ 0),
-         # PP_MSUPPORT_ANY = case_when(PPTHERAPY == 1 ~ 1, 
-         #                             PPMEDS_DEP_ANX == 1 ~ 1,
-         #                             TRUE ~ 0),
-         # PP_MSUPPORT_ONLY = case_when(PPMEDS_DEP_ANX == 1 & PPTHERAPY == 1 ~ "Counseling & Meds",
-         #                              PPMEDS_DEP_ANX == 0 & PPTHERAPY == 1 ~ "Counseling Only",
-         #                              PPMEDS_DEP_ANX == 1 & PPTHERAPY == 2 ~ "Meds Only", 
-         #                              PPMEDS_DEP_ANX == 0 & PPTHERAPY == 2 ~ "Neither"),
-         # PP_UNMET_NEEDS = case_when(PP_MSUPPORT_ANY == 0 & PHQ4_PPDEP == 1 ~ 1, 
-         #                            PP_MSUPPORT_ANY == 0 & PHQ4_PPANX == 1 ~ 1, 
-         #                            PP_MSUPPORT_ANY == 1 & PHQ4_PPDEP == 1 ~ 0, 
-         #                            PP_MSUPPORT_ANY == 1 & PHQ4_PPANX == 1 ~ 0),
+         PPMEDS_ANY = case_when(PPMEDSC1 == 1 ~ 1,
+                                PPMEDSC2 == 1 ~ 1,
+                                PPMEDSC3 == 1 ~ 1,
+                                PPMEDSC4 == 1 ~ 1,
+                                PPMEDSC5 == 1 ~ 0),
+         PPMEDS_DEP_ANX = case_when(PPMEDSC1 == 1 ~ 1,
+                                    PPMEDSC2 == 1 ~ 1,
+                                    PPMEDSC5 == 1 ~ 0, 
+                                    PPMEDSC3 == 1 ~ 0, 
+                                    PPMEDSC4 == 1 ~ 0),
+         PP_MSUPPORT_ANY = case_when(PPTHERAPY == 1 ~ 1, 
+                                     PPMEDS_DEP_ANX == 1 ~ 1,
+                                     TRUE ~ 0),
+         PP_MSUPPORT_ONLY = case_when(PPMEDS_DEP_ANX == 1 & PPTHERAPY == 1 ~ "Counseling & Meds",
+                                      PPMEDS_DEP_ANX == 0 & PPTHERAPY == 1 ~ "Counseling Only",
+                                      PPMEDS_DEP_ANX == 1 & PPTHERAPY == 2 ~ "Meds Only", 
+                                      PPMEDS_DEP_ANX == 0 & PPTHERAPY == 2 ~ "Neither"),
+         PP_UNMET_NEEDS = case_when(PP_MSUPPORT_ANY == 0 & PHQ4_PPDEP == 1 ~ 1, 
+                                    PP_MSUPPORT_ANY == 0 & PHQ4_PPANX == 1 ~ 1, 
+                                    PP_MSUPPORT_ANY == 1 & PHQ4_PPDEP == 1 ~ 0, 
+                                    PP_MSUPPORT_ANY == 1 & PHQ4_PPANX == 1 ~ 0),
          CLASS_ANY = case_when(CURREDUC == 1 | PRIOREDUC == 1 ~ 1, 
                                PRIOREDUC == 2 & CURREDUC == 2 ~ 0), 
          INDUC_REC = case_when(BIGBABY2 == 1 ~ 1, 
@@ -402,9 +325,9 @@ LTM2 <- LTM1 %>%
                                   BMI4_PREPREG == 4  & WEIGHTGAIN_R < 11 ~ "Below",
                                   BMI4_PREPREG == 4  & WEIGHTGAIN_R > 20 ~ "Above"), 
          NEITHER = case_when(MEDINDUCE == 1 ~ 0, 
-                             MODE1INDEX == 2 ~ 0, 
+                             MODE2023 == 2 ~ 0, 
                              MEDINDUCE == 0 ~ 1, 
-                             MODE1INDEX == 1 ~ 1), 
+                             MODE2023 == 1 ~ 1), 
          NEITHER_REC = case_when(BIGBABY2 == 1 | BIGBABY2 == 2 ~ 0, 
                                  BIGBABY2 == 97 ~ 1),
          PLANNED_INDUCED = case_when(MEDINDUCE == 1 ~ 1, # induced 
@@ -448,7 +371,7 @@ LTM2 <- LTM1 %>%
                                 TRUE ~ LABORINTC6),
          LABORINTC7 = case_when(LABORINTC7 > 1 ~ NA, 
                                 TRUE ~ LABORINTC7),
-         LABORED = case_when(MODE1INDEX == 1 | LABCSEC == 1 ~ 1, 
+         LABORED = case_when(MODE2023 == 1 | LABCSEC == 1 ~ 1, 
                              TRUE ~ 0),
          PITOCIN = case_when(LABORINTC3 == 1 ~ 1, 
                              MEDINDUCE1C4 == 1 ~ 1, 
@@ -503,7 +426,7 @@ LTM2 <- LTM1 %>%
                               VAGASSIST == 2 ~ "Assisted",
                               VAGASSIST == 3 ~ "Unassisted",
                               VAGASSIST == 99 ~ "PNTA"), 
-         CUM_CES = case_when(MODE1INDEX == 2 ~ 1, 
+         CUM_CES = case_when(MODE2023 == 2 ~ 1, 
                              TRUE ~ 0), 
          CUSTOMS2 = case_when(CUSTOMS > 90 ~ NA, 
                               TRUE ~ CUSTOMS),
@@ -527,153 +450,8 @@ LTM2 <- LTM1 %>%
          HSPFEEDC7 = HOSPFEEDC7, 
          HOSPFEEDC4 = RHOSPFEEDC4,
          HOSPFEEDC6 = RHOSPFEEDC6,
-         HOSPFEEDC7 = RHOSPFEEDC7) %>%
-  rowwise() %>% 
-  mutate(MODE_ALL = sum(across(starts_with("RMODE")), na.rm = T),
-         SUM_SOCIALNEED =sum(across(starts_with("SOCIALNEED")), na.rm = T),
-         SUM_HOSPFEED = sum(across(starts_with("HOSPFEED")), na.rm = T),
-         SUM_SNNEEDS = sum(across(starts_with("SN")), na.rm = T),
-         SDM = sum(SDM_1,SDM_2,SDM_3,SDM_4, na.rm = T), 
-         SUM_ANX = sum(BOTHER_R1, BOTHER_R2, na.rm = T), 
-         SUM_DEP = sum(BOTHER_R3, BOTHER_R4, na.rm = T), 
-         SUM_PHQ4 = sum(across(starts_with("BOTHER_R"))), 
-         SUM_DRUGFREE = sum(DRUGFREEC1,DRUGFREEC2,DRUGFREEC3,DRUGFREEC4,
-                            DRUGFREEC5,DRUGFREEC6,DRUGFREEC7,DRUGFREEC8,
-                            DRUGFREEC9,DRUGFREEC10), # including other
-         SUM_LABORINT = sum(LABORINTC1, LABORINTC2, LABORINTC3, 
-                            LABORINTC4, LABORINTC5, FETALMONC1, LABORWALK_NO, 
-                            VAGEXAM_5, DENIED), 
-         CUM_INT = sum(across(starts_with("CUM_"))), # Induction, epidural, augmentation, assisted, cesarean
-         SUM_LABORSTUFF = sum(DOULAC1, DOULAC2, FETALMONC2_R, VAGEXAM_5, 
-                              LABORWALK_R, LABORPERMIT_A1_R, LABORPERMIT_A2_R,
-                              PROVIDER_R))
+         HOSPFEEDC7 = RHOSPFEEDC7)
 
-LTM2 <- LTM2 %>% 
-  mutate(SUM_LABORSTUFF = case_when(SUM_LABORSTUFF > 4 ~ 4, 
-                                    TRUE ~ SUM_LABORSTUFF),
-         VAGEXAM_5 = case_when(VAGEXAM_5 == 0 ~ "Early Labor", 
-                               VAGEXAM_5 == 1 ~ "Active Labor"), 
-         VBAC = case_when(xMODE2 == 2 ~ 1,
-                          xMODE2 != 2 ~ 0),
-         NUM_CS = case_when(xMODE2 == 3 ~ 0, 
-                            xMODE2 == 4 ~ MODE_ALL,
-                            xMODE2 == 2 ~ MODE_ALL, 
-                            xMODE1 == 1 ~ 0),
-         NUM_CS = case_when(NUM_CS >= 3 ~ 3, 
-                            NUM_CS == 2 ~ 2, 
-                            NUM_CS == 1 ~ 1, 
-                            NUM_CS == 0 ~ 0),
-         VBACINTEREST = case_when(NUM_CS == 3 ~ NA, 
-                                  xMODE2 == 3 ~ NA, 
-                                  TRUE ~ VBACINTEREST),
-         PRIOR_C = case_when(MODE2INDEX == 4 ~ 1, 
-                             MODE2INDEX == 2 ~ 1, 
-                             MODE2INDEX == 1 ~ 0, 
-                             MODE2INDEX == 3 ~ 0),
-         SDM = case_when(is.na(SDM_1) ~ NA,
-                         is.na(SDM_2) ~ NA,
-                         is.na(SDM_3) ~ NA,
-                         is.na(SDM_4) ~ NA, 
-                         TRUE ~ SDM), 
-         SDM_dich = case_when(SDM == 0 ~ 0, 
-                              SDM > 0 ~ 1),
-         R_PHQ_ANX = case_when(SUM_ANX < 3 ~ 0, 
-                               SUM_ANX >= 3 ~ 1),
-         R_PHQ_DEP = case_when(SUM_DEP < 3 ~ 0, 
-                               SUM_DEP >= 3 ~ 1),
-         R_PHQ4 = case_when(SUM_PHQ4 <= 2 ~ "Normal", 
-                            SUM_PHQ4 <= 5 ~ "Mild", 
-                            SUM_PHQ4 <= 8 ~ "Moderate", 
-                            SUM_PHQ4 <= 12 ~ "Severe"),
-         R_PHQ_DISC = case_when(R_PHQ_ANX == 1 & R_PHQ_DEP == 1 ~ "Pregnancy Depression and Anxiety",
-                                R_PHQ_ANX == 1 & R_PHQ_DEP == 0 ~ "Pregnancy Anxiety Only",
-                                R_PHQ_ANX == 0 & R_PHQ_DEP == 1 ~ "Pregnancy Depression Only",
-                                R_PHQ_ANX == 0 & R_PHQ_DEP == 0 ~ "Neither"),
-         PREG_UNMET_NEEDS = case_when(MSUPPORT_ANY == 0 & R_PHQ_DEP == 1 ~ 1, 
-                                      MSUPPORT_ANY == 0 & R_PHQ_ANX == 1 ~ 1, 
-                                      MSUPPORT_ANY == 1 & R_PHQ_DEP == 1 ~ 0, 
-                                      MSUPPORT_ANY == 1 & R_PHQ_ANX == 1 ~ 0),
-         MIDWIFE_DOULA = case_when(BIRTHATTEND2 == "Midwife" & DOULAC2 == 1 ~ "Midwife & Doula", 
-                                   BIRTHATTEND2 != "Midwife" & DOULAC2 != 1 ~ "No Midwife & No Doula"), 
-         TRI_DOULA = case_when(DOULAC1 == 1 & DOULAC2 == 1 & PROVIDER == 4 ~ 1, 
-                               TRUE ~ 0),
-         MDID = as.numeric(MDID),
-         SUM_HOSPFEED = case_when(SUM_HOSPFEED > 10 ~ NA, 
-                                  TRUE ~ SUM_HOSPFEED),
-         SUM_HOSPFEED = as.numeric(SUM_HOSPFEED),
-         HOSPFEED2 = case_when(SUM_HOSPFEED == 0 | SUM_HOSPFEED == 1 ~ "0-1", 
-                               SUM_HOSPFEED == 2 | SUM_HOSPFEED == 3 ~ "2-3",
-                               SUM_HOSPFEED == 4 | SUM_HOSPFEED == 5 ~ "4-5", 
-                               SUM_HOSPFEED == 6 | SUM_HOSPFEED == 7 ~ "6-7", 
-                               SUM_HOSPFEED == 8 | SUM_HOSPFEED == 9 ~ "8-9"),
-         RHOSPFEEDC11 = case_when(SUM_HOSPFEED == 0 ~ 1,
-                                  SUM_HOSPFEED > 0 ~ 0),
-         SUM_SNNEEDS = case_when(SUM_SNNEEDS > 10 ~ NA, 
-                                 TRUE ~ SUM_SNNEEDS), 
-         CAT_SNNEEDS = case_when(SUM_SNNEEDS == 0 ~ 0, SUM_SNNEEDS > 0 ~ 1), 
-         LABORINT_ALL = case_when(SUM_LABORINT == 6 ~ 1, 
-                                  SUM_LABORINT < 6 ~ 0)) %>%
-  # select(-c(HOSPFEEDC6, HOSPFEEDC7,HOSPFEEDC4)) %>%
-  rename(SOCIALNEEDC11 = SONEEDC11,
-         SOCIALNEEDC10 = SONEEDC10, 
-         HOSPFEEDC8 = HSPFEEDC8,
-         HOSPFEEDC11 = HSPFEEDC11,
-         HOSPFEEDC12 = HSPFEEDC12, 
-         RHOSPFEEDC4 = HOSPFEEDC4,
-         RHOSPFEEDC6 = HOSPFEEDC6,
-         RHOSPFEEDC7 = HOSPFEEDC7,
-         HOSPFEEDC4 = HSPFEEDC4,
-         HOSPFEEDC6 = HSPFEEDC6,
-         HOSPFEEDC7 = HSPFEEDC7)
 
-# Scoring for PCMC ----
-PCMC <- c('RESPECT', 'KNOWLEDGE', 'HEARD',
-          'DECISIONS', 'CONSENT', 'INFORMED',
-          'TRUST', 'FEEDING', 'SAFE')
-for(i in PCMC){
-  LTM2[,paste0(i, "_pcmc")] <- pcmc.score(i)
-}
-
-LTM2 <- LTM2 %>%
-  mutate(CUSTOMS_subopt = case_when(CUSTOMS == 1 ~ 1, 
-                                    CUSTOMS == 2 ~ 1, 
-                                    CUSTOMS == 3 ~ 1, 
-                                    CUSTOMS == 4 ~ 0), 
-         CUSTOMS_pcmc = case_when(CUSTOMS == 1 ~ 0, 
-                                  CUSTOMS == 2 ~ 1, 
-                                  CUSTOMS == 3 ~ 2, 
-                                  CUSTOMS == 4 ~ 3, 
-                                  CUSTOMS == 97 ~ 2), 
-         TIMELINESS_pcmc = case_when(TIMELINESS == 1 ~ 0, 
-                                     TIMELINESS == 2 ~ 1, 
-                                     TIMELINESS == 3 ~ 2, 
-                                     TIMELINESS == 4 ~ 3, 
-                                     TIMELINESS == 97 ~ 2),
-         DISCRIMINATION_pcmc = case_when(DISCRIMINATION == 1 ~ 3, 
-                                         DISCRIMINATION == 2 ~ 2,
-                                         DISCRIMINATION == 3 ~ 1, 
-                                         DISCRIMINATION == 4 ~ 0),
-         NEGLECT_pcmc = case_when(NEGLECT == 1 ~ 3, 
-                                  NEGLECT == 2 ~ 2,
-                                  NEGLECT == 3 ~ 1, 
-                                  NEGLECT == 4 ~ 0)) %>%
-  rowwise() %>%
-  mutate(PCMC_SCORE = sum(across(ends_with("_pcmc"))), 
-         PCMC_resp = sum(RESPECT_pcmc, KNOWLEDGE_pcmc, CUSTOMS_pcmc, 
-                         DISCRIMINATION_pcmc, NEGLECT_pcmc, na.rm = T), 
-         PCMC_comms = sum(HEARD_pcmc, DECISIONS_pcmc, 
-                          CONSENT_pcmc, INFORMED_pcmc, na.rm = T), 
-         PCMC_supp = TIMELINESS_pcmc+TRUST_pcmc+SAFE_pcmc+FEEDING_pcmc)
-
-LTM2 <- LTM2 %>% 
-  mutate(PCMC_SCORE = 100*round(PCMC_SCORE/39,2), 
-         PCMC_resp = 100*round(PCMC_resp/15,2),
-         PCMC_comms = 100*round(PCMC_comms/12,2),
-         PCMC_supp = 100*round(PCMC_supp/12,2))
-
-# Changing 0 back to 2 for data dictionary application ----
-for(i in sn_cols){
-  LTM2[[i]] <- ifelse(LTM2[[i]] == 0, 2, LTM2[[i]])
-}
-
-LTM2 <- as.data.frame(LTM2)
+CA_Q1_dsn <- CA_Q1 %>%
+  as_survey_design(weight = FINALWTCA, id = 1)

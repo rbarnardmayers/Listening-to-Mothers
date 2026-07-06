@@ -1,5 +1,5 @@
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/ApplyDictionary2.R")
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Fig_Helpful_Functions.R")
+source("~/Desktop/LTM/Listening-to-Mothers/Fig_Helpful_Functions.R")
 
 # MORB table ----
 r_svysummary(include = c("MORB_A1", "MORB_A2"), 
@@ -21,8 +21,34 @@ r_svysummary(include = c("MORBPERSIST_A1"),
                            MORB_A1 %in% c("A major new problem", 
                                           "A minor new problem")))
 
+# WEIGHT GAIN/LOSS ----
 
-# BCONTROL ----
+# MATHOSP ----
+# RACE INSURANCE AGE4 DISABILITY EMPLOYBEN
+r_svysummary(by = "EMPLOYBEN",
+             include = c("MATHOSP_ANY", "MATHOSPC2", "MATHOSPC3"))
+
+
+# MATER
+# RACE INSURANCE AGE4 DISABILITY MODE1INDEX URBANICITY2
+r_svysummary(by = "URBANICITY2",
+             include = "MATER_ANY")
+
+# BABYHOSP
+# RACE INSURANCE AGE4 DISABILITY
+r_svysummary(by = "RACE",
+             include = "BABYHOSP2", 
+             data = filter(LTM_dsn, 
+                           BABYHOSP2 != "I’d prefer not to answer"))
+
+# BABYER
+# RACE INSURANCE AGE4 DISABILITY
+r_svysummary(by = "RACE",
+             include = "BABYER", 
+             data = filter(LTM_dsn, 
+                           BABYER != "I’d prefer not to answer"))
+
+# BCONTROL 
 # BCACQUIRE
 # BCOFFERED
 r_svysummary(include = c("BCOFFEREDC1", "BCOFFEREDC2", "BCOFFEREDC3", 
@@ -39,8 +65,9 @@ r_svysummary(by = "PARITY",
                          'SELFCARE_A4', 'SELFCARE_A5', 'SELFCARE_A6'))
 
 # CURRREL
-r_svysummary(by = "MARRIED", 
-             include = "CURRREL")
+# MARRIED RACE INSURANCE
+r_svysummary(#by = "INSURANCE", 
+             include = "CURRREL_R")
 
 # RELSUPPORT
 # MH2WK
@@ -61,6 +88,8 @@ r_svysummary(include = c("MAXSUPP_A1", 'MAXSUPP_A2',
 # RACE, MODE1INDEX, INSURANCE, DISABILITY
 r_svysummary(by = "MODE1INDEX",
              include = c("PP_UNMET_NEEDS"), 
+             data = filter(LTM_dsn, MH2WK_ANXDEP == 1))
+r_svysummary(include = c("TIME_SINCE_BIRTH"), 
              data = filter(LTM_dsn, MH2WK_ANXDEP == 1))
 
 # COUNSELINT
@@ -87,26 +116,131 @@ r_svysummary(by = "AGE4",
 # BABYHEALTHDET
 # NICUREAS -- all PNTA
 # INFVAC
-# BABYCARE
+# BABYCARETIME
+r_svysummary(include = c("xBABYCARETIME_B0", 'xBABYCARETIME_B1', 'xBABYCARETIME_B2',
+                         'xBABYCARETIME_B3', 'xBABYCARETIME_B4', 'xBABYCARETIME_B5', 
+                         'xBABYCARETIME_B6', 'xBABYCARETIME_B7', 'xBABYCARETIME_B8',
+                         'xBABYCARETIME_B9'),
+             data = filter(LTM_dsn, 
+                    Q2FIELD %in% c("Original Fielding")))
+
+r_svysummary(include = c("BABYCARETIME_B0", 'BABYCARETIME_B1', 'BABYCARETIME_B2',
+                         'BABYCARETIME_B3', 'BABYCARETIME_B4', 'BABYCARETIME_B5', 
+                         'BABYCARETIME_B6', 'BABYCARETIME_B7', 'BABYCARETIME_B8'),
+             data = filter(LTM_dsn, 
+                           Q2FIELD %in% c("Original Fielding")))
+
+# CAREGIVE 
+# RACE INSURANCE PARITY
+r_svysummary(by = "PARITY", 
+             include = "CAREGIVE")
+
+#CAREGIVE
+r_svysummary(include = c("CAREGIVE1C1", 'CAREGIVE1C2', 'CAREGIVE1C3',
+                         'CAREGIVE1C4', 'CAREGIVE1C5', 'CAREGIVE1C6', 
+                         'CAREGIVE1C7', 'CAREGIVE1C8'),
+             data = filter(LTM_dsn, CAREGIVE == "Yes"))
+
+# STUDENT 
+# RACE INSURANCE DISABILITY 
+r_svysummary(by = "DISABILITY",
+             include = "STUDENT_R")
+
+# RACE INSURANCE DISABILITY 
+r_svysummary(#by = "RACE",
+             include = "PARTSTUDENT_R")
+
+
 # MH2WKMHCOND
-r_svysummary(by = "RACE",
-             include = "MH2WK_ANXDEP")
+r_svysummary(by = "WarmRec",
+             include = "PREPREG_MHCONDC2",
+             data = filter(LTM_dsn, 
+                           Q2FIELD %in% c("Original Fielding", "Refield")))
+r_svysummary(by = "WarmRec",
+             include = "PREPREG_MHCONDC1",
+             data = filter(LTM_dsn, 
+                           Q2FIELD %in% c("Original Fielding", "Refield")))
+#  RACE
+
 
 r_svysummary(include = c('PREPREG_MHCONDC2', 
                          'PHQ4_PREG_ANX', 
-                         'PHQ4_PPANX'), 
+                         'PHQ4_PPANX', 
+                         'PHQ4_MH2WK_ANX'), 
              data = filter(LTM_dsn, 
-                           Q2FIELD %in% c("Original Fielding", "Refield") & 
-                           PHQ4_MH2WK_ANX == "Positive screen for anxiety"))
-
-
+                           Q2FIELD %in% c("Original Fielding", "Refield")))
 
 r_svysummary(include = c('PREPREG_MHCONDC1', 
                          'PHQ4_PREG_DEP', 
-                         'PHQ4_PPDEP'), 
+                         'PHQ4_PPDEP', 
+                         'PHQ4_MH2WK_DEP'), 
              data = filter(LTM_dsn, 
-                           Q2FIELD %in% c("Original Fielding", "Refield") & 
-                             PHQ4_MH2WK_DEP == "Positive screen for depression"))
+                           Q2FIELD %in% c("Original Fielding", "Refield")))
+
+# Psych distress
+# RACE INSURANCE DISABILITY
+r_svysummary(by = "DISABILITY",
+             include = "PHQ4_MH2WK_PSYCH")
+
+# English proficiency
+r_svysummary(by = "ENGPROF", 
+             include = "ResLanguage")
+
+# PPTreatment 
+# RACE INSURANCE URBANICITY2 MODE1INDEX AGE4
+r_svysummary(by = "RACE",
+             include = 'PP_SUPP_ONLY',
+             data = filter(LTM_dsn, MH2WK_ANXDEP == 1))
+
+# FLOW CHART -----
+# PREPREG_MHCONDC2 PHQ4_PREG_ANX PHQ4_PPANX PHQ4_MH2WK_ANX 
+count_svysummary(include = "PREPREG_MHCONDC2", 
+               data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield")))
+
+count_svysummary(by = "PREPREG_MHCONDC2", 
+                 include = "PHQ4_PREG_ANX",
+                 data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield")))
+
+# Anxiety, worry, or stress    Not selected
+count_svysummary(by = "PHQ4_PREG_ANX", 
+                 include = "PHQ4_PPANX",
+                 data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
+                                 PREPREG_MHCONDC2 == "Not selected"))
+
+count_svysummary(by = "PHQ4_PPANX", 
+                 include = "PHQ4_MH2WK_ANX",
+                 data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
+                                 PREPREG_MHCONDC2 == "Not selected",
+                               PHQ4_PREG_ANX == "Positive screen for anxiety"))
+
+
+# PREPREG_MHCONDC1 PHQ4_PREG_DEP PHQ4_PPDEP PHQ4_MH2WK_DEP
+count_svysummary(include = "PREPREG_MHCONDC1", 
+                 data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield")))
+
+count_svysummary(by = "PREPREG_MHCONDC1", 
+                 include = "PHQ4_PREG_DEP",
+                 data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield")))
+
+# Depression or sadness    Not selected
+count_svysummary(by = "PHQ4_PREG_DEP", 
+                 include = "PHQ4_PPDEP",
+                 data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
+                                 PREPREG_MHCONDC1 == "Depression or sadness"))
+
+count_svysummary(by = "PHQ4_PPDEP", 
+                 include = "PHQ4_MH2WK_DEP",
+                 data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
+                                 PREPREG_MHCONDC1 == "Depression or sadness",
+                               PHQ4_PREG_DEP == "Positive screen for depression"))
+
+
+# Breastfeeding 
+# PLANNEDFEED_ONLY FEED1WEEK_ONLY ANY_BF_3MONTH EXCL_BF_3MONTH ANY_BF_6MONTH EXCL_BF_6MONTH
+count_svysummary(include = "PLANNEDFEED_ONLY", 
+                 data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield")))
+
+
 
 
 

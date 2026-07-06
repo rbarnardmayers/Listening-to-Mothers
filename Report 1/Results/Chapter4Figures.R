@@ -16,6 +16,14 @@ r_svysummary(by = "BIRTHATTEND2",
 # Figure 4.4
 r_svysummary(include = "UNPLANNEDREASON")
 
+# For gene 
+#  primary cesarean planned in advance for no medical reason
+9711.6300/622431.9100
+# among all women who had a primary cesarean
+
+count_svysummary(include = "xMODE1", 
+             data = filter(LTM_dsn, xMODE2 == "Cesarean Primary"))
+
 # Figure 4.5
 r_svysummary(by = "SUM_LABORSTUFF", 
              include = "CSECTIONTYPE_R", 

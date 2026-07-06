@@ -1,14 +1,30 @@
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/ApplyDictionary2.R")
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Fig_Helpful_Functions.R")
+source("~/Desktop/LTM/Listening-to-Mothers/Report 2/Cleaning/ApplyDictionary2.R")
+source("~/Desktop/LTM/Listening-to-Mothers/Fig_Helpful_Functions.R")
 
 # INTERVAL
+table(LTM_final$INTERVAL)
+
+r_svysummary(include = c("R_INTERVAL", "INTERVAL"), 
+             data = filter(LTM_dsn, EMPLOY == "Yes, by someone else"))
+
+r_svysummary(by = "INSURANCE", 
+             include = c("R_INTERVAL"), 
+             data = filter(LTM_dsn, EMPLOY == "Yes, by someone else"))
+
+# up until a week (1 - 7), later (8+)
+
+# RACE INSURANCE DISABILITY RESPONSIBTIER
+r_svysummary(by = "RESPONSIBTIER",
+             include = "INTERVAL", 
+             data = filter(LTM_dsn, EMPLOY == "Yes, by someone else"))
+
 # BIRTHVIEW
 # PRESSURE
 # RACE, INSURANCE, PRIOR_C, PARITY, DISABILITY2
 r_svysummary(by = "PARITY", 
              include = "PRESSURE_A5")
 
-r_svysummary(by = "CSECTIONTYPE", 
+r_svysummary(by = "MODE2INDEX", 
              include = "PRESSURE_A5")
 
 r_svysummary(by = "MODE2INDEX", 
@@ -16,17 +32,43 @@ r_svysummary(by = "MODE2INDEX",
              data = filter(LTM_dsn, PARITY == "Nulliparous"))
 
 
-# DECLINEDDETAIL
-# CSECTFEEL
-r_svysummary(include = c("CSECTFEEL_POS", "CSECTFEEL_NEG"),
+# CSECTFEEL PRESSURE_A5
+r_svysummary(#by = "PRESSURE_A5", 
+             include = c("CSECTFEEL_POS", "CSECTFEEL_NEG", 'CSECTFEEL_ALL'), 
              data = filter(LTM_dsn, MODE1INDEX == "Cesarean all"))
 
-# TRUST
+# MODE2INDEX 
+r_svysummary(by = "MODE2INDEX", 
+             include = c("CSECTFEEL_POS", "CSECTFEEL_NEG", 'CSECTFEEL_ALL'), 
+             data = filter(LTM_dsn, MODE1INDEX == "Cesarean all" & 
+                             PARITY == "Nulliparous"))
+# BIRTHVIEW_R CSECTIONTYPE
+r_svysummary(by = "PRESSURE_A5", 
+             include = c("CSECTFEEL_POS", "CSECTFEEL_NEG"),
+             data = filter(LTM_dsn, MODE1INDEX == "Cesarean all"))
+
+r_svysummary(include = c("CSECTFEEL_ALL"),
+             data = filter(LTM_dsn, MODE1INDEX == "Cesarean all"))
+
+# 306,638.9787
+
+# TRUSTTEAM
+# RACE INSURANCE BIRTHATTEND_2 ENGPROF DISABILITY
+r_svysummary(by = "DISABILITY", 
+             include = "TRUSTTEAM_NONE")
+
+
 # MISTRUST
 r_svysummary(include = c("MISTRUSTC1", 'MISTRUSTC2', 'MISTRUSTC3', 'MISTRUSTC4', 
                          'MISTRUSTC5', 'MISTRUSTC6', 'MISTRUSTC7', 'MISTRUSTC8'))
 
 # SAFETY
+# RACE INSURANCE MODE1INDEX DISABILITY RESPONSIBTIER
+r_svysummary(by = "RACE", 
+             include = "NOSAFETY")
+r_svysummary(by = "RACE", 
+             include = "NOSAFETY2")
+
 # HOSPSAFE
 r_svysummary(include = c('HOSPSAFEC1', 'HOSPSAFEC2', 'HOSPSAFEC3', 'HOSPSAFEC4', 
                          'HOSPSAFEC5', 'HOSPSAFEC6', 'HOSPSAFEC7', 'HOSPSAFEC8', 
@@ -42,22 +84,36 @@ r_svysummary(include = c('LACKSAFEC1', 'LACKSAFEC2', 'LACKSAFEC3', 'LACKSAFEC4',
              data = filter(LTM_dsn, SAFETY %in% c("Usually safe", "Sometimes safe", 
                                                   "Rarely safe", "Never safe")))
 
+
 # SAFEBABY
+# NOSAFEBABY
+# RACE DISABILITY 
+r_svysummary(by = "DISABILITY", 
+             include = "NOSAFEBABY")
+
 # MISTREAT
 # RACE, INSURANCE, BIRTHATTEND, AGE
-r_svysummary(by = "BIRTHATTEND_R2",
+r_svysummary(by = "BIRTHATTEND2",
              include = "ANYMISTREAT")
 
-raw_svysummary(include = c('MISTREATC1', 'MISTREATC2', 'MISTREATC3', 
+count_svysummary(include = c('MISTREATC1', 'MISTREATC2', 'MISTREATC3', 
                          'MISTREATC4', 'MISTREATC5', 'MISTREATC6', 
                          'MISTREATC7', "MISTREATC8"))
 
-# PERCEIVEDRE
+count_svysummary(include = c('THREATC3', "SHOUTC3", 'SHAREPRIVC3',
+                             'FORCEDC3', 'WHOPRIVC3', 'WITHHELDC3',
+                             'IGNOREC3', 'PABUSEC3'))
 
-# Postpartum Weight 
+r_svysummary(include = "ANYMISTREAT_MW", 
+             data = filter(LTM_dsn, BIRTHATTEND2 == "All Doctors"))
+
+r_svysummary(by = "BIRTHATTEND_R",
+             include = c("ANYMISTREAT_OB", "ANYMISTREAT_MW", "ANYMISTREAT_N"))
+
+# INTENDLOCALE
+r_svysummary(include = "INTENDLOCALE", 
+             data = filter(LTM_dsn, INTENDLOCALE != "I’d prefer not to answer" & 
+                             INTENDLOCALE != "Yes"))
 
 
-
-
-# PERCEIVEDID
 

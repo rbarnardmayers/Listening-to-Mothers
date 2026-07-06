@@ -8,15 +8,20 @@ csfeel <- read.csv("CSECTFEEL_R.csv")
 mistrust <- read.csv("MISTRUST_R.csv")
 hospsafe <- read.csv("HOSPSAFE_R.csv")
 lacksafe <- read.csv("LACKSAFE_R.csv")
-bcoff <- read.csv("BCOFFERED_R.csv")
+# bcoff <- read.csv("BCOFFERED_R.csv")
 counselb <- read.csv("COUNSELBARR_R.csv")
+Sources <- read.csv("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/Sources.csv")
+
 
 LTM3 <- LTM3 %>% 
   full_join(csfeel) %>%
   mutate(CSECTFEEL_POS = case_when(CSECTFEEL_POS == 1 | CSECTFEEL_POS_R == 1 ~ 1, 
                                    TRUE ~ 0),
          CSECTFEEL_NEG = case_when(CSECTFEEL_NEG == 1 | CSECTFEEL_NEG_R == 1 ~ 1, 
-                                   TRUE ~ 0))
+                                   TRUE ~ 0), 
+         CSECTFEEL_ALL = case_when(CSECTFEEL_POS == 1 & CSECTFEEL_NEG == 1 ~ "Both",
+                                   CSECTFEEL_POS == 1 & CSECTFEEL_NEG == 0 ~ "Positive Only",
+                                   CSECTFEEL_POS == 0 & CSECTFEEL_NEG == 1 ~ "Negative Only"))
 
 LTM3 <- LTM3 %>%
   full_join(mistrust) %>% 
@@ -45,10 +50,10 @@ LTM3 <- LTM3 %>%
                                  TRUE ~ LACKSAFEC1),
          LACKSAFEC2 = case_when(LACKSAFEC2 == 0 & LACKSAFEC2_R == 1 ~ 1,
                                  TRUE ~ LACKSAFEC2))
-LTM3 <- LTM3 %>% 
-  full_join(bcoff) %>% 
-  mutate(BCOFFEREDC1 = case_when(BCOFFEREDC1_R == 1 ~ 1, 
-                                 TRUE ~ BCOFFEREDC1))
+# LTM3 <- LTM3 %>% 
+#   full_join(bcoff) %>% 
+#   mutate(BCOFFEREDC1 = case_when(BCOFFEREDC1_R == 1 ~ 1, 
+#                                  TRUE ~ BCOFFEREDC1))
 
 LTM3 <- LTM3 %>%
   full_join(counselb) %>% 
@@ -67,3 +72,5 @@ LTM3 <- LTM3 %>%
          COUNSELBARRC8 = case_when(COUNSELBARRC8_R == 0 ~ 0,
                                    TRUE ~ COUNSELBARRC8))
 
+LTM3 <- LTM3 %>% 
+  left_join(Sources)
