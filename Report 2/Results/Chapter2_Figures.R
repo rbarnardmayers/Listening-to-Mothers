@@ -7,19 +7,26 @@ table(LTM_final$INTERVAL)
 r_svysummary(include = c("R_INTERVAL", "INTERVAL"), 
              data = filter(LTM_dsn, EMPLOY == "Yes, by someone else"))
 
-r_svysummary(by = "INSURANCE", 
-             include = c("R_INTERVAL"), 
+# RACE INSURANCE DISABILITY RESPONSIBTIER
+
+r_svysummary(by = "RESPONSIBTIER", 
+             include = c("INTERVAL"), 
              data = filter(LTM_dsn, EMPLOY == "Yes, by someone else"))
 
 # up until a week (1 - 7), later (8+)
+r_svysummary(by = "RESPONSIBTIER", 
+             include = c("INTERVAL_7days"), 
+             data = filter(LTM_dsn, EMPLOY == "Yes, by someone else"))
 
-# RACE INSURANCE DISABILITY RESPONSIBTIER
-r_svysummary(by = "RESPONSIBTIER",
-             include = "INTERVAL", 
+r_svysummary(include = "INTERVAL0", 
              data = filter(LTM_dsn, EMPLOY == "Yes, by someone else"))
 
 # BIRTHVIEW
-# PRESSURE
+# PRESSURE 
+# PLANNEDFEEDC1 PLANNEDFEED PLANNEDFEED_ONLY
+r_svysummary(by = "PLANNEDFEED_ONLY", 
+             include = "PRESSURE_A6")
+
 # RACE, INSURANCE, PRIOR_C, PARITY, DISABILITY2
 r_svysummary(by = "PARITY", 
              include = "PRESSURE_A5")
@@ -36,18 +43,23 @@ r_svysummary(by = "MODE2INDEX",
 r_svysummary(#by = "PRESSURE_A5", 
              include = c("CSECTFEEL_POS", "CSECTFEEL_NEG", 'CSECTFEEL_ALL'), 
              data = filter(LTM_dsn, MODE1INDEX == "Cesarean all"))
+LTM_final %>% 
+  subset(CSECTFEELC10O != "") %>%
+  select(c(CSECTFEEL_ALL, CSECTFEEL_POS, CSECTFEEL_NEG, CSECTFEELC10, CSECTFEELC10O)) %>% 
+  View()
 
 # MODE2INDEX 
 r_svysummary(by = "MODE2INDEX", 
              include = c("CSECTFEEL_POS", "CSECTFEEL_NEG", 'CSECTFEEL_ALL'), 
              data = filter(LTM_dsn, MODE1INDEX == "Cesarean all" & 
-                             PARITY == "Nulliparous"))
-# BIRTHVIEW_R CSECTIONTYPE
-r_svysummary(by = "PRESSURE_A5", 
+                             PARITY == "Multiparous"))
+# BIRTHVIEW_R CSECTIONTYPE PRESSURE_A5 MODE2INDEX
+r_svysummary(#by = "MODE2INDEX", 
              include = c("CSECTFEEL_POS", "CSECTFEEL_NEG"),
              data = filter(LTM_dsn, MODE1INDEX == "Cesarean all"))
 
-r_svysummary(include = c("CSECTFEEL_ALL"),
+r_svysummary(by = "BIRTHVIEW_R", 
+             include = c("CSECTFEEL_ALL"),
              data = filter(LTM_dsn, MODE1INDEX == "Cesarean all"))
 
 # 306,638.9787
@@ -92,8 +104,8 @@ r_svysummary(by = "DISABILITY",
              include = "NOSAFEBABY")
 
 # MISTREAT
-# RACE, INSURANCE, BIRTHATTEND, AGE
-r_svysummary(by = "BIRTHATTEND2",
+# RACE, INSURANCE, BIRTHATTEND, AGE DISABILITY
+r_svysummary(by = "DISABILITY",
              include = "ANYMISTREAT")
 
 count_svysummary(include = c('MISTREATC1', 'MISTREATC2', 'MISTREATC3', 

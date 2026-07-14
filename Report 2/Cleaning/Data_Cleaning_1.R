@@ -10,7 +10,6 @@ LTM1 <- LTM %>%
   mutate(MDID = as.character(MDID)) %>% 
   select(-c(MDID2, MDID1))
 
-
 miss_vars <- dict2[dict2$missing == 99999,"variable"] %>% subset(!is.na(variable)) 
 
 # Create dataset of just text responses and MDID (so we can merge back) ----
@@ -77,6 +76,10 @@ LTM1 <- convert.miss(LTM1, c('THREATC1', 'SHOUTC1', 'SHAREPRIVC1',
                            'WITHHELDC2', 'IGNOREC2', 'PABUSEC2', 'THREATC3', 
                            'SHOUTC3', 'SHAREPRIVC3', 'FORCEDC3', 'WHOPRIVC3', 
                            'WITHHELDC3', 'IGNOREC3', 'PABUSEC3'), 99999)
+LTM1 <- convert.miss(LTM1, c('TRAUMADETC1', 'TRAUMADETC2', 'TRAUMADETC3', 
+                             'TRAUMADETC4', 'TRAUMADETC5', 'TRAUMADETC6', 
+                             'TRAUMADETC7'), 99999)
+
 # Creating new variables ----
 
 LTM2 <- LTM1 %>% 
@@ -111,6 +114,10 @@ LTM2 <- LTM1 %>%
                                     !is.na(PREPREG_WEIGHT_A1) ~ PREPREG_WEIGHT_A1), 
          PREG_WEIGHT = case_when(is.na(PREGWEIGHT_LBS_2) ~ 2.20462 * PREGWEIGHT_KG_2, 
                                  !is.na(PREGWEIGHT_LBS_2) ~ PREGWEIGHT_LBS_2), 
+         PREG_WEIGHT = case_when(PREG_WEIGHT <= 85 ~ NA, 
+                                 TRUE ~ PREG_WEIGHT),
+         PREPREG_WEIGHT = case_when(PREPREG_WEIGHT <= 85 ~ NA, 
+                                    TRUE ~ PREPREG_WEIGHT),
          WEIGHTGAIN_R = as.numeric(PREG_WEIGHT) - as.numeric(PREPREG_WEIGHT), 
          MARRIED = case_when(RELATIONSHIP == 1 ~ "Married",
                              RELATIONSHIP == 2 ~ "Committed Partner", 
@@ -125,7 +132,7 @@ LTM2 <- LTM1 %>%
                           RACEALONE == 6 ~ "MENA"),
          INSURANCE = case_when(INSURCAT == 1 ~ "Private",
                                INSURCAT == 2 ~ "Medicaid"),
-         PROVIDER_R = case_when(PROVIDER == 1 ~ "OB",
+         PROVIDER2_R = case_when(PROVIDER == 1 ~ "OB",
                                PROVIDER == 4 ~ "Midwife",
                                PROVIDER %in% c(5,6) ~ "Other"),
          LABORWALK_NO = case_when(LABORWALK == 1 | LABORWALK == 3 ~ 0, 

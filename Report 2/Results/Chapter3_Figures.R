@@ -3,25 +3,65 @@ source("~/Desktop/LTM/Listening-to-Mothers/Fig_Helpful_Functions.R")
 
 # MORB table ----
 r_svysummary(include = c("MORB_A1", "MORB_A2"), 
-                 data = filter(LTM_dsn, 
-                               MODE1INDEX == "Vaginal all"))
+             data = filter(LTM_dsn, 
+                           MODE1INDEX == "Vaginal all"))
 
 r_svysummary(include = c("MORB_A3", "MORB_A4"), 
-                 data = filter(LTM_dsn,
-                               MODE1INDEX == "Cesarean all"))
+             data = filter(LTM_dsn,
+                           MODE1INDEX == "Cesarean all"))
 
 r_svysummary(include = c(paste0("MORB_A", 5:20)))
 
 r_svysummary(include = c("MORB_A9"), 
-                 data = filter(LTM_dsn, 
-                               FEED1WEEKC1 == "Breast milk"))
-# MORBPERSIST ----
-r_svysummary(include = c("MORBPERSIST_A1"), 
              data = filter(LTM_dsn, 
-                           MORB_A1 %in% c("A major new problem", 
-                                          "A minor new problem")))
+                           FEED1WEEKC1 == "Breast milk"))
+# MORBPERSIST ----
+r_svysummary(include = c("MORBPERSIST_A20"), 
+             data = filter(LTM_dsn, 
+                           MORB_A20 %in% c("A major new problem", 
+                                          "A minor new problem") & 
+                             TIME_SINCE_BIRTH >= 24))
+
+# BASES 
+r_svysummary(include = "MORBPERSIST_A22")
+LTM_final %>% 
+  filter(MORB_A22 %in% c("A major new problem", 
+                                "A minor new problem") & 
+           TIME_SINCE_BIRTH >= 24) %>% 
+  nrow()
 
 # WEIGHT GAIN/LOSS ----
+# WEIGHTGAIN_R is pre-preg to pregnancy 
+# WEIGHTLOSS_Q1 is pregnancy to time of Q1
+# WEIGHTLOSS_Q2 is Q1 to Q2
+
+r_svysummary(#by = "PARITY", 
+             include = c("WEIGHTGAIN_R", 
+                         "WEIGHTLOSS_Q2"), 
+             data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
+                             !is.na(WEIGHTLOSS_Q2)))
+
+r_svysummary(by = "TIME_SINCE_BIRTH_QUART", 
+             include = c("WEIGHTLOSS_Q2"), 
+             data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
+                             !is.na(WEIGHTLOSS_Q2)))
+
+r_svysummary(by = "TIME_SINCE_BIRTH_HALF", 
+             include = c("WEIGHTLOSS_Q2"), 
+             data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
+                             !is.na(WEIGHTLOSS_Q2)))
+
+r_svysummary(by = "TIME_SINCE_BIRTH_QUART", 
+             include = c("WEIGHTLOSS_Q2"), 
+             data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
+                             PARITY == "Nulliparous" & 
+                             !is.na(WEIGHTLOSS_Q2)))
+
+r_svysummary(by = "TIME_SINCE_BIRTH_QUART", 
+             include = c("WEIGHTLOSS_Q2"), 
+             data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
+                             PARITY == "Multiparous" & 
+                             !is.na(WEIGHTLOSS_Q2)))
 
 # MATHOSP ----
 # RACE INSURANCE AGE4 DISABILITY EMPLOYBEN
@@ -67,7 +107,7 @@ r_svysummary(by = "PARITY",
 # CURRREL
 # MARRIED RACE INSURANCE
 r_svysummary(#by = "INSURANCE", 
-             include = "CURRREL_R")
+  include = "CURRREL_R")
 
 # RELSUPPORT
 # MH2WK
@@ -76,6 +116,9 @@ r_svysummary(by = "DISABILITY2",
              include = "PHQ4_MH2WK_PSYCH")
 
 # BOND
+# PROBABLEPTSDPHQ4_MH2WK_PSYCH PHQ4_MH2WK_ANX PHQ4_MH2WK_DEP
+r_svysummary(by = "PROBABLEPTSD",
+             include = "BOND_R")
 
 # SUPPORT
 r_svysummary(include = c("FAMFRISUPP_A1", 'FAMFRISUPP_A2',
@@ -122,7 +165,7 @@ r_svysummary(include = c("xBABYCARETIME_B0", 'xBABYCARETIME_B1', 'xBABYCARETIME_
                          'xBABYCARETIME_B6', 'xBABYCARETIME_B7', 'xBABYCARETIME_B8',
                          'xBABYCARETIME_B9'),
              data = filter(LTM_dsn, 
-                    Q2FIELD %in% c("Original Fielding")))
+                           Q2FIELD %in% c("Original Fielding")))
 
 r_svysummary(include = c("BABYCARETIME_B0", 'BABYCARETIME_B1', 'BABYCARETIME_B2',
                          'BABYCARETIME_B3', 'BABYCARETIME_B4', 'BABYCARETIME_B5', 
@@ -148,7 +191,7 @@ r_svysummary(by = "DISABILITY",
 
 # RACE INSURANCE DISABILITY 
 r_svysummary(#by = "RACE",
-             include = "PARTSTUDENT_R")
+  include = "PARTSTUDENT_R")
 
 
 # MH2WKMHCOND
@@ -195,7 +238,7 @@ r_svysummary(by = "RACE",
 # FLOW CHART -----
 # PREPREG_MHCONDC2 PHQ4_PREG_ANX PHQ4_PPANX PHQ4_MH2WK_ANX 
 count_svysummary(include = "PREPREG_MHCONDC2", 
-               data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield")))
+                 data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield")))
 
 count_svysummary(by = "PREPREG_MHCONDC2", 
                  include = "PHQ4_PREG_ANX",

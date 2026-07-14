@@ -1,5 +1,5 @@
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/Data_Cleaning_2.R")
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/Dates2.R")
+# source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/Dates2.R")
 
 LTM3 <- LTM2
 
@@ -10,8 +10,9 @@ hospsafe <- read.csv("HOSPSAFE_R.csv")
 lacksafe <- read.csv("LACKSAFE_R.csv")
 # bcoff <- read.csv("BCOFFERED_R.csv")
 counselb <- read.csv("COUNSELBARR_R.csv")
+midwifeconc <- read.csv("MIDWIFECONCERN_R.csv")
+# doulaconc <- read.csv("DOULACONCERN_R.csv")
 Sources <- read.csv("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/Sources.csv")
-
 
 LTM3 <- LTM3 %>% 
   full_join(csfeel) %>%
@@ -71,6 +72,22 @@ LTM3 <- LTM3 %>%
                                    TRUE ~ COUNSELBARRC7),
          COUNSELBARRC8 = case_when(COUNSELBARRC8_R == 0 ~ 0,
                                    TRUE ~ COUNSELBARRC8))
+
+LTM3 <- LTM3 %>% 
+  full_join(midwifeconc) %>% 
+  mutate(MIDWIFECONCERNC1 = case_when(MIDWIFECONCERNC1_R == 1 ~ 1,
+                                   TRUE ~ MIDWIFECONCERNC1),
+         MIDWIFECONCERNC2 = case_when(MIDWIFECONCERNC2_R == 1 ~ 1,
+                                   TRUE ~ MIDWIFECONCERNC2),
+         MIDWIFECONCERNC3 = case_when(MIDWIFECONCERNC3_R == 1 ~ 1,
+                                   TRUE ~ MIDWIFECONCERNC3),
+         MIDWIFECONCERNC4 = case_when(MIDWIFECONCERNC4_R == 1 ~ 1,
+                                   TRUE ~ MIDWIFECONCERNC4),
+         MIDWIFECONCERNC6 = case_when(MIDWIFECONCERNC6_R == 1 ~ 1,
+                                   TRUE ~ MIDWIFECONCERNC6),
+         MIDWIFECONCERNC7 = case_when(MIDWIFECONCERNC7_R == 0 ~ 0,
+                                   TRUE ~ MIDWIFECONCERNC7))
+
 
 LTM3 <- LTM3 %>% 
   left_join(Sources)

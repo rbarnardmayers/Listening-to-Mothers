@@ -186,7 +186,7 @@ r_svysummary <- function(by = NULL, include, data = LTM_dsn){
                                        all_categorical() ~ "{n_unweighted}; {p}%", 
                                        #all_continuous() ~ "{min}, {p25}, {median}, {p75}, {max}"),
                                        # all_continuous() ~ "{min},{mean}, {max}"),
-                                       all_continuous() ~ "{mean}, {median}"),
+                                       all_continuous() ~ "{mean}"),
                       
                       digits = list(all_categorical() ~ 3, 
                                     all_continuous() ~ 1),
@@ -231,4 +231,9 @@ raw_svysummary <- function(by = NULL, include, data = LTM_dsn){
                  digits = list(all_categorical() ~ 0, 
                                all_continuous() ~ 1),
                  missing_stat = "{p_miss}")
+}
+
+get_mode <- function(x) {
+  ux <- unique(na.omit(x))
+  ux[which.max(tabulate(match(x, ux)))]
 }
