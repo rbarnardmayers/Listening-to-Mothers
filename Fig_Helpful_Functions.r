@@ -186,7 +186,7 @@ r_svysummary <- function(by = NULL, include, data = LTM_dsn){
                                        all_categorical() ~ "{n_unweighted}; {p}%", 
                                        #all_continuous() ~ "{min}, {p25}, {median}, {p75}, {max}"),
                                        # all_continuous() ~ "{min},{mean}, {max}"),
-                                       all_continuous() ~ "{mean}"),
+                                       all_continuous() ~ "{mean} ({median})"),
                       
                       digits = list(all_categorical() ~ 3, 
                                     all_continuous() ~ 1),

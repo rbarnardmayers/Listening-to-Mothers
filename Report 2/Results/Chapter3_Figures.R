@@ -2,23 +2,11 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/ApplyDi
 source("~/Desktop/LTM/Listening-to-Mothers/Fig_Helpful_Functions.R")
 
 # MORB table ----
-r_svysummary(include = c("MORB_A1", "MORB_A2"), 
-             data = filter(LTM_dsn, 
-                           MODE1INDEX == "Vaginal all"))
 
-r_svysummary(include = c("MORB_A3", "MORB_A4"), 
-             data = filter(LTM_dsn,
-                           MODE1INDEX == "Cesarean all"))
-
-r_svysummary(include = c(paste0("MORB_A", 5:20)))
-
-r_svysummary(include = c("MORB_A9"), 
-             data = filter(LTM_dsn, 
-                           FEED1WEEKC1 == "Breast milk"))
 # MORBPERSIST ----
-r_svysummary(include = c("MORBPERSIST_A20"), 
+r_svysummary(include = c("MORBPERSIST_A25"), 
              data = filter(LTM_dsn, 
-                           MORB_A20 %in% c("A major new problem", 
+                           MORB_A25 %in% c("A major new problem", 
                                           "A minor new problem") & 
                              TIME_SINCE_BIRTH >= 24))
 
@@ -42,12 +30,12 @@ r_svysummary(#by = "PARITY",
                              !is.na(WEIGHTLOSS_Q2)))
 
 r_svysummary(by = "TIME_SINCE_BIRTH_QUART", 
-             include = c("WEIGHTLOSS_Q2"), 
+             include = c("WEIGHTLOSS_Q2R"), 
              data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
                              !is.na(WEIGHTLOSS_Q2)))
 
 r_svysummary(by = "TIME_SINCE_BIRTH_HALF", 
-             include = c("WEIGHTLOSS_Q2"), 
+             include = c("WEIGHTLOSS_Q2R"), 
              data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
                              !is.na(WEIGHTLOSS_Q2)))
 
@@ -61,6 +49,10 @@ r_svysummary(by = "TIME_SINCE_BIRTH_QUART",
              include = c("WEIGHTLOSS_Q2"), 
              data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
                              PARITY == "Multiparous" & 
+                             !is.na(WEIGHTLOSS_Q2)))
+
+r_svysummary(include = "TIME_SINCE_BIRTH",
+             data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
                              !is.na(WEIGHTLOSS_Q2)))
 
 # MATHOSP ----
@@ -116,9 +108,14 @@ r_svysummary(by = "DISABILITY2",
              include = "PHQ4_MH2WK_PSYCH")
 
 # BOND
+# RACE INSURANCE DISABILITY
+r_svysummary(by = "DISABILITY",
+             include = "BOND_R")
+
 # PROBABLEPTSDPHQ4_MH2WK_PSYCH PHQ4_MH2WK_ANX PHQ4_MH2WK_DEP
 r_svysummary(by = "PROBABLEPTSD",
              include = "BOND_R")
+
 
 # SUPPORT
 r_svysummary(include = c("FAMFRISUPP_A1", 'FAMFRISUPP_A2',
@@ -154,6 +151,15 @@ r_svysummary(by = "AGE4",
              include = c("PP_ANYSUPP"),
              data = filter(LTM_dsn, 
                            MH2WK_ANXDEP == 1))
+r_svysummary(by = "PP_ANYSUPP",
+             include = c("PHQ4_MH2WK_DEP"))
+r_svysummary(by = "PP_ANYSUPP",
+             include = c("PHQ4_MH2WK_ANX"))
+
+# TRAUMA 
+# RACE INSURANCE MODE1INDEX BIRTHATTEND_R DISABILITY RESPONSIBTIER
+r_svysummary(by = "RESPONSIBTIER",
+             include = "MATTRAUMA")
 
 # BABYHEALTH
 # BABYHEALTHDET
@@ -193,6 +199,9 @@ r_svysummary(by = "DISABILITY",
 r_svysummary(#by = "RACE",
   include = "PARTSTUDENT_R")
 
+r_svysummary(include = "TIME_SINCE_BIRTH",
+             data = filter(LTM_dsn, 
+                           Q2FIELD %in% c("Original Fielding", "Refield")))
 
 # MH2WKMHCOND
 r_svysummary(by = "WarmRec",
@@ -204,8 +213,6 @@ r_svysummary(by = "WarmRec",
              data = filter(LTM_dsn, 
                            Q2FIELD %in% c("Original Fielding", "Refield")))
 #  RACE
-
-
 r_svysummary(include = c('PREPREG_MHCONDC2', 
                          'PHQ4_PREG_ANX', 
                          'PHQ4_PPANX', 
@@ -236,6 +243,10 @@ r_svysummary(by = "RACE",
              data = filter(LTM_dsn, MH2WK_ANXDEP == 1))
 
 # FLOW CHART -----
+r_svysummary(by = "TIME_SINCE_BIRTH_QUART",
+               include = "PHQ4_MH2WK_DEP", 
+             data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield")))
+
 # PREPREG_MHCONDC2 PHQ4_PREG_ANX PHQ4_PPANX PHQ4_MH2WK_ANX 
 count_svysummary(include = "PREPREG_MHCONDC2", 
                  data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield")))

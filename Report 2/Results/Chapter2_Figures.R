@@ -1,5 +1,5 @@
 source("~/Desktop/LTM/Listening-to-Mothers/Report 2/Cleaning/ApplyDictionary2.R")
-source("~/Desktop/LTM/Listening-to-Mothers/Fig_Helpful_Functions.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Fig_Helpful_Functions.R")
 
 # INTERVAL
 table(LTM_final$INTERVAL)
@@ -23,6 +23,22 @@ r_svysummary(include = "INTERVAL0",
 
 # BIRTHVIEW
 # PRESSURE 
+r_svysummary(include = c("PRESSURE_A1", 'PRESSURE_A2', 'PRESSURE_A3', 'PRESSURE_A4', 
+                         'PRESSURE_A5', 'PRESSURE_A6'),
+             data = filter(LTM_dsn, UNPLANNED_SCREEN == "Unplanned"))
+
+# Induction pressure 
+# MEDINDUCE MODE1INDEX CSECTIONTYPE
+r_svysummary(by = "CSECTIONTYPE", 
+             include = "PRESSURE_A1",
+             data = filter(LTM_dsn, UNPLANNED_SCREEN == "Unplanned"))
+
+r_svysummary(by = "PRESSURE_A1", 
+             include = "UNPLANNED_VAG",
+             data = filter(LTM_dsn, UNPLANNED_SCREEN == "Unplanned"))
+
+r_svysummary(include = "MEDINDUCE", 
+             data = filter(LTM_dsn, UNPLANNED_SCREEN == "Unplanned"))
 # PLANNEDFEEDC1 PLANNEDFEED PLANNEDFEED_ONLY
 r_svysummary(by = "PLANNEDFEED_ONLY", 
              include = "PRESSURE_A6")
@@ -108,6 +124,7 @@ r_svysummary(by = "DISABILITY",
 r_svysummary(by = "DISABILITY",
              include = "ANYMISTREAT")
 
+# Type of mistreat
 count_svysummary(include = c('MISTREATC1', 'MISTREATC2', 'MISTREATC3', 
                          'MISTREATC4', 'MISTREATC5', 'MISTREATC6', 
                          'MISTREATC7', "MISTREATC8"))
@@ -116,10 +133,11 @@ count_svysummary(include = c('THREATC3', "SHOUTC3", 'SHAREPRIVC3',
                              'FORCEDC3', 'WHOPRIVC3', 'WITHHELDC3',
                              'IGNOREC3', 'PABUSEC3'))
 
+# By provider type
 r_svysummary(include = "ANYMISTREAT_MW", 
              data = filter(LTM_dsn, BIRTHATTEND2 == "All Doctors"))
-
-r_svysummary(by = "BIRTHATTEND_R",
+# BIRTHATTEND_R
+r_svysummary(by = "BIRTHATTEND2",
              include = c("ANYMISTREAT_OB", "ANYMISTREAT_MW", "ANYMISTREAT_N"))
 
 # INTENDLOCALE

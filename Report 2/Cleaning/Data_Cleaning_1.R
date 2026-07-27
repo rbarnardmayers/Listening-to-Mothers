@@ -78,8 +78,12 @@ LTM1 <- convert.miss(LTM1, c('THREATC1', 'SHOUTC1', 'SHAREPRIVC1',
                            'WITHHELDC3', 'IGNOREC3', 'PABUSEC3'), 99999)
 LTM1 <- convert.miss(LTM1, c('TRAUMADETC1', 'TRAUMADETC2', 'TRAUMADETC3', 
                              'TRAUMADETC4', 'TRAUMADETC5', 'TRAUMADETC6', 
-                             'TRAUMADETC7'), 99999)
-
+                             'TRAUMADETC7','WICFEEDING_A1', 'WICFEEDING_A2', 
+                             'WICFEEDING_A3', 'WICFEEDING_A4'), 99999)
+LTM1 <- convert.miss(LTM1, c('WICFEEDING_A1', 'WICFEEDING_A2', 
+                             'WICFEEDING_A3', 'WICFEEDING_A4'), 98)
+LTM1 <- convert.miss(LTM1, c('WICFEEDING_A1', 'WICFEEDING_A2', 
+                             'WICFEEDING_A3', 'WICFEEDING_A4'), 99)
 # Creating new variables ----
 
 LTM2 <- LTM1 %>% 
@@ -114,11 +118,11 @@ LTM2 <- LTM1 %>%
                                     !is.na(PREPREG_WEIGHT_A1) ~ PREPREG_WEIGHT_A1), 
          PREG_WEIGHT = case_when(is.na(PREGWEIGHT_LBS_2) ~ 2.20462 * PREGWEIGHT_KG_2, 
                                  !is.na(PREGWEIGHT_LBS_2) ~ PREGWEIGHT_LBS_2), 
-         PREG_WEIGHT = case_when(PREG_WEIGHT <= 85 ~ NA, 
+         PREG_WEIGHTR = case_when(PREG_WEIGHT <= 85 ~ NA, 
                                  TRUE ~ PREG_WEIGHT),
-         PREPREG_WEIGHT = case_when(PREPREG_WEIGHT <= 85 ~ NA, 
+         PREPREG_WEIGHTR = case_when(PREPREG_WEIGHT <= 85 ~ NA, 
                                     TRUE ~ PREPREG_WEIGHT),
-         WEIGHTGAIN_R = as.numeric(PREG_WEIGHT) - as.numeric(PREPREG_WEIGHT), 
+         WEIGHTGAIN_R = as.numeric(PREG_WEIGHTR) - as.numeric(PREPREG_WEIGHTR), 
          MARRIED = case_when(RELATIONSHIP == 1 ~ "Married",
                              RELATIONSHIP == 2 ~ "Committed Partner", 
                              RELATIONSHIP == 3 | RELATIONSHIP == 4 ~ "Separated/Single"),
