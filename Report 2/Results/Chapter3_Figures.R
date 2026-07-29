@@ -56,10 +56,11 @@ r_svysummary(include = "TIME_SINCE_BIRTH",
                              !is.na(WEIGHTLOSS_Q2)))
 
 # MATHOSP ----
-# RACE INSURANCE AGE4 DISABILITY EMPLOYBEN
+# RACE INSURANCE AGE4 DISABILITY 
 r_svysummary(by = "EMPLOYBEN",
              include = c("MATHOSP_ANY", "MATHOSPC2", "MATHOSPC3"))
 
+r_svysummary(include = c("PTLEAVE"))
 
 # MATER
 # RACE INSURANCE AGE4 DISABILITY MODE1INDEX URBANICITY2
@@ -112,7 +113,7 @@ r_svysummary(by = "DISABILITY2",
 r_svysummary(by = "DISABILITY",
              include = "BOND_R")
 
-# PROBABLEPTSDPHQ4_MH2WK_PSYCH PHQ4_MH2WK_ANX PHQ4_MH2WK_DEP
+# PROBABLEPTSD PHQ4_MH2WK_PSYCH PHQ4_MH2WK_ANX PHQ4_MH2WK_DEP
 r_svysummary(by = "PROBABLEPTSD",
              include = "BOND_R")
 
@@ -142,7 +143,7 @@ r_svysummary(include = c("COUNSELBARRC1", 'COUNSELBARRC2', 'COUNSELBARRC3',
 
 # PPMEDS
 # RACE, INSURANCE, URBANICITY2, DISABILITY, PARITY, MODE1INDEX
-r_svysummary(by = "AGE4",
+r_svysummary(by = "RACE",
              include = c("PP_SUPP_ONLY"),
              data = filter(LTM_dsn, 
                            MH2WK_ANXDEP == 1))

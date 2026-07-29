@@ -29,6 +29,13 @@ r_svysummary(include = c("PARTLEAVETYPEC1","PARTLEAVETYPEC2","PARTLEAVETYPEC3",
                          "PARTLEAVETYPEC7"), 
              data = filter(LTM_dsn, PARTLEAVE1 %in% c("Completely paid",
                                                       "My spouse or partner used both paid and unpaid leave")))
+
+# MATHOSP PAID LEAVE 
+# EMPLOYBEN CURREMPLOY EMPLOY PTLEAVE 
+# MATERINTY_LEAVE (selected maternity leave)
+r_svysummary(by = "PTLEAVE",
+             include = c("MATHOSP_ANY", "MATHOSPC2", "MATHOSPC3"))
+
 # IDEALLEAVE
 r_svysummary(include = "IDEALLEAVE", 
              data = filter(LTM_dsn, 
@@ -40,6 +47,8 @@ r_svysummary(include = "IDEALLEAVE1",
              data = filter(LTM_dsn, 
                            !is.na(IDEALLEAVE1) & 
                              IDEALLEAVE1 != "I'd prefer not to answer"))
+
+
 
 
 # CURREMPLOY

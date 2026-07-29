@@ -67,6 +67,9 @@ r_svysummary(by = "xCOSTBABY",
 # INSURANCE
 r_svysummary(by = "INSURC6",
              include = c("COSTMOM1"))
+# c(BILLED_MOM_0 PAID_MOM_0 BILLED_BABY_0 PAID_BABY_0)
+r_svysummary(#by = "INSURANCE",
+             include = c('BILLED_MOM_0', 'PAID_MOM_0'))
 
 # INSURBABYC2 - medicaid
 # INSURBABYC1 - private
@@ -75,3 +78,5 @@ r_svysummary(by = "INSURC6",
 r_svysummary(by = "INSURBABY",
              include = c("COSTBABY1"))
 
+r_svysummary(#by = "INSURBABYC5",
+             include = c('BILLED_BABY_0', 'PAID_BABY_0'))

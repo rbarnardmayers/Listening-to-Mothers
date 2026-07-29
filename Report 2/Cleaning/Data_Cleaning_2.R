@@ -5,6 +5,14 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/Dates2.
 LTM2 <- LTM2 %>% 
   mutate(INSURBABY = case_when(INSURBABYC1 == 1 & INSURBABYC2 == 0 ~ "Private", 
                                INSURBABYC2 == 1 & INSURBABYC1 == 0 ~ "Medicaid"), 
+         BILLED_MOM_0 = case_when(COSTMOM == 0 ~ "$0", 
+                                COSTMOM > 0 ~ "> $0"),
+         PAID_MOM_0 = case_when(COSTMOM1 == 0 ~ "$0", 
+                                COSTMOM1 > 0 ~ "> $0"),
+         BILLED_BABY_0 = case_when(COSTBABY == 0 ~ "$0", 
+                                   COSTBABY > 0 ~ "> $0"),
+         PAID_BABY_0 = case_when(COSTBABY1 == 0 ~ "$0", 
+                                 COSTBABY1 > 0 ~ "> $0"),
          PERCEIVEDREC4_6 = case_when(PERCEIVEDREC4 == 1 ~ "AIAN-NHPI",
                                      PERCEIVEDREC6 == 1 ~ "AIAN-NHPI",
                                      TRUE ~ "Not Selected"),
@@ -40,8 +48,8 @@ LTM2 <- LTM2 %>%
          CSECTFEEL_POS = case_when(CSECTFEELC1 == 1 | CSECTFEELC3 == 1|
                                      CSECTFEELC5 == 1 | CSECTFEELC7 == 1 ~ 1, 
                                    TRUE ~ 0),
-         INTENDLOCALE_R = case_when(INTENDLOCALE == 1 ~ "Yes", 
-                                    INTENDLOCALE %in% c(2,3,4,5) ~ "No", 
+         INTENDLOCALE_R = case_when(INTENDLOCALE == 1 ~ "Intended", 
+                                    INTENDLOCALE %in% c(2,3,4,5) ~ "Unintended", 
                                     INTENDLOCALE == 95 ~ "Other", 
                                     INTENDLOCALE == 99 ~ "PNTA"),
          WIC_TREND = case_when(WICBEN == 1 & WICPPC1 == 1 ~ "Preg & Birth", 
@@ -56,10 +64,17 @@ LTM2 <- LTM2 %>%
                             WICBEN == 2 & WICPPC3 == 1 ~ 0,
                             WICBEN == 2 & WICPPC5 == 1 ~ 0,
                             WICBEN == 2 & WICPPC4 == 1 ~ 0), 
-         ANYCOVIDVAC = case_when(COVIDVACC1 == 1 ~ 1, 
-                                 COVIDVACC2 == 1 ~ 1, 
-                                 COVIDVACC3 == 1 ~ 1, 
-                                 TRUE ~ 0), 
+         ANYCOVID = case_when(COVIDC1 == 1 ~ 1, 
+                                 COVIDC2 == 1 ~ 1, 
+                                 COVIDC3 == 1 ~ 1, 
+                              COVIDC4 == 1 ~ 0), 
+         MATERINTY_LEAVE = case_when(MATLEAVEC5 == 1 ~ "Maternity Leave",
+                                     MATLEAVEC1 == 1 | MATLEAVEC2 == 1 | 
+                                       MATLEAVEC3 == 1 | MATLEAVEC4 == 1 | 
+                                       MATLEAVEC6 == 1 | 
+                                       MATLEAVEC7 == 1 ~ "Other Leave",
+                                     MATLEAVEC8 == 1 ~ NA,
+                                     TRUE ~ "No Leave"),
          MORBPERSIST_A1_R = case_when(MORBPERSIST_A1 %in% c(1,2,3) ~ 1, 
                                       TRUE ~ 0),
          MORBPERSIST_A2_R = case_when(MORBPERSIST_A2 %in% c(1,2,3) ~ 1, 
@@ -167,6 +182,15 @@ LTM2 <- LTM2 %>%
                                SAFETY == 2 ~ 0), 
          NOSAFEBABY = case_when(SAFEBABY > 1 & SAFEBABY < 99 ~ 1, 
                                 SAFEBABY == 1 ~ 0),
+         INTERVAL_NUM_R = case_when(INTERVAL == 0 ~ "0 days", 
+                                    INTERVAL == 1 ~ "1 day", 
+                                    INTERVAL == 2 ~ "2 days", 
+                                    INTERVAL == 3 ~ "3 days", 
+                                    INTERVAL == 4 ~ "4 days", 
+                                    INTERVAL == 5 ~ "5 days", 
+                                    INTERVAL == 6 ~ "6 days", 
+                                    INTERVAL == 7 ~ "7 days", 
+                                    INTERVAL > 7 & INTERVAL < 9999 ~ "8+ days"),
          INTERVAL0 = case_when(INTERVAL == 0 ~ "0 days", 
                                INTERVAL > 0 & INTERVAL < 9999 ~ "1+ days"),
          INTERVAL_7days = case_when(INTERVAL <= 7 ~ "Within 1 week", 
@@ -449,7 +473,9 @@ LTM2 <- LTM2 %>%
                              FORCEDC3, WHOPRIVC3, WITHHELDC3,
                              IGNOREC3, PABUSEC3, na.rm = T),
          TRAUMADET_SUM = sum(TRAUMADETC1, TRAUMADETC2, TRAUMADETC3, 
-                             TRAUMADETC4, TRAUMADETC5, na.rm = T)
+                             TRAUMADETC4, TRAUMADETC5, na.rm = T),
+         ANY_CLIMATE = sum(CLIMATEC1, CLIMATEC2, CLIMATEC3, CLIMATEC4, 
+                           CLIMATEC5, CLIMATEC6, CLIMATEC7, CLIMATEC8)
          )
 
 LTM2 <- LTM2 %>% 

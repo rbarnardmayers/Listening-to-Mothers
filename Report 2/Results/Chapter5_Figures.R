@@ -7,9 +7,8 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Fig_Helpful_Functions.R")
 r_svysummary(by = "MODE1INDEX",
              include = "HCQUAL_R")
 
-r_svysummary(by = "DISABILITY",
+r_svysummary(by = "MODE1INDEX",
              include = "QUALCARE_R")
-
 
 # REPORT, REPORT2, REPORT3
 r_svysummary(include = "REPORT", 
@@ -58,11 +57,19 @@ max(LTM_final$HOSPDISTANCE, na.rm = T)
 r_svysummary(include = c("xPPCTIME", 
                          "xPNCTIME"))
 
+r_svysummary(include = c("xCARETIME_AVG", 
+                         "xCAREDIST_AVG"))
+
 # PPDISTANCE
 r_svysummary(include = c("xPREDISTANCE_R", 
                          "xPOSTDISTANCE_R"))
 
 # SUBGROUP DISTANCE 
+# RACE INSURANCE URBANICITY2
+r_svysummary(by = "RACE", 
+             include = c("CAREDIST_AVG_10", 
+                         "CAREDIST_AVG_20"))
+
 # RACE INSURANCE URBANICITY2
 r_svysummary(by = "RACE", 
              include = c("PREDISTANCE20", 
@@ -89,6 +96,13 @@ r_svysummary(by = "xCOSTBABY",
              include = "xCOSTBABY1")
 
 # ERRORCONCERN
+r_svysummary(include = c('ERRORCONCERN_A1_R', 'ERRORCONCERN_A2_R',
+                         'ERRORCONCERN_A3_R', 'ERRORCONCERN_A4_R',
+                         'ERRORCONCERN_A5_R'))
+
+r_svysummary(include = c('ERRORCONCERN_A3_R'),
+             data = filter(LTM_dsn, NICU %in% c("Yes, for part of the time in the hospital", 
+                                                "Yes, for the entire time in the hospital")))
 # RACE RESPONSIBTIER
 r_svysummary(by = "RESPONSIBTIER",
              include = c('ERRORCONCERN_A1_R', 'ERRORCONCERN_A2_R',
@@ -97,17 +111,23 @@ r_svysummary(by = "RESPONSIBTIER",
 
 
 # CARECONC
+r_svysummary(by = "RACE", 
+             include = c("CARECONC_R", 'CARECONC1_R'))
+
+# RACE PROVIDER2_R MARRIED 
+r_svysummary(#by = "MARRIED", 
+             include = c("CARECONC4_R", 'CARECONC5_R'))
+
+
 # ResLanguage LANGSIMP ENGPROFSIMP
-r_svysummary(by = "ResLanguage", 
-             include = "CARECONC2")
-
-r_svysummary(by = "ResLanguage", 
-             include = "CARECONC3")
-
-# INTERPRET1 INTERPRET
-
 r_svysummary(by = "ENGPROFSIMP", 
-             include = c("INTERPRET", "INTERPRET1"))
+             include = c("CARECONC2_R", "CARECONC3_R"))
+
+
+# INTERPRET_R INTERPRET1_R
+# ENGPROFSIMP LANGSIMP
+r_svysummary(by = "LANGSIMP", 
+             include = c("INTERPRET_R", "INTERPRET1_R"))
 
 
 # FUTURE BIRTH
@@ -173,3 +193,86 @@ r_svysummary(by = "RACE",
              include = "FUTUREBABYDIFF1_A3R", 
              data = filter(LTM_dsn, FUTUREBIRTH != '0' & 
                              FUTUREBIRTH != "I'd prefer not to answer"))
+
+# WICBEN 
+# CURRREL_R
+r_svysummary(by = "DISABILITY", 
+             include = "WICBEN")
+
+# WICPP
+# RACE INSURANCE PARITY CURRREL_R DISABILITY
+r_svysummary(by = "RACE",
+             include = "WICPP_ANY")
+
+r_svysummary(by = "PARITY",
+             include = c("WICPPC1", "WICPPC2",
+                         "WICPP_ANY", 'WICPP_ONLY'))
+
+# WICOFFER 
+r_svysummary(include = c('WICOFFER_R', 'WICFEEDING_A1', 'WICFEEDING_A2', 
+                         'WICFEEDING_A3', 'WICFEEDING_A4'), 
+             data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding") & 
+                             WICANY == 1))
+
+r_svysummary(by = "MODE1INDEX", 
+             include = c('WICOFFER_R'), 
+             data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding") & 
+                             WICANY == 1))
+
+# RESOURCEVALUE
+LTM_final %>% 
+  filter(RESOURCEVALUE_A12 %in% c("Not valuable", 
+                                  "Somewhat valuable", 
+                                  "Very valuable")) %>% 
+  nrow()
+
+r_svysummary(include = c(paste0("RESOURCEVALUE_A", 1:12)))
+r_svysummary(include = "RESOURCEVALUE_A12", 
+             data = filter(LTM_dsn, 
+                           RESOURCEVALUE_A12 %in% c("Not valuable", 
+                                                   "Somewhat valuable", 
+                                                   "Very valuable")))
+
+# RESOURCEVALUE
+LTM_final %>% 
+  filter(RESOURCEVALUE2_A10 %in% c("Not valuable", 
+                                  "Somewhat valuable", 
+                                  "Very valuable")) %>% 
+  nrow()
+
+r_svysummary(include = c(paste0("RESOURCEVALUE2_A", 1:10)))
+
+r_svysummary(include = "RESOURCEVALUE2_A10", 
+             data = filter(LTM_dsn, 
+                           RESOURCEVALUE2_A10 %in% c("Not valuable", 
+                                                    "Somewhat valuable", 
+                                                    "Very valuable")))
+
+# 5.RESOURCETRUST
+r_svysummary(include = paste0("RESOURCETRUST_A", 1:21, "_N"),
+             data = filter(LTM_dsn, 
+                           Q2FIELD == "Original Fielding"))
+
+# COVID
+# RACE, INSURANCE, URBANICITY2 DISABILITY
+r_svysummary(by = "RACE", 
+             include = "ANYCOVID")
+
+# COVIDVAC 
+# RACE, INSURANCE, DISABILITY, POLIT2
+r_svysummary(by = "POLIT2", 
+             include = "COVIDVACC_ANY")
+
+# RACE, INSURANCE, DISABILITY, POLIT2
+r_svysummary(#by = "RACE", 
+             include = "COVIDVACC2")
+# BABYVAC
+# CURRREL_R POLIT2
+r_svysummary(by = "POLIT2",
+             include = "BABYVAC")
+
+# CLIMATE
+# CENSUS_REG
+r_svysummary(#by = "CENSUS_REG", 
+             include = paste0("CLIMATEC", 1:9))
+

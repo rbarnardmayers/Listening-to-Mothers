@@ -4,8 +4,12 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Fig_Helpful_Functions.R")
 # INTERVAL
 table(LTM_final$INTERVAL)
 
-r_svysummary(include = c("R_INTERVAL", "INTERVAL"), 
+count_svysummary(include = c("INTERVAL"), 
              data = filter(LTM_dsn, EMPLOY == "Yes, by someone else"))
+
+r_svysummary(include = c("INTERVAL_NUM_R"), 
+                 data = filter(LTM_dsn, EMPLOY == "Yes, by someone else"))
+
 
 # RACE INSURANCE DISABILITY RESPONSIBTIER
 
@@ -28,8 +32,8 @@ r_svysummary(include = c("PRESSURE_A1", 'PRESSURE_A2', 'PRESSURE_A3', 'PRESSURE_
              data = filter(LTM_dsn, UNPLANNED_SCREEN == "Unplanned"))
 
 # Induction pressure 
-# MEDINDUCE MODE1INDEX CSECTIONTYPE
-r_svysummary(by = "CSECTIONTYPE", 
+# MEDINDUCE UNPLANNED_VAG
+r_svysummary(by = "UNPLANNED_VAG", 
              include = "PRESSURE_A1",
              data = filter(LTM_dsn, UNPLANNED_SCREEN == "Unplanned"))
 
@@ -144,6 +148,9 @@ r_svysummary(by = "BIRTHATTEND2",
 r_svysummary(include = "INTENDLOCALE", 
              data = filter(LTM_dsn, INTENDLOCALE != "I’d prefer not to answer" & 
                              INTENDLOCALE != "Yes"))
-
-
+# RACE INSURANCE DISABILITY PARITY URBANICITY2
+r_svysummary(by = "RACE", 
+             include = "INTENDLOCALE_R", 
+             data = filter(LTM_dsn, INTENDLOCALE_R != "PNTA" & 
+                             INTENDLOCALE_R != "Other"))
 
