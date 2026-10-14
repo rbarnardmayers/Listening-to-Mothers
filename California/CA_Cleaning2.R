@@ -1,14 +1,17 @@
-setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers/California")
-source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Fig_Helpful_Functions.r")
-
-CA_Q1 <- read_xlsx("LTM_CA_Q1.xlsx")
-datadict_CAQ1 <- read.xlsx("LTM_CA_Q1_DataDictionary.xlsx")
-
-CA_Q1 <- CA_Q1 %>% 
-  mutate(PARITY = case_when(NUMB_BIRTH == 1 ~ "Nulliparous",
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/California/SetUp.R")
+CA_Q1Q2a <- CA_Q1Q2
+CA_Q1Q2 <- CA_Q1Q2a %>% 
+  mutate(LANGSIMP2 = case_when(str_detect(LANGHOMEC2O, "Español") ~ "Spanish",
+                               str_detect(LANGHOMEC2O, "Espanol") ~ "Spanish",
+                               str_detect(LANGHOMEC2O, "Spanish") ~ "Spanish",
+                               str_detect(LANGHOMEC2O, "spanish") ~ "Spanish",
+                               str_detect(LANGHOMEC2O, "Espanola") ~ "Spanish",
+                               str_detect(LANGHOMEC2O, "espanola") ~ "Spanish",
+                               LANGSIMP == 1 ~ "English",
+                               LANGSIMP == 3 ~ "Other"),
+         PARITY = case_when(NUMB_BIRTH == 1 ~ "Nulliparous",
                             NUMB_BIRTH > 1 ~ "Multiparous",
                             TRUE ~ "Missing"),
-         
          GESTAGE_F = case_when(GESTAGE_WEEKS < 27 ~ 1, GESTAGE_WEEKS > 43 ~ 1, TRUE ~ 0), 
          GESTAGE_R = case_when(GESTAGE_F == 1 ~ NA, 
                                GESTAGE_F == 0 ~ GESTAGE_WEEKS),
@@ -41,14 +44,15 @@ CA_Q1 <- CA_Q1 %>%
          MARRIED = case_when(RELATIONSHIP == 1 ~ "Married",
                              RELATIONSHIP == 2 ~ "Committed Partner", 
                              RELATIONSHIP == 3 | RELATIONSHIP == 4 ~ "Separated/Single"),
-         RACE = case_when(RACEALONE == 5 ~ "AIAN",
-                          RACEALONE == 7 ~ "AIAN",
+         RACE = case_when(RACEALONE == 5 ~ "AIAN/NHPI",
+                          RACEALONE == 7 ~ "AIAN/NHPI",
                           is.na(RACEALONE) ~ "Multi",
                           RACEALONE == 1 ~ "White",
                           RACEALONE == 2 ~ "Latina",
                           RACEALONE == 3 ~ "Black",
                           RACEALONE == 4 ~ "Asian",
-                          RACEALONE == 6 ~ "MENA"),
+                          RACEALONE == 6 ~ "MENA", 
+                          MULTIRACIAL1 == 1 ~ "Multi"),
          INSURANCE = case_when(INSURCAT == 1 ~ "Private",
                                INSURCAT == 2 ~ "Medicaid"),
          PROVIDER2 = case_when(PROVIDER == 1 ~ "OB",
@@ -77,9 +81,9 @@ CA_Q1 <- CA_Q1 %>%
                               TRUE ~ as.numeric(LEARNED1)), 
          LEARNED2_R = case_when(LEARNED2 < 4 & LEARNED2 > 1 ~ "Less than 4 weeks",
                                 LEARNED2 < 7 ~ "4 to 6 weeks", 
-                                LEARNED2 < 9 ~ "7 to 8 weeks", 
-                                LEARNED2 < 12 ~ "9 to 11 weeks", 
-                                LEARNED2 >= 12 & LEARNED2 < 90 ~ "12 weeks or more"),
+                                LEARNED2 < 11 ~ "7 to 10 weeks", 
+                                LEARNED2 >= 11 & LEARNED2 < 90 ~ "11 weeks or more",
+                                LEARNED2 == 1 ~ "No Prenatal Care"),
          PRENAT = case_when(LEARNED2 == 1 ~ "No Prenatal Care", 
                             LEARNED2 == 99 ~ "Missing", 
                             is.na(LEARNED2) ~ "Missing",
@@ -104,7 +108,7 @@ CA_Q1 <- CA_Q1 %>%
                                  BIRTHATTEND %in% c(5,6) ~ "Other"), 
          PPVISIT_CA = case_when(PPVISIT == 99 ~ NA,
                                 PPVISIT >= 3 ~ 3,
-                              TRUE ~ PPVISIT),
+                                TRUE ~ PPVISIT),
          PPVISIT_8 = case_when(PPVISIT >= 8 ~ 1, 
                                PPVISIT < 8 ~ 0),
          MEDINDUCE4 = case_when(MEDINDUCE4 >= 999 ~ NA, 
@@ -188,9 +192,9 @@ CA_Q1 <- CA_Q1 %>%
                              MODE14 == 2 ~ 1),
          VBACEFFORT2 = case_when(VBACEFFORT %in% c(1,2,3) ~ "Tried Something", 
                                  VBACEFFORT == 97 ~ "Tried Nothing"),
-         ANYLABOR = case_when(MODE2023 == 1 ~ "Labored", 
-                              MODE2023 == 2 & LABCSEC == 1 ~ "Labored", 
-                              MODE2023 == 2 & LABCSEC == 2 ~ "No Labor"),
+         ANYLABOR = case_when(MODE1INDEX == 1 ~ "Labored", 
+                              MODE1INDEX == 2 & LABCSEC == 1 ~ "Labored", 
+                              MODE1INDEX == 2 & LABCSEC == 2 ~ "No Labor"),
          PAINMEDSANY = case_when(PAINMEDSC1 == 1 ~ 1, 
                                  PAINMEDSC2 == 1 ~ 1, 
                                  PAINMEDSC3 == 1 ~ 1,
@@ -202,7 +206,7 @@ CA_Q1 <- CA_Q1 %>%
                              PAINMEDSANY == 1 ~ "No",
                              EPIST == 1 ~ "No",
                              xGESTAGE == 1 ~ "No",
-                             MODE2023 == 2 ~ "No",
+                             MODE1INDEX == 2 ~ "No",
                              LABORINTC3 == 1 ~ "No",
                              LABORINTC1 == 1 ~ "No",
                              TRUE ~ "Yes"),
@@ -325,9 +329,9 @@ CA_Q1 <- CA_Q1 %>%
                                   BMI4_PREPREG == 4  & WEIGHTGAIN_R < 11 ~ "Below",
                                   BMI4_PREPREG == 4  & WEIGHTGAIN_R > 20 ~ "Above"), 
          NEITHER = case_when(MEDINDUCE == 1 ~ 0, 
-                             MODE2023 == 2 ~ 0, 
+                             MODE1INDEX == 2 ~ 0, 
                              MEDINDUCE == 0 ~ 1, 
-                             MODE2023 == 1 ~ 1), 
+                             MODE1INDEX == 1 ~ 1), 
          NEITHER_REC = case_when(BIGBABY2 == 1 | BIGBABY2 == 2 ~ 0, 
                                  BIGBABY2 == 97 ~ 1),
          PLANNED_INDUCED = case_when(MEDINDUCE == 1 ~ 1, # induced 
@@ -371,7 +375,7 @@ CA_Q1 <- CA_Q1 %>%
                                 TRUE ~ LABORINTC6),
          LABORINTC7 = case_when(LABORINTC7 > 1 ~ NA, 
                                 TRUE ~ LABORINTC7),
-         LABORED = case_when(MODE2023 == 1 | LABCSEC == 1 ~ 1, 
+         LABORED = case_when(MODE1INDEX == 1 | LABCSEC == 1 ~ 1, 
                              TRUE ~ 0),
          PITOCIN = case_when(LABORINTC3 == 1 ~ 1, 
                              MEDINDUCE1C4 == 1 ~ 1, 
@@ -390,7 +394,10 @@ CA_Q1 <- CA_Q1 %>%
                               LABORINTC1 == 1 & MEDINDUCE1C1 == 0 ~ "AROM Induction",
                               MEDINDUCE1C1 == 0 & LABORINTC1 == 0 ~ "No AROM"),
          VAGEXAM2 = case_when(VAGEXAM == 99999 ~ NA, 
-                              VAGEXAM >= 7 & VAGEXAM <= 10 ~ "7",
+                              VAGEXAM < 2 ~ "< 2",
+                              VAGEXAM >= 2 & VAGEXAM <= 4 ~ "2 - 4",
+                              VAGEXAM > 4 & VAGEXAM < 6 ~ "5 - 6",
+                              VAGEXAM >= 6 & VAGEXAM <= 10 ~ "6+",
                               TRUE ~ factor(VAGEXAM)),
          VAGEXAM_4 = case_when(VAGEXAM <= 4 ~ "≤ 4", 
                                VAGEXAM > 4 & VAGEXAM <= 10 ~ "5+"),
@@ -426,7 +433,7 @@ CA_Q1 <- CA_Q1 %>%
                               VAGASSIST == 2 ~ "Assisted",
                               VAGASSIST == 3 ~ "Unassisted",
                               VAGASSIST == 99 ~ "PNTA"), 
-         CUM_CES = case_when(MODE2023 == 2 ~ 1, 
+         CUM_CES = case_when(MODE1INDEX == 2 ~ 1, 
                              TRUE ~ 0), 
          CUSTOMS2 = case_when(CUSTOMS > 90 ~ NA, 
                               TRUE ~ CUSTOMS),
@@ -439,19 +446,44 @@ CA_Q1 <- CA_Q1 %>%
          LABORPERMIT_A2_R = case_when(LABORPERMIT_A2 == 1 ~ 1, 
                                       TRUE ~ 0),
          PROVIDER_R = case_when(PROVIDER == 4 ~ 1, 
-                                TRUE ~ 0)) %>% 
-  rename(SONEEDC11 = SOCIALNEEDC11,
-         SONEEDC10 = SOCIALNEEDC10, 
-         HSPFEEDC8 = HOSPFEEDC8,
-         HSPFEEDC11 = HOSPFEEDC11,
-         HSPFEEDC12 = HOSPFEEDC12, 
-         HSPFEEDC4 = HOSPFEEDC4, 
-         HSPFEEDC6 = HOSPFEEDC6,
-         HSPFEEDC7 = HOSPFEEDC7, 
-         HOSPFEEDC4 = RHOSPFEEDC4,
-         HOSPFEEDC6 = RHOSPFEEDC6,
-         HOSPFEEDC7 = RHOSPFEEDC7)
+                                TRUE ~ 0))
+
+# Warm recruitment
+Sources <- read.csv("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/Sources.csv")
+# SourcesQ1 <- read.csv("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/SourcesQ1.csv")
+
+CA_Q1Q2 <- CA_Q1Q2 %>% 
+  left_join(Sources) #%>%
+  # left_join(SourcesQ1) #%>% 
+# mutate(WarmRec_Q1Q2 = case_when(is.na(WarmRec2) ~ WarmRec, 
+#                                 is.na(WarmRec) ~ WarmRec2, 
+#                                 WarmRec == "Y" & WarmRec2 == "N" ~ "Y"))
 
 
-CA_Q1_dsn <- CA_Q1 %>%
-  as_survey_design(weight = FINALWTCA, id = 1)
+# Dictionary Application
+CA_dict2_3 <- CA_dict2_3 %>% 
+  mutate(KEEP = case_when(variable %in% colnames(CA_Q1Q2) ~ 1, TRUE ~ 0)) %>% 
+  subset(KEEP == 1) %>% 
+  select(-c(KEEP))
+
+CA_Q1Q2_include <- CA_Q1Q2 %>% select(CA_dict2_3$variable)
+
+# 
+CA_Q1Q2 <- CA_Q1Q2 %>% 
+  select(c(setdiff(colnames(CA_Q1Q2), colnames(CA_Q1Q2_include)), MDID))
+
+# Apply dictionary recoding and labeling 
+CA_Q1Q2_include <- recode_vrs(data = CA_Q1Q2_include, 
+                              data_dictionary = data_dict2, 
+                              vrs = colnames(CA_Q1Q2_include))
+
+CA_Q1Q2 <- CA_Q1Q2 %>% 
+  full_join(CA_Q1Q2_include, by = join_by(MDID)) %>% 
+  mutate(xFINALWTCA = as.numeric(xFINALWTCA)) %>% 
+  filter(STATE == "California" & !is.na(xFINALWTCA))
+
+CA_Q1Q2_dsn <- CA_Q1Q2 %>% 
+  filter(STATE == "California") %>% 
+  as_survey_design(weight = xFINALWTCA, id = 1)
+
+

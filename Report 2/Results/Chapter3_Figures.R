@@ -1,5 +1,5 @@
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/ApplyDictionary2.R")
-source("~/Desktop/LTM/Listening-to-Mothers/Fig_Helpful_Functions.R")
+source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Fig_Helpful_Functions.R")
 
 # MORB table ----
 
@@ -22,42 +22,18 @@ LTM_final %>%
 # WEIGHTGAIN_R is pre-preg to pregnancy 
 # WEIGHTLOSS_Q1 is pregnancy to time of Q1
 # WEIGHTLOSS_Q2 is Q1 to Q2
-
-r_svysummary(#by = "PARITY", 
-             include = c("WEIGHTGAIN_R", 
-                         "WEIGHTLOSS_Q2"), 
+r_svysummary(include = c("PREPREG_WEIGHTR","PREG_WEIGHTR","CURRWEIGHT_Q2R"),
              data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
                              !is.na(WEIGHTLOSS_Q2)))
 
-r_svysummary(by = "TIME_SINCE_BIRTH_QUART", 
-             include = c("WEIGHTLOSS_Q2R"), 
-             data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
-                             !is.na(WEIGHTLOSS_Q2)))
-
-r_svysummary(by = "TIME_SINCE_BIRTH_HALF", 
-             include = c("WEIGHTLOSS_Q2R"), 
-             data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
-                             !is.na(WEIGHTLOSS_Q2)))
-
-r_svysummary(by = "TIME_SINCE_BIRTH_QUART", 
+r_svysummary(by = "TIME_SINCE_BIRTH_HALF_2", 
              include = c("WEIGHTLOSS_Q2"), 
-             data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
-                             PARITY == "Nulliparous" & 
-                             !is.na(WEIGHTLOSS_Q2)))
-
-r_svysummary(by = "TIME_SINCE_BIRTH_QUART", 
-             include = c("WEIGHTLOSS_Q2"), 
-             data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
-                             PARITY == "Multiparous" & 
-                             !is.na(WEIGHTLOSS_Q2)))
-
-r_svysummary(include = "TIME_SINCE_BIRTH",
              data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield") & 
                              !is.na(WEIGHTLOSS_Q2)))
 
 # MATHOSP ----
-# RACE INSURANCE AGE4 DISABILITY 
-r_svysummary(by = "EMPLOYBEN",
+# RACE INSURANCE DISABILITY 
+r_svysummary(#by = "RACE",
              include = c("MATHOSP_ANY", "MATHOSPC2", "MATHOSPC3"))
 
 r_svysummary(include = c("PTLEAVE"))
@@ -99,7 +75,7 @@ r_svysummary(by = "PARITY",
 
 # CURRREL
 # MARRIED RACE INSURANCE
-r_svysummary(#by = "INSURANCE", 
+r_svysummary(by = "RACE", 
   include = "CURRREL_R")
 
 # RELSUPPORT
@@ -108,13 +84,41 @@ r_svysummary(#by = "INSURANCE",
 r_svysummary(by = "DISABILITY2", 
              include = "PHQ4_MH2WK_PSYCH")
 
-# BOND
+# INF FEED
+#"CURRFEEDC1","CURRFEEDC2","CURRFEEDC3",
+#"CURRFEEDC4", 
+#"BFEXC", "BF_MONTHS", 
+#'BFEXCSAT', 'xBFANY', 'WEAN',
+#'BFANYSAT'
+r_svysummary(by = "TIME_SINCE_BIRTH_HALF_2",
+             include = c("CURRFEEDC1","CURRFEEDC2","CURRFEEDC3",
+                         "CURRFEEDC4"))
+# FEED1WEEKC1 FEED1WEEK_ONLY PLANNEDFEEDC1 PLANNEDFEED_ONLY 
+r_svysummary(by = "FEED1WEEK_ONLY",
+             include = c("CURRFEEDC1", "CURRFEED_ONLY"),
+             data = filter(LTM_dsn, Q2FIELD != "Standalone"))
+
+# RACE INSURANCE PARITY 
+r_svysummary(by = "RACE", 
+             include = "BFEXCSAT", 
+             data = filter(LTM_dsn, 
+                           FEED1WEEK_ONLY == "Breastmilk"))
+
+count_svysummary(include = "FEED1WEEK_ONLY",
+                 data = filter(LTM_dsn, TIME_SINCE_BIRTH_MONTH >= 6))
+
+count_svysummary(include = "BFEXC_R2c", 
+                 data = filter(LTM_dsn, TIME_SINCE_BIRTH_MONTH >= 6))
+
+# BOND 
 # RACE INSURANCE DISABILITY
 r_svysummary(by = "DISABILITY",
              include = "BOND_R")
 
 # PROBABLEPTSD PHQ4_MH2WK_PSYCH PHQ4_MH2WK_ANX PHQ4_MH2WK_DEP
-r_svysummary(by = "PROBABLEPTSD",
+# RESPONSIBTIER
+# ANY_MH
+r_svysummary(by = "ANY_MH",
              include = "BOND_R")
 
 
@@ -166,6 +170,9 @@ r_svysummary(by = "RESPONSIBTIER",
 # BABYHEALTHDET
 # NICUREAS -- all PNTA
 # INFVAC
+r_svysummary(by = "POLIT2", 
+             include = "INFVAC")
+
 # BABYCARETIME
 r_svysummary(include = c("xBABYCARETIME_B0", 'xBABYCARETIME_B1', 'xBABYCARETIME_B2',
                          'xBABYCARETIME_B3', 'xBABYCARETIME_B4', 'xBABYCARETIME_B5', 

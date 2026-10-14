@@ -14,6 +14,37 @@ r_svysummary(by = "DISABILITY",
 # with dilation of 6cm or more.
 
 # RACE INSURANCE PARITY DISABILITY
-r_svysummary(by = "DISABILITY",
-             include = "VAGEXAM_5", 
-             data = filter(CA_Q1_dsn, LABORINTC5 == 1))
+r_svysummary(#by = "DISABILITY",
+             include = "VAGEXAM2", 
+             data = filter(CA_Q1_dsn, 
+                           LABORINTC5 == "You had one or more vaginal exams to check how much your cervix was open/dilated"))
+
+# INSURANCE
+r_svysummary(by = "INSURCAT", 
+             include = "LEARNED2_R", 
+             data = CA_Q1_dsn)
+
+r_svysummary(by = "INSURCAT", 
+             include = "LEARNED2_R", 
+             data = filter(CA_Q1_dsn, STATE == "California"))
+
+CA_Q1 %>% 
+  subset(INSURC5O != "") %>%
+  select(c(INSURC1, INSURC2,INSURC3,INSURC4,INSURC5,
+           INSURC5O)) %>%
+  View()
+
+# LANGUAGES
+
+r_svysummary(include =c("LANGSIMP2", "LANGHOMEC1","LANGHOMEC2"), 
+             data = CA_Q1_dsn)
+count_svysummary(by = "LANGHOMEC2", 
+                 include = "LANGHOMEC1",
+                 data = CA_Q1_dsn)
+
+r_svysummary(include =c("LANGSIMP2", "LANGHOMEC1", "LANGHOMEC2"), 
+             data = CA_Q1Q2_dsn)
+
+count_svysummary(by = "LANGHOMEC2", 
+                 include = "LANGHOMEC1",
+                 data = CA_Q1Q2_dsn)

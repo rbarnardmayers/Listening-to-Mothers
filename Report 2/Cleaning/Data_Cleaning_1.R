@@ -1,24 +1,27 @@
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/SetUp.R")
 setwd("~/Documents/2025-2026/LTM")
+options(scipen = 999)
 
 # Data Read in &  Get rid of identifying information ----
 LTM <- read.csv("Data_FINAL12.csv") %>% 
-  mutate(MDID2 = as.numeric(MDID2)) %>% 
+mutate(MDID2 = as.numeric(MDID2)) %>%
   subset(!is.na(MDID2))
 
 LTM1 <- LTM %>% 
   mutate(MDID = as.character(MDID)) %>% 
   select(-c(MDID2, MDID1))
 
-miss_vars <- dict2[dict2$missing == 99999,"variable"] %>% subset(!is.na(variable)) 
+miss_vars <- dict2[dict2$missing == 99999,"variable"] %>% 
+  subset(!is.na(variable)) 
 
 # Create dataset of just text responses and MDID (so we can merge back) ----
 # Don't want to convert these columns to numeric
 ends_o <- LTM1[str_ends(colnames(LTM1), "O")]  %>% colnames()
 
 LTM_ignore <- LTM1 %>% 
-  select(c(all_of(ends_o), MDID, DOULA3, INDUCE6,
-           ResLanguage,xResLanguage, ELSE, ANYTHINGELSE, DISABILITYCOND 
+  select(c(all_of(ends_o), MDID, DOULA3, INDUCE6, MATHOSP1, MATHOSP2,
+           ResLanguage,xResLanguage, ELSE, ANYTHINGELSE, DISABILITYCOND, 
+           WENTWELL, DIDNTGOWELL, INDUCE6
            #, other vars we don't want
   )) 
 
@@ -33,6 +36,7 @@ LTM_keep <- LTM1 %>%
 
 sn_cols <- LTM_keep %>% 
   select(starts_with("SN")) %>% 
+  select(-starts_with("SNAP")) %>% 
   colnames()
 
 for(i in sn_cols){
@@ -55,7 +59,6 @@ for(i in tochange){
 LTM1 <- LTM_keep %>% 
   full_join(LTM_ignore, join_by(MDID))
 
-
 # Recode variables ----
 LTM1$BOTHER_R1 <- rev.likert("BOTHER_A1", dat = LTM1)
 LTM1$BOTHER_R2 <- rev.likert("BOTHER_A2", dat = LTM1)
@@ -66,24 +69,33 @@ LTM1$BOTHER_R4 <- rev.likert("BOTHER_A4", dat = LTM1)
 LTM1 <- convert.miss(LTM1, c('RESPECT', 'KNOWLEDGE', 'HEARD', 
                              'DECISIONS', 'CONSENT', 'INFORMED',
                              'TIMELINESS', 'TRUST', 'FEEDING',
-                             'SAFE', 'DISCRIMINATION', 'NEGLECT'), 99)
+                             'SAFE', 'DISCRIMINATION', 'NEGLECT',
+                             'WICFEEDING_A1', 'WICFEEDING_A2', 
+                             'WICFEEDING_A3', 'WICFEEDING_A4','WEAN_MONTHS'), 99)
 LTM1 <- convert.miss(LTM1, c("TIMELINESS"), 97)
-LTM1 <- convert.miss(LTM1, miss_vars$variable, 99999)
-LTM1 <- convert.miss(LTM1, c('THREATC1', 'SHOUTC1', 'SHAREPRIVC1',
-                           'FORCEDC1', 'WHOPRIVC1', 'WITHHELDC1',
-                           'IGNOREC1', 'PABUSEC1', 'THREATC2', 'SHOUTC2',
-                           'SHAREPRIVC2', 'FORCEDC2', 'WHOPRIVC2', 
-                           'WITHHELDC2', 'IGNOREC2', 'PABUSEC2', 'THREATC3', 
-                           'SHOUTC3', 'SHAREPRIVC3', 'FORCEDC3', 'WHOPRIVC3', 
-                           'WITHHELDC3', 'IGNOREC3', 'PABUSEC3'), 99999)
-LTM1 <- convert.miss(LTM1, c('TRAUMADETC1', 'TRAUMADETC2', 'TRAUMADETC3', 
-                             'TRAUMADETC4', 'TRAUMADETC5', 'TRAUMADETC6', 
-                             'TRAUMADETC7','WICFEEDING_A1', 'WICFEEDING_A2', 
-                             'WICFEEDING_A3', 'WICFEEDING_A4'), 99999)
 LTM1 <- convert.miss(LTM1, c('WICFEEDING_A1', 'WICFEEDING_A2', 
                              'WICFEEDING_A3', 'WICFEEDING_A4'), 98)
-LTM1 <- convert.miss(LTM1, c('WICFEEDING_A1', 'WICFEEDING_A2', 
-                             'WICFEEDING_A3', 'WICFEEDING_A4'), 99)
+LTM1 <- convert.miss(LTM1, miss_vars$variable, 99999)
+LTM1 <- convert.miss(LTM1, c('THREATC1', 'SHOUTC1', 'SHAREPRIVC1',
+                             'FORCEDC1', 'WHOPRIVC1', 'WITHHELDC1',
+                             'IGNOREC1', 'PABUSEC1', 'THREATC2', 'SHOUTC2',
+                             'SHAREPRIVC2', 'FORCEDC2', 'WHOPRIVC2', 
+                             'WITHHELDC2', 'IGNOREC2', 'PABUSEC2', 'THREATC3', 
+                             'SHOUTC3', 'SHAREPRIVC3', 'FORCEDC3', 'WHOPRIVC3', 
+                             'WITHHELDC3', 'IGNOREC3', 'PABUSEC3', 
+                             'TRAUMADETC1', 'TRAUMADETC2', 'TRAUMADETC3', 
+                             'TRAUMADETC4', 'TRAUMADETC5', 'TRAUMADETC6', 'BFANY',
+                             'TRAUMADETC7','WICFEEDING_A1', 'WICFEEDING_A2',"BFEXC", 
+                             'WICFEEDING_A3', 'WICFEEDING_A4', "MATLEAVEC1",
+                             "MATLEAVEC2","MATLEAVEC3", "MATLEAVEC4","WEAN",
+                             "MATLEAVEC5","MATLEAVEC6", "MATLEAVEC7", 'PARTLEAVETYPEC1',
+                             'PARTLEAVETYPEC2', 'PARTLEAVETYPEC3', 'PARTLEAVETYPEC4', 
+                             'PARTLEAVETYPEC5', 'PARTLEAVETYPEC6', 'PARTLEAVETYPEC7'), 99999)
+LTM1 <- convert.miss(LTM1, c('BFANY'), 9999)
+# LTM1 <- convert.miss(LTM1, c("COSTMOM1"), 999999999999)
+# LTM1 <- convert.miss(LTM1, c("COSTMOM", "COSTMOM1"), 9999999)
+# LTM1 <- convert.miss(LTM1, c("COSTMOM", "COSTMOM1"), 9999998)
+
 # Creating new variables ----
 
 LTM2 <- LTM1 %>% 
@@ -119,26 +131,52 @@ LTM2 <- LTM1 %>%
          PREG_WEIGHT = case_when(is.na(PREGWEIGHT_LBS_2) ~ 2.20462 * PREGWEIGHT_KG_2, 
                                  !is.na(PREGWEIGHT_LBS_2) ~ PREGWEIGHT_LBS_2), 
          PREG_WEIGHTR = case_when(PREG_WEIGHT <= 85 ~ NA, 
-                                 TRUE ~ PREG_WEIGHT),
+                                  PREG_WEIGHT >= 325 ~ NA,
+                                  TRUE ~ PREG_WEIGHT),
          PREPREG_WEIGHTR = case_when(PREPREG_WEIGHT <= 85 ~ NA, 
-                                    TRUE ~ PREPREG_WEIGHT),
+                                     PREPREG_WEIGHT >= 300 ~ NA,
+                                     TRUE ~ PREPREG_WEIGHT),
+         PREG_WEIGHT_FLAG = case_when(PREPREG_WEIGHT <= 85 ~ "< 85",
+                                      PREPREG_WEIGHT >= 300 ~ ">= 325"),
+         PREPREG_WEIGHT_FLAG = case_when(PREG_WEIGHT <= 85 ~ "< 85",
+                                         PREG_WEIGHT >= 325 ~ ">= 325"),
          WEIGHTGAIN_R = as.numeric(PREG_WEIGHTR) - as.numeric(PREPREG_WEIGHTR), 
          MARRIED = case_when(RELATIONSHIP == 1 ~ "Married",
                              RELATIONSHIP == 2 ~ "Committed Partner", 
                              RELATIONSHIP == 3 | RELATIONSHIP == 4 ~ "Separated/Single"),
-         RACE = case_when(RACEALONE == 5 ~ "AIAN-NHPI",
-                          RACEALONE == 7 ~ "AIAN-NHPI",
-                          is.na(RACEALONE) ~ "Multi",
+         RACE_R = case_when(RACEALONE == 5 ~ "AIAN",
+                          RACEALONE == 7 ~ "NHPI",
                           RACEALONE == 1 ~ "White",
                           RACEALONE == 2 ~ "Latina",
                           RACEALONE == 3 ~ "Black",
-                          RACEALONE == 4 ~ "Asian",
-                          RACEALONE == 6 ~ "MENA"),
+                          RACEALONE == 4 ~ "Asian", 
+                          RACEALONE == 6 ~ "MENA",
+                          is.na(RACEALONE) ~ "Multi"),
+         RACE = case_when(RACEALONE == 5 ~ "AIAN-NHPI",
+                          RACEALONE == 7 ~ "AIAN-NHPI",
+                          RACEALONE == 1 ~ "White",
+                          RACEALONE == 2 ~ "Latina",
+                          RACEALONE == 3 ~ "Black",
+                          RACEALONE == 4 ~ "Asian", 
+                          RACEALONE == 6 ~ "MENA",
+                          is.na(RACEALONE) ~ "Multi"),
+         RACE = factor(RACE, levels = c("AIAN-NHPI", "Asian", "Black", "Latina", "White", "Multi")),
+         RACE_NOTWHITE = case_when(RACE == "White" ~ "White", 
+                                   RACE != "White" & !is.na(RACE) ~ "All Others"),
+         MULTI_NOWHITE_R = case_when(RACE == "Multi" & RACEC1 != 1 ~ "Multi (no white)",
+                                     RACE == "Multi" & RACEC1 == 1 ~ "Multi w/ white",
+                                     RACE != "Multi"  ~ "Not Multi"),
          INSURANCE = case_when(INSURCAT == 1 ~ "Private",
                                INSURCAT == 2 ~ "Medicaid"),
+         CURR_INSURANCE = case_when(INSURCURRC1 == 1 & INSURCURRC2 == 0 & 
+                                      INSURCURRC3 == 0 & INSURCURRC4 == 0 & 
+                                      INSURCURRC5 == 0 ~ "Private",
+                                    INSURCURRC2 == 1 & INSURCURRC1 == 0 & 
+                                      INSURCURRC3 == 0 & INSURCURRC4 == 0 & 
+                                      INSURCURRC5 == 0 ~ "Medicaid"),
          PROVIDER2_R = case_when(PROVIDER == 1 ~ "OB",
-                               PROVIDER == 4 ~ "Midwife",
-                               PROVIDER %in% c(5,6) ~ "Other"),
+                                 PROVIDER == 4 ~ "Midwife",
+                                 PROVIDER %in% c(5,6) ~ "Other"),
          LABORWALK_NO = case_when(LABORWALK == 1 | LABORWALK == 3 ~ 0, 
                                   LABORWALK == 2 ~ 1),
          BMI = PREPREG_WEIGHT *703 / HEIGHT^2, 
@@ -185,12 +223,12 @@ LTM2 <- LTM1 %>%
          MACROSOMIC = case_when(BW_CAT == 4 ~ "Macro", 
                                 BW_CAT < 4 ~ "Not Macro"),
          BIRTHATTEND_R =case_when(BIRTHATTEND %in% c(1)  ~ "OB",
-                                 BIRTHATTEND == 4 ~ "Midwife",
-                                 BIRTHATTEND %in% c(2,3,5,6) ~ "Other"),
+                                  BIRTHATTEND == 4 ~ "Midwife",
+                                  BIRTHATTEND %in% c(2,3,5,6) ~ "Other"),
          BIRTHATTEND_R2 = case_when(BIRTHATTEND %in% c(1,2,3) ~ "Doctor",
-                                   BIRTHATTEND == 4 ~ "Midwife", 
-                                   BIRTHATTEND == 5 ~ "Nurse",
-                                   BIRTHATTEND == 6 ~ "Other"),
+                                    BIRTHATTEND == 4 ~ "Midwife", 
+                                    BIRTHATTEND == 5 ~ "Nurse",
+                                    BIRTHATTEND == 6 ~ "Other"),
          # PPVISIT2 = case_when(PPVISIT >= 4 ~ 4,
          #                      TRUE ~ PPVISIT),
          # PPVISIT_8 = case_when(PPVISIT >= 8 ~ 1, 
@@ -564,16 +602,27 @@ LTM2 <- LTM2 %>%
                                     TRUE ~ SUM_LABORSTUFF),
          VAGEXAM_5 = case_when(VAGEXAM_5 == 0 ~ "Early Labor", 
                                VAGEXAM_5 == 1 ~ "Active Labor"), 
-         VBAC = case_when(xMODE2 == 2 ~ 1,
-                          xMODE2 != 2 ~ 0),
-         NUM_CS = case_when(xMODE2 == 3 ~ 0, 
-                            xMODE2 == 4 ~ MODE_ALL,
-                            xMODE2 == 2 ~ MODE_ALL, 
-                            xMODE1 == 1 ~ 0),
+         VBAC = case_when(MODEINDEX == 1 & MODE_ALL >= 1 ~ 1,
+                          MODE_ALL == 0  ~ 0, 
+                          MODEINDEX == 2 ~ 0),
+         NUM_CS = case_when(MODEINDEX == 2 & MODE_ALL == 0 ~ 1,
+                            TRUE ~ MODE_ALL),
          NUM_CS = case_when(NUM_CS >= 3 ~ 3, 
                             NUM_CS == 2 ~ 2, 
                             NUM_CS == 1 ~ 1, 
                             NUM_CS == 0 ~ 0),
+         DELIVERY_TYPE = case_when(xMODE2 == 1 ~ "Vaginal/No VBAC",
+                                   xMODE2 == 2 ~ "VBAC",
+                                   xMODE2 == 3 ~ "Cesarean Primary",
+                                   xMODE2 == 4 ~ "Cesarean Repeat",
+                                   is.na(xMODE2) & 
+                                     MODE2INDEX == 1 ~ "Vaginal/No VBAC",
+                                   is.na(xMODE2) & 
+                                     MODE2INDEX == 2 ~ "VBAC",
+                                   is.na(xMODE2) & 
+                                     MODE2INDEX == 3 ~ "Cesarean Primary",
+                                   is.na(xMODE2) & 
+                                     MODE2INDEX == 4 ~ "Cesarean Repeat"),
          VBACINTEREST = case_when(NUM_CS == 3 ~ NA, 
                                   xMODE2 == 3 ~ NA, 
                                   TRUE ~ VBACINTEREST),

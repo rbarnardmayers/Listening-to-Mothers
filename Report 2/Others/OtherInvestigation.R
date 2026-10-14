@@ -147,3 +147,48 @@ doulaconc <- LTM_final %>%
   select(c('DOULACONCERNC1', 'DOULACONCERNC2', 'DOULACONCERNC3', 'DOULACONCERNC4', 
            'DOULACONCERNC5O', 'DOULACONCERNC5', MDID ))
 write.csv(doulaconc, "DOULACONCERN.csv")
+
+# REASONEMPLOY
+reasonemploy <- LTM_final %>% 
+  subset(REASONEMPLOYC10O != "") %>% 
+  select(c('REASONEMPLOYC1', 'REASONEMPLOYC2', 'REASONEMPLOYC3', 'REASONEMPLOYC4', 
+           'REASONEMPLOYC5', 'REASONEMPLOYC6',"REASONEMPLOYC7",
+           "REASONEMPLOYC8", "REASONEMPLOYC9", "REASONEMPLOYC10O",
+           "REASONEMPLOYC10", MDID )) #%>% View()
+write.csv(reasonemploy, "REASONEMPLOY.csv")
+
+# REASONEMPLOY
+reasonemploy <- LTM_final %>% 
+  subset(NOTEMPLOYO != "") %>% 
+  select(c('NOTEMPLOY', 'NOTEMPLOYO', MDID )) %>% View()
+write.csv(reasonemploy, "REASONEMPLOY.csv")
+
+# TRANSPORT
+LTM_final %>% 
+  subset(TRANSPORTO != "") %>% 
+  select(c('TRANSPORT', 'TRANSPORTO', MDID )) %>% View()
+
+
+LTM_final %>% 
+  subset(CLIMATEC8O != "") %>%
+  select(c(CLIMATEC1,CLIMATEC2,CLIMATEC3,CLIMATEC4,
+           CLIMATEC5,CLIMATEC6,CLIMATEC7,CLIMATEC8,CLIMATEC8O,
+           MDID)) %>%
+  View()
+
+LTM_final %>% 
+  subset(PARTLEAVETYPEC6O != "") %>%
+  select(c(PARTLEAVETYPEC1,PARTLEAVETYPEC2,
+           PARTLEAVETYPEC3,PARTLEAVETYPEC4,PARTLEAVETYPEC5,
+           PARTLEAVETYPEC6,PARTLEAVETYPEC6O,
+           MDID)) %>%
+  View()
+
+LTM_final %>% 
+  subset(WICVALUE_OEO != "") %>%
+  select(c(WICVALUE_A1,WICVALUE_A2,
+           WICVALUE_A3,WICVALUE_A4,WICVALUE_A5,
+           WICVALUE_A6,WICVALUE_A7,WICVALUE_OE,
+           WICVALUE_OEO, MDID)) %>%
+  View()
+

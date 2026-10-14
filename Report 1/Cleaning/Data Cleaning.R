@@ -145,6 +145,11 @@ LTM2 <- LTM1 %>%
                            LEARNED2 < 9 ~ "7 to 8 weeks", 
                            LEARNED2 < 12 ~ "9 to 11 weeks", 
                            LEARNED2 >= 12 & LEARNED2 < 90 ~ "12 weeks or more"),
+    LEARNED2_CA = case_when(LEARNED2 < 4 & LEARNED2 > 1 ~ "Less than 4 weeks",
+                           LEARNED2 < 7 ~ "4 to 6 weeks", 
+                           LEARNED2 < 11 ~ "7 to 10 weeks", 
+                           LEARNED2 >= 11 & LEARNED2 < 90 ~ "11 weeks or more",
+                           LEARNED2 == 1 ~ "No Prenatal Care"),
     PRENAT = case_when(LEARNED2 == 1 ~ "No Prenatal Care", 
                        LEARNED2 == 99 ~ "Missing", 
                        is.na(LEARNED2) ~ "Missing",
@@ -396,6 +401,7 @@ LTM2 <- LTM1 %>%
                             BIGBABY2 == 97 ~ 1),
     PLANNED_INDUCED = case_when(MEDINDUCE == 1 ~ 1, # induced 
                                 CSECTIONTYPE == 1 ~ 1, # planned cesarean 
+                                MEDINDUCE == 2 & MODE2023 == 1 ~ 0,
                                 MEDINDUCE != 1 & CSECTIONTYPE != 1 ~ 0), # no induction and not planned cesarean
     OTHERSUPPORT_ONLY = case_when(OTHERSUPPORTC1 == 1 & OTHERSUPPORTC2 == 0 ~ "Spouse",
                                   OTHERSUPPORTC1 == 0 & OTHERSUPPORTC2 == 1 ~ "Family", 
@@ -663,6 +669,10 @@ LTM2 <- LTM2 %>%
 for(i in sn_cols){
   LTM2[[i]] <- ifelse(LTM2[[i]] == 0, 2, LTM2[[i]])
 }
+
+SourcesQ1 <- read.csv("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/SourcesQ1.csv")
+LTM2 <- LTM2 %>% 
+  left_join(SourcesQ1)
 
 # Exporting ----
 LTM2 <- as.data.frame(LTM2)

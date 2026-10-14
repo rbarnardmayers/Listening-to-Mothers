@@ -176,7 +176,7 @@ fig_compile_2 <- function(cols, others = c("RACE", "INSURANCE", "URBANICITY2"), 
   return(fig)
 }
 
-r_svysummary <- function(by = NULL, include, data = LTM_dsn){
+r_svysummary <- function(by = NULL, include, data = LTM_dsn, ...){
   t <- tbl_svysummary(data = data, 
                       missing = "ifany",
                       by = by, 
@@ -189,7 +189,8 @@ r_svysummary <- function(by = NULL, include, data = LTM_dsn){
                                        all_continuous() ~ "{mean} ({median})"),
                       
                       digits = list(all_categorical() ~ 3, 
-                                    all_continuous() ~ 1),
+                                    all_continuous() ~ 3),
+                      # type = list(include ~ "categorical"),
                       missing_stat = "{p_miss}"
                       )
   if(!is.null(by)){
@@ -206,6 +207,28 @@ r_svysummary <- function(by = NULL, include, data = LTM_dsn){
                                                               label_style_sigfig(digits = 4))) }
   return(t)
 }
+
+r_svysummary2 <- function(by = NULL, include, data = LTM_dsn, ...){
+  t <- tbl_svysummary(data = data, 
+                      missing = "ifany",
+                      by = by, 
+                      include = include, 
+                      statistic = list(#all_categorical() ~ "{p}%", 
+                        # all_categorical() ~ "{N_unweighted}; {p}%", 
+                        all_categorical() ~ "{p}%", 
+                        #all_continuous() ~ "{min}, {p25}, {median}, {p75}, {max}"),
+                        # all_continuous() ~ "{min},{mean}, {max}"),
+                        all_continuous() ~ "{mean} ({median})"),
+                      
+                      digits = list(all_categorical() ~ 3, 
+                                    all_continuous() ~ 3),
+                      # type = list(include ~ "categorical"),
+                      missing_stat = "{p_miss}"
+  )
+
+  return(t)
+}
+
 
 count_svysummary <- function(by = NULL, include, data = LTM_dsn){
   tbl_svysummary(data = data, 

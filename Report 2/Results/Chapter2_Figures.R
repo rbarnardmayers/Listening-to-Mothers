@@ -13,12 +13,12 @@ r_svysummary(include = c("INTERVAL_NUM_R"),
 
 # RACE INSURANCE DISABILITY RESPONSIBTIER
 
-r_svysummary(by = "RESPONSIBTIER", 
+r_svysummary(by = "RACE", 
              include = c("INTERVAL"), 
              data = filter(LTM_dsn, EMPLOY == "Yes, by someone else"))
 
 # up until a week (1 - 7), later (8+)
-r_svysummary(by = "RESPONSIBTIER", 
+r_svysummary(by = "RACE", 
              include = c("INTERVAL_7days"), 
              data = filter(LTM_dsn, EMPLOY == "Yes, by someone else"))
 
@@ -41,10 +41,11 @@ r_svysummary(by = "PRESSURE_A1",
              include = "UNPLANNED_VAG",
              data = filter(LTM_dsn, UNPLANNED_SCREEN == "Unplanned"))
 
-r_svysummary(include = "MEDINDUCE", 
-             data = filter(LTM_dsn, UNPLANNED_SCREEN == "Unplanned"))
+r_svysummary(by = "MEDINDUCE", 
+             include = "PRESSURE_A1",
+             data = filter(LTM_dsn, PARITY == "Nulliparous"))
 # PLANNEDFEEDC1 PLANNEDFEED PLANNEDFEED_ONLY
-r_svysummary(by = "PLANNEDFEED_ONLY", 
+r_svysummary(by = "PLANNEDFEEDC1", 
              include = "PRESSURE_A6")
 
 # RACE, INSURANCE, PRIOR_C, PARITY, DISABILITY2
@@ -63,6 +64,7 @@ r_svysummary(by = "MODE2INDEX",
 r_svysummary(#by = "PRESSURE_A5", 
              include = c("CSECTFEEL_POS", "CSECTFEEL_NEG", 'CSECTFEEL_ALL'), 
              data = filter(LTM_dsn, MODE1INDEX == "Cesarean all"))
+
 LTM_final %>% 
   subset(CSECTFEELC10O != "") %>%
   select(c(CSECTFEEL_ALL, CSECTFEEL_POS, CSECTFEEL_NEG, CSECTFEELC10, CSECTFEELC10O)) %>% 
@@ -73,6 +75,7 @@ r_svysummary(by = "MODE2INDEX",
              include = c("CSECTFEEL_POS", "CSECTFEEL_NEG", 'CSECTFEEL_ALL'), 
              data = filter(LTM_dsn, MODE1INDEX == "Cesarean all" & 
                              PARITY == "Multiparous"))
+
 # BIRTHVIEW_R CSECTIONTYPE PRESSURE_A5 MODE2INDEX
 r_svysummary(#by = "MODE2INDEX", 
              include = c("CSECTFEEL_POS", "CSECTFEEL_NEG"),
@@ -96,10 +99,9 @@ r_svysummary(include = c("MISTRUSTC1", 'MISTRUSTC2', 'MISTRUSTC3', 'MISTRUSTC4',
 
 # SAFETY
 # RACE INSURANCE MODE1INDEX DISABILITY RESPONSIBTIER
-r_svysummary(by = "RACE", 
+r_svysummary(by = "DISABILITY", 
              include = "NOSAFETY")
-r_svysummary(by = "RACE", 
-             include = "NOSAFETY2")
+
 
 # HOSPSAFE
 r_svysummary(include = c('HOSPSAFEC1', 'HOSPSAFEC2', 'HOSPSAFEC3', 'HOSPSAFEC4', 
@@ -120,7 +122,7 @@ r_svysummary(include = c('LACKSAFEC1', 'LACKSAFEC2', 'LACKSAFEC3', 'LACKSAFEC4',
 # SAFEBABY
 # NOSAFEBABY
 # RACE DISABILITY 
-r_svysummary(by = "DISABILITY", 
+r_svysummary(by = "RACE", 
              include = "NOSAFEBABY")
 
 # MISTREAT
@@ -149,8 +151,7 @@ r_svysummary(include = "INTENDLOCALE",
              data = filter(LTM_dsn, INTENDLOCALE != "I’d prefer not to answer" & 
                              INTENDLOCALE != "Yes"))
 # RACE INSURANCE DISABILITY PARITY URBANICITY2
-r_svysummary(by = "RACE", 
+r_svysummary(#by = "RACE", 
              include = "INTENDLOCALE_R", 
-             data = filter(LTM_dsn, INTENDLOCALE_R != "PNTA" & 
-                             INTENDLOCALE_R != "Other"))
+             data = filter(LTM_dsn, INTENDLOCALE_R != "PNTA"))
 

@@ -1,6 +1,7 @@
 # Data Dictionary Application
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 2/Cleaning/Data_Cleaning_3.R")
 
+
 # Data dictionary prep ----
 # Getting rid of columns with no conversion in dict
 dict3 <- dict3 %>% 
@@ -29,8 +30,9 @@ LTM_final <- LTM4 %>%
 continuous <- LTM_final %>% 
   select(c(
     # Continuous variables
-    PPDISTANCE, YEARBIRTH, BIRTHDATE_D, TIME_SINCE_BIRTH, DAYSHOSP, INTERVAL,WEIGHTGAIN_R, 
-    HOSPDISTANCE, STDLEAVE1, CURRWEIGHT_Q1, CURRWEIGHT_Q2, WEIGHTLOSS_Q2
+    PPDISTANCE, YEARBIRTH, BIRTHDATE_D, TIME_SINCE_BIRTH, DAYSHOSP, INTERVAL,
+    WEIGHTGAIN_R, BF_MONTHS, HOSPDISTANCE, STDLEAVE1, CURRWEIGHT_Q1,BFANY, 
+    CURRWEIGHT_Q2, WEIGHTLOSS_Q2, COSTMOM, COSTMOM1, BFEXC,WEAN
   )) %>% 
   colnames()
 
@@ -52,4 +54,5 @@ LTM_final <- LTM_final %>%
 
 LTM_dsn <- LTM_final %>%
   as_survey_design(weight = xFINALWT, id = 1)
-
+# FINALWT_q1_q2
+#  xFINALWT
