@@ -99,7 +99,9 @@ LTM3 <- LTM3 %>%
                                TRUE ~ MATHOSPC2),
          MATHOSPC3 = case_when(MATHOSPC3_R == 0 ~ 0,
                                MATHOSPC3_R == 1 ~ 1,
-                               TRUE ~ MATHOSPC3))
+                               TRUE ~ MATHOSPC3), 
+         MATHOSP_ANY = case_when(MATHOSPC2 == 1 | MATHOSPC3 == 1 ~ 1, 
+                                 TRUE ~ 0))
 
 LTM3 <- LTM3 %>% 
   left_join(Sources) %>% 

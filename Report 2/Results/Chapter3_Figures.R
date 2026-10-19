@@ -32,8 +32,8 @@ r_svysummary(by = "TIME_SINCE_BIRTH_HALF_2",
                              !is.na(WEIGHTLOSS_Q2)))
 
 # MATHOSP ----
-# RACE INSURANCE DISABILITY 
-r_svysummary(#by = "RACE",
+# RACE INSURANCE DISABILITY2
+r_svysummary(by = "RACE",
              include = c("MATHOSP_ANY", "MATHOSPC2", "MATHOSPC3"))
 
 r_svysummary(include = c("PTLEAVE"))
@@ -111,9 +111,15 @@ count_svysummary(include = "BFEXC_R2c",
                  data = filter(LTM_dsn, TIME_SINCE_BIRTH_MONTH >= 6))
 
 # BOND 
-# RACE INSURANCE DISABILITY
+# RACE INSURANCE DISABILITY2
 r_svysummary(by = "DISABILITY",
              include = "BOND_R")
+
+# PROBABLEPTSD
+# RACE, INSURANCE, MODE1INDEX DISABILITY2
+r_svysummary(by = "BIRTHATTEND_R", 
+             include = "PROBABLEPTSD_R", 
+             data = filter(LTM_dsn, MODE1INDEX == "Vaginal all"))
 
 # PROBABLEPTSD PHQ4_MH2WK_PSYCH PHQ4_MH2WK_ANX PHQ4_MH2WK_DEP
 # RESPONSIBTIER
@@ -162,9 +168,10 @@ r_svysummary(by = "PP_ANYSUPP",
              include = c("PHQ4_MH2WK_ANX"))
 
 # TRAUMA 
-# RACE INSURANCE MODE1INDEX BIRTHATTEND_R DISABILITY RESPONSIBTIER
-r_svysummary(by = "RESPONSIBTIER",
-             include = "MATTRAUMA")
+# RACE INSURANCE MODE1INDEX BIRTHATTEND_R DISABILITY2
+r_svysummary(by = "BIRTHATTEND_R",
+             include = "MATTRAUMA", 
+             data = filter(LTM_dsn, MODE1INDEX == "Vaginal all"))
 
 # BABYHEALTH
 # BABYHEALTHDET

@@ -256,6 +256,19 @@ raw_svysummary <- function(by = NULL, include, data = LTM_dsn){
                  missing_stat = "{p_miss}")
 }
 
+unweighted_svysummary <- function(by = NULL, include, data = LTM_dsn){
+  tbl_svysummary(data = data, 
+                 missing = "no",
+                 by = by, 
+                 include = include, 
+                 statistic = list(all_categorical() ~ "{p_unweighted}", 
+                                  all_continuous() ~ "{mean}"),
+                 
+                 digits = list(all_categorical() ~ 0, 
+                               all_continuous() ~ 1),
+                 missing_stat = "{p_miss}")
+}
+
 get_mode <- function(x) {
   ux <- unique(na.omit(x))
   ux[which.max(tabulate(match(x, ux)))]

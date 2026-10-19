@@ -1,3 +1,9 @@
+# TO DO ----
+# Pull UID2 from verbatim compendium to see if we can pull races for those individuals
+
+# 
+
+# Results ----
 # Run report 2 code but comment out line 7 (subset(MDID2))
 LTM_final <- LTM_final %>% 
   mutate(WHITE_HISP = case_when(RACEC1 == "White" & 
@@ -136,5 +142,18 @@ r_svysummary(include = c("RACEC1", "RACEC2", "RACEC3", "RACEC4",
 
 r_svysummary(include = c("WHITE_HISP", "WHITE_HISP_ONLY", "BLACKWHITE", "BLACKWHITE_ANY"),
              data = filter(LTM_dsn, RACE == "Multi"))
+
+# Across all questionnairres ----
+# unweighted_svysummary
+r_svysummary(include = c("AGE4", "BIRTHCOUNTRY", "PARITY", 
+                          "EDUCAT", "INSURCAT", "LEARNED2_TRI",
+                          "BIRTHATTEND", "MODE1INDEX", 
+                          "MODE2INDEX", "ASSISTED",
+                         "GESTAGE_TERM",
+                         "BW_CAT", "AROM_ANY"
+                         ), 
+             data = filter(LTM_dsn, RACE == "Black"))
+
+
 
 

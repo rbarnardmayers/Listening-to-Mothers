@@ -268,9 +268,6 @@ LTM2 <- LTM2 %>%
                                TIME_SINCE_BIRTH_MONTH >= 12 ~ "12+ months"),
          BOND_R = case_when(BOND > 1 & BOND < 5 ~ 1,
                             BOND == 1 ~ 0),
-         MATHOSP_ANY = case_when(MATHOSPC2 == 1 ~ 1, 
-                                 MATHOSPC3 == 1 ~ 1, 
-                                 TRUE ~ 0),
          MATER_ANY = case_when(MATERC2 == 1 ~ 1, 
                                MATERC3 == 1 ~ 1, 
                                TRUE ~ 0), 
@@ -532,6 +529,9 @@ LTM2 <- LTM2 %>%
                                 WICFEEDING_A3 == 1 ~ 1,
                                 WICFEEDING_A4 == 1 ~ 1,
                                 TRUE ~ 0),
+         CURRFEEDC1_R = case_when(CURRFEEDC1 == 1 ~ "Breast milk",
+                                  CURRFEEDC1 == 0 & Q2FIELD == 3 ~ "Not selected", 
+                                  CURRFEEDC1 == 0 & CURRENTFEEDC1 == 0 ~ "Not selected"),
          CURRFEED_ONLY = case_when(CURRFEEDC1 == 1 & CURRFEEDC2 == 0 & 
                                      CURRFEEDC3 == 0 & CURRFEEDC4 == 0 ~ "Breastmilk Only", 
                                    CURRFEEDC1 == 1 & (CURRFEEDC2 == 1 |
@@ -570,6 +570,12 @@ LTM2 <- LTM2 %>%
                                   ELSELEAVE1 == 4 ~ "Other relative",
                                   ELSELEAVE1 == 3 ~ "Other relative",
                                   ELSELEAVE1 %in% c(5,6,7) ~ "Other non-relative"),
+         STDLEAVE1_R = case_when(STDLEAVE1 < 60 ~ "< 60%",
+                               STDLEAVE1 < 81 ~ "60% - 80%",
+                               STDLEAVE1 >= 81 & STDLEAVE1 <= 100 ~ "81% - 100%"),
+         PAIDLEAVEPAY_R = case_when(PAIDLEAVEPAY < 60 ~ "< 60%",
+                                    PAIDLEAVEPAY < 81 ~ "60% - 80%",
+                               PAIDLEAVEPAY >= 81 & PAIDLEAVEPAY <= 100 ~ "81% - 100%"),
          SNAP_ANY = case_when(SNAPC1 == 1 ~ "SNAP", 
                               SNAPC2 == 1 ~ "SNAP", 
                               SNAPC3 == 1 ~ "NO SNAP"),
@@ -632,7 +638,12 @@ LTM2 <- LTM2 %>%
                                  EMPLOY == 3 & CURREMPLOY == 1 ~ "Recently employed",
                                  EMPLOY == 2 & CURREMPLOY == 1 ~ "Recently employed",
                                  WHOEMPLOY == 2 ~ "Changed employer", 
-                                 WHOEMPLOY == 1 ~ "Stayed with Employer")
+                                 WHOEMPLOY == 1 ~ "Stayed with Employer"),
+         FLEXLEAVE = as.numeric(FLEXLEAVE)/5, 
+         SICKLEAVE = as.numeric(SICKLEAVE)/5, 
+         VACLEAVE = as.numeric(VACLEAVE)/5,
+         PARTLEAVE = as.numeric(PARTLEAVE)/5,
+         ELSELEAVE = as.numeric(ELSELEAVE)/5 
          
   ) %>% 
   rowwise() %>% 
@@ -713,7 +724,9 @@ LTM2 <- LTM2 %>%
          RESOURCEVALUE2_A9R = case_when(RESOURCEVALUE2_A9 == 4 ~ "No Use", 
                                         RESOURCEVALUE2_A9 %in% c(1,2,3) ~ "Used"),
          RESOURCEVALUE2_A10R = case_when(RESOURCEVALUE2_A10 == 4 ~ "No Use", 
-                                         RESOURCEVALUE2_A10 %in% c(1,2,3) ~ "Used")
+                                         RESOURCEVALUE2_A10 %in% c(1,2,3) ~ "Used"),
+         PAIDLEAVETOTAL_R = sum(FLEXLEAVE, SICKLEAVE, VACLEAVE, 
+                                STDLEAVE, PAIDLEAVETIME, na.rm = T)
   )
 
 LTM2 <- LTM2 %>% 

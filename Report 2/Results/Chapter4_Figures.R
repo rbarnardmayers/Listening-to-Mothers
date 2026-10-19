@@ -55,12 +55,13 @@ r_svysummary(include = c("MATLEAVE_ONLY"),
                              EMPLOY == "Yes, by someone else" & 
                              MATLEAVEC5 == "Paid maternity/parental leave program (other than sick, vacation, flex, or short-term disability time)"))
 
-# STDLEAVE1
-r_svysummary(include = "xSTDLEAVE1", 
+# STDLEAVE1 STDLEAVE1_R
+r_svysummary(include = "STDLEAVE1_R", 
              data = filter(LTM_dsn, MATLEAVEC4 != "Not selected"))
 
-# PAIDLEAVEPAY
-r_svysummary(include = "xPAIDLEAVEPAY", 
+
+# PAIDLEAVEPAY_R
+r_svysummary(include = "PAIDLEAVEPAY_R", 
              data = filter(LTM_dsn, MATLEAVEC5 != "Not selected"))
 
 # DUTIES
@@ -74,11 +75,11 @@ r_svysummary(by = "EMPLOY",
                                                   "Yes, self-employed ")))
 
 # PARTEMPLOY
-# r_svysummary(by = )
-# PARTEMPLOY1
-r_svysummary(by = "INSURANCE", 
+# INSURANCE RACE
+r_svysummary(by = "RACE", 
              include = "PARTEMPLOY",
-             data = filter(LTM_dsn, MARRIED %in% c("Married", "Committed Partner")))
+             data = filter(LTM_dsn, MARRIED %in% c("Married", "Committed Partner") & 
+                             PARTEMPLOY != "I’d prefer not to answer"))
 # INSURANCE RACE
 r_svysummary(by = "RACE", 
              include = "PARTCURREMPLOY",
@@ -126,6 +127,7 @@ r_svysummary(include = c("PARTLEAVE_ONLY", "PARTLEAVE_SUM",
 # MATHOSP PAID LEAVE 
 # EMPLOYBEN CURREMPLOY EMPLOY PTLEAVE 
 # MATERINTY_LEAVE (selected maternity leave)
+# PAIDBENPN
 r_svysummary(by = "PTLEAVE",
              include = c("MATHOSP_ANY", "MATHOSPC2", "MATHOSPC3"))
 

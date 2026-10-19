@@ -32,7 +32,9 @@ continuous <- LTM_final %>%
     # Continuous variables
     PPDISTANCE, YEARBIRTH, BIRTHDATE_D, TIME_SINCE_BIRTH, DAYSHOSP, INTERVAL,
     WEIGHTGAIN_R, BF_MONTHS, HOSPDISTANCE, STDLEAVE1, CURRWEIGHT_Q1,BFANY, 
-    CURRWEIGHT_Q2, WEIGHTLOSS_Q2, COSTMOM, COSTMOM1, BFEXC,WEAN
+    CURRWEIGHT_Q2, WEIGHTLOSS_Q2, COSTMOM, COSTMOM1, BFEXC,WEAN, PAIDLEAVETOTAL,
+    FLEXLEAVE, SICKLEAVE, VACLEAVE, STDLEAVE, PAIDLEAVETIME, PAIDLEAVETOTAL_R, 
+    PARTLEAVE, ELSELEAVE2, PAIDLEAVEPAY
   )) %>% 
   colnames()
 
@@ -50,9 +52,9 @@ for (i in seq_len(nrow(dict2))) {
 }
 
 LTM_final <- LTM_final %>% 
-  mutate(xFINALWT = as.numeric(xFINALWT))
+  mutate(FINALWT_q1_q2 = as.numeric(FINALWT_q1_q2))
 
 LTM_dsn <- LTM_final %>%
-  as_survey_design(weight = xFINALWT, id = 1)
+  as_survey_design(weight = FINALWT_q1_q2, id = 1)
 # FINALWT_q1_q2
 #  xFINALWT

@@ -3,9 +3,9 @@ setwd("~/Documents/2025-2026/LTM")
 options(scipen = 999)
 
 # Data Read in &  Get rid of identifying information ----
-LTM <- read.csv("Data_FINAL12.csv") %>% 
-mutate(MDID2 = as.numeric(MDID2)) %>%
-  subset(!is.na(MDID2))
+LTM <- read.csv("Data_FINAL12.csv") #%>% 
+# mutate(MDID2 = as.numeric(MDID2)) %>%
+  # subset(!is.na(MDID2))
 
 LTM1 <- LTM %>% 
   mutate(MDID = as.character(MDID)) %>% 
@@ -92,6 +92,9 @@ LTM1 <- convert.miss(LTM1, c('THREATC1', 'SHOUTC1', 'SHAREPRIVC1',
                              'PARTLEAVETYPEC2', 'PARTLEAVETYPEC3', 'PARTLEAVETYPEC4', 
                              'PARTLEAVETYPEC5', 'PARTLEAVETYPEC6', 'PARTLEAVETYPEC7'), 99999)
 LTM1 <- convert.miss(LTM1, c('BFANY'), 9999)
+LTM1 <- convert.miss(LTM1, c('FLEXLEAVE', 'SICKLEAVE', 'VACLEAVE', "PAIDLEAVETIME", "STDLEAVE"), 99999)
+LTM1 <- convert.miss(LTM1, c('FLEXLEAVE', 'SICKLEAVE', 'VACLEAVE', "PAIDLEAVETIME", "STDLEAVE"),9999)
+
 # LTM1 <- convert.miss(LTM1, c("COSTMOM1"), 999999999999)
 # LTM1 <- convert.miss(LTM1, c("COSTMOM", "COSTMOM1"), 9999999)
 # LTM1 <- convert.miss(LTM1, c("COSTMOM", "COSTMOM1"), 9999998)
@@ -112,6 +115,8 @@ LTM2 <- LTM1 %>%
                                 GESTAGE_R_cont <= 40 ~ "Term", 
                                 GESTAGE_R_cont <= 41 ~ "Late Term", 
                                 GESTAGE_R_cont >= 42 ~ "Postterm"),
+         GESTAGE_TERM = case_when(GESTAGE_R_cont < 37 ~ "Preterm", 
+                                  GESTAGE_R_cont >= 37 ~ "Term"),
          HEIGHT = (HEIGHT_FEET*12) + HEIGHT_INCHES, 
          INCCAT2 = case_when(INCCAT == 5 | INCCAT == 6 ~ "$100,000+",
                              INCCAT == 4 | INCCAT == 3 ~ "$50,000 to $99,999",
@@ -198,6 +203,10 @@ LTM2 <- LTM1 %>%
          LEARNED1 = case_when(LEARNED1 == 99 ~ NA, 
                               is.na(LEARNED1) ~ NA,
                               TRUE ~ as.numeric(LEARNED1)), 
+         LEARNED2_TRI = case_when(LEARNED2 == 1 ~ "3rd Trimester or no prenatal care", 
+                                  LEARNED2 < 13 ~ "1st Trimester", 
+                                  LEARNED2 < 26 ~ "2nd Trimester", 
+                                  LEARNED2 >= 26 ~ "3rd Trimester or no prenatal care"),
          LEARNED2_R = case_when(LEARNED2 < 4 & LEARNED2 > 1 ~ "Less than 4 weeks",
                                 LEARNED2 < 7 ~ "4 to 6 weeks", 
                                 LEARNED2 < 9 ~ "7 to 8 weeks", 

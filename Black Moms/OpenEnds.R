@@ -1,27 +1,32 @@
 source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Report 1/Cleaning/ApplyDictionary.R")
 library(openxlsx)
 
+Verbatims <- read_excel("~/Desktop/Verbatims.xlsx")
+Verbatims <- Verbatims %>% select(c(MDID,UID2, WENTWELL, DIDNTGOWELL)) %>% mutate(UID2 = as.character(UID2))
+LTM_final <- LTM_final %>% mutate(UID2 = as.character(UID2)) %>%
+  full_join(Verbatims)
+
 path = "~/Documents/2025-2026/LTM/Listening-to-Mothers/Black Moms/AllOpenEnds.xlsx"
 
-# Edited_V_DIDNTGOWELL <- read.csv("~/Desktop/Edited V_DIDNTGOWELL.csv") %>% mutate(Respondent = as.character(Respondent))
-# Edited_V_WENTWELL <- read.csv("~/Desktop/Edited V_WENTWELL.csv") %>% mutate(Respondent = as.character(Respondent))
-Edited_V_ANYTHINGELSE <- read_excel(path, sheet = "Edited_V_ANYTHINGELSE") #%>% mutate(Respondent = as.character(Respondent))
-Edited_V_DISCRIMINATION1C18O <- read_excel(path, sheet = "Edited_V_DISCRIMINATION1C18O")
-Edited_V_DISCRIMINATION2O <- read_excel(path, sheet = "Edited_V_DISCRIMINATION2O")
-Edited_V_INDUCE6 <- read_excel(path, sheet = "Edited_V_INDUCE6")
-Edited_EDUCIMPACTC7O <-read_excel(path, sheet = "Edited_EDUCIMPACTC7O")
-Edited_NOPRENATALC13O <- read_excel(path, sheet = "Edited_NOPRENATALC13O")
-Edited_PLANNEDCO <-read_excel(path, sheet = "Edited_PLANNEDCO")
-Edited_V_MEDINDUCE3C8O <- read_excel(path, sheet = "Edited_V_MEDINDUCE3C8O")
-Edited_V_SELFINDUCE2C8O <-read_excel(path, sheet = "Edited_V_SELFINDUCE2C8O")
-Edited_WHYTELEC7O <- read_excel(path, sheet = "Edited_WHYTELEC7O")
-Edited_V_DOULA3 <- read_excel(path, sheet = "Edited_V_DOULA3")
+Edited_V_DIDNTGOWELL <- read_excel(path, sheet = "Edited_V_DIDNTGOWELL")
+Edited_V_WENTWELL <- read_excel(path, sheet = "Edited_V_WENTWELL") 
+# Edited_V_ANYTHINGELSE <- read_excel(path, sheet = "Edited_V_ANYTHINGELSE") #%>% mutate(Respondent = as.character(Respondent))
+# Edited_V_DISCRIMINATION1C18O <- read_excel(path, sheet = "Edited_V_DISCRIMINATION1C18O")
+# Edited_V_DISCRIMINATION2O <- read_excel(path, sheet = "Edited_V_DISCRIMINATION2O")
+# Edited_V_INDUCE6 <- read_excel(path, sheet = "Edited_V_INDUCE6")
+# Edited_EDUCIMPACTC7O <-read_excel(path, sheet = "Edited_EDUCIMPACTC7O")
+# Edited_NOPRENATALC13O <- read_excel(path, sheet = "Edited_NOPRENATALC13O")
+# Edited_PLANNEDCO <-read_excel(path, sheet = "Edited_PLANNEDCO")
+# Edited_V_MEDINDUCE3C8O <- read_excel(path, sheet = "Edited_V_MEDINDUCE3C8O")
+# Edited_V_SELFINDUCE2C8O <-read_excel(path, sheet = "Edited_V_SELFINDUCE2C8O")
+# Edited_WHYTELEC7O <- read_excel(path, sheet = "Edited_WHYTELEC7O")
+# Edited_V_DOULA3 <- read_excel(path, sheet = "Edited_V_DOULA3")
 
-collist_O <- c(#'Edited_V_DIDNTGOWELL', 'Edited_V_WENTWELL',
-  'Edited_V_ANYTHINGELSE',"Edited_V_DOULA3","Edited_V_DISCRIMINATION1C18O",
-  'Edited_V_DISCRIMINATION2O', 'Edited_V_INDUCE6', 'Edited_EDUCIMPACTC7O',
-  'Edited_NOPRENATALC13O', 'Edited_PLANNEDCO', 'Edited_V_MEDINDUCE3C8O',
-  'Edited_V_SELFINDUCE2C8O', 'Edited_WHYTELEC7O'
+collist_O <- c('Edited_V_DIDNTGOWELL', 'Edited_V_WENTWELL'#,
+               # 'Edited_V_ANYTHINGELSE',"Edited_V_DOULA3","Edited_V_DISCRIMINATION1C18O",
+               # 'Edited_V_DISCRIMINATION2O', 'Edited_V_INDUCE6', 'Edited_EDUCIMPACTC7O',
+               # 'Edited_NOPRENATALC13O', 'Edited_PLANNEDCO', 'Edited_V_MEDINDUCE3C8O',
+               # 'Edited_V_SELFINDUCE2C8O', 'Edited_WHYTELEC7O'
 )
 
 
@@ -70,7 +75,7 @@ for(i in collist_2){
 collist_3 <- paste0(collist_O, "_3")
 
 for(i in collist_O){
- 
+  
   dat <- get(paste0(i, "_2_3")) %>% 
     rename(Respondent = UID2) %>%
     relocate(colnames(get(i)))
@@ -104,12 +109,23 @@ for(name in collist_final){
   saveWorkbook(wb, path, overwrite = TRUE)
 }
 
+# WENTWELL DIDN'T GO WELL 
+WENTWELL_t <- LTM_final %>% select(c(MDID, UID2, RACE, RACEC1, RACEC2, RACEC3, 
+                                   RACEC4, RACEC5, RACEC6, RACEC7)) %>% 
+  right_join(Edited_V_WENTWELL, join_by( 'UID2' == 'Respondent'))
+WENTWELL_t2 <- Edited_V_WENTWELL %>% 
+  select(c(Respondent)) %>% 
+  left_join(select(LTM_final, c(UID2, WENTWELL)), by = join_by(Respondent == UID2))
+
+DIDNTGOWELL_t <- LTM_final %>% select(c(MDID, UID2, RACE, RACEC1, RACEC2, RACEC3, 
+                                     RACEC4, RACEC5, RACEC6, RACEC7)) %>% 
+  right_join(Edited_V_DIDNTGOWELL, join_by( 'UID2' == 'Respondent'))
+
+DIDNTGOWELL_t2 <- Edited_V_DIDNTGOWELL %>% 
+  select(c(Respondent)) %>% 
+  left_join(select(LTM_final, c(UID2, DIDNTGOWELL)), by = join_by(Respondent == UID2))
 
 
-# OLD -----
-LTM_final %>% 
-  subset(DISCRIMINATION2O != "") %>%
-  select(c(DISCRIMINATION2O, RACE, RACEALONE, RACEC1, RACEC2, RACEC3, 
-           RACEC4, RACEC5, RACEC6, RACEC7)) %>% 
-  View()
-
+setwd("~/Documents/2025-2026/LTM/Listening-to-Mothers/Black Moms")
+write.csv(WENTWELL_t, "WENTWELL.csv")
+write.csv(DIDNTGOWELL_t, "DIDNTGOWELL.csv")
