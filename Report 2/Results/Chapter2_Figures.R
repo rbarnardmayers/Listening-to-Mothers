@@ -49,7 +49,7 @@ r_svysummary(by = "PLANNEDFEEDC1",
              include = "PRESSURE_A6")
 
 # RACE, INSURANCE, PRIOR_C, PARITY, DISABILITY2
-r_svysummary(by = "PARITY", 
+r_svysummary(by = "RACE", 
              include = "PRESSURE_A5")
 
 r_svysummary(by = "MODE2INDEX", 
@@ -139,9 +139,20 @@ count_svysummary(include = c('THREATC3', "SHOUTC3", 'SHAREPRIVC3',
                              'FORCEDC3', 'WHOPRIVC3', 'WITHHELDC3',
                              'IGNOREC3', 'PABUSEC3'))
 
+r_svysummary(include = c('THREATC1', "SHOUTC1", 'SHAREPRIVC1',
+                             'FORCEDC1', 'WHOPRIVC1', 'WITHHELDC1',
+                             'IGNOREC1', 'PABUSEC1'), 
+                 data = filter(LTM_dsn, BIRTHATTEND2 == "All Doctors"))
+
+r_svysummary(include = c('THREATC2', "SHOUTC2", 'SHAREPRIVC2',
+                             'FORCEDC2', 'WHOPRIVC2', 'WITHHELDC2',
+                             'IGNOREC2', 'PABUSEC2'), 
+                 data = filter(LTM_dsn, BIRTHATTEND2 == "Midwife"))
+
 # By provider type
 r_svysummary(include = "ANYMISTREAT_MW", 
              data = filter(LTM_dsn, BIRTHATTEND2 == "All Doctors"))
+
 # BIRTHATTEND_R
 r_svysummary(by = "BIRTHATTEND2",
              include = c("ANYMISTREAT_OB", "ANYMISTREAT_MW", "ANYMISTREAT_N"))

@@ -123,16 +123,20 @@ LTM_final %>% filter(FTPTWORK_any == "Employed" &
 svymean(~COSTMOM, filter(LTM_dsn, BILLED_MOM_0 == "> $0"), na.rm = T)
 svymean(~COSTMOM1, filter(LTM_dsn, BILLED_MOM_0 == "> $0"), na.rm = T)
 
+r_svysummary(include = c("COSTMOM_R", "COSTMOM1_R", "COSTMOM_IDK", "PAIDMOM_IDK"),
+             data = filter(LTM_dsn, INSURANCE == "Private" )) 
+
 r_svysummary(include = c("COSTMOM", "COSTMOM1"),
-             data = filter(LTM_dsn, BILLED_MOM_0 == "> $0"))
+             data = filter(LTM_dsn, INSURANCE == "Private"  & 
+                             BILLED_MOM_0 == "> $0"))
 
 # Table 5.COSTBABY
-r_svysummary(include = c("COSTBABY_R", 
-                         "COSTBABY1_R"))
+r_svysummary(include = c("COSTBABY_R", "COSTBABY1_R", "COSTBABY_IDK", "PAIDBABY_IDK"),
+             data = filter(LTM_dsn, INSURANCE == "Private" )) 
 
 r_svysummary(include = c("COSTBABY", "COSTBABY1"),
-             data = filter(LTM_dsn, BILLED_BABY_0 == "> $0"))
-
+             data = filter(LTM_dsn, INSURANCE == "Private" & 
+                             BILLED_BABY_0 == "> $0"))
 
 LTM_dsn %>%
   filter(COSTBABY > 0) %>%
@@ -187,8 +191,8 @@ r_svysummary(by = "POLIT2",
              include = c("COVIDVACC_ANY"))
 
 # RESOURCE VALUE
-r_svysummary(include = c(paste0("RESOURCEVALUE_A", 1:12)))
-r_svysummary(include = c(paste0("RESOURCEVALUE2_A", 1:10)))
+r_svysummary(include = c(paste0("RESOURCEVALUE_A", 1:12), 
+                         paste0("RESOURCEVALUE2_A", 1:10)))
 
 r_svysummary(include = "RESOURCEVALUE_A1",
              data = filter(LTM_dsn, Q2FIELD == "Original Fielding"))

@@ -4,13 +4,13 @@ source("~/Documents/2025-2026/LTM/Listening-to-Mothers/Fig_Helpful_Functions.R")
 #HCQUAL 
 # RACE INSURANCE PARITY DISABILITY
 # URBANICITY2 BIRTHATTEND2 MODE1INDEX
-r_svysummary(by = "RACE",
+r_svysummary(#by = "RACE",
              include = "HCQUAL_R")
 
-r_svysummary(by = "MODE1INDEX",
+r_svysummary(#by = "MODE1INDEX",
              include = "QUALCARE_R")
 
-r_svysummary(include = c("HCQUAL", "QUALCARE"), 
+r_svysummary(include = c("HCQUAL_R", "QUALCARE_R"), 
              data = filter(LTM_dsn, Q2FIELD %in% c("Original Fielding", "Refield")))
 
 count_svysummary(#by = "HCQUAL",
@@ -391,11 +391,11 @@ r_svysummary(by = "RACE",
 r_svysummary(#by = "RACE", 
   include = "COVIDVACC2")
 # BABYVAC
-# RACE INSURANCE PARITY CURRREL_R URBANICITY2 POLIT2
+# RACE CURR_INSURANCE PARITY CURRREL_R URBANICITY2 POLIT2
 # CHILD_AGE
-r_svysummary(by = "CHILD_AGE",
+r_svysummary(by = "RACE",
              include = "BABYVAC", 
-             data = filter(LTM_dsn, TIME_SINCE_BIRTH_MONTH >= 6))
+             data = filter(LTM_dsn, TIME_SINCE_BIRTH_MONTH >= 12))
 
 
 # CLIMATE

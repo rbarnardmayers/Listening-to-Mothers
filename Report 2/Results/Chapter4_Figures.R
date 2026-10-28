@@ -15,6 +15,11 @@ r_svysummary(by = "PTLEAVE",
              include = "WORK_CHANGE")
 
 # MATLEAVE ----
+r_svysummary(include = c('FLEXLEAVE', 'SICKLEAVE', 'VACLEAVE', 
+                         'STDLEAVE', 'PAIDLEAVETIME', 'PAIDLEAVETOTAL_R'), 
+             data = filter(LTM_dsn, PTLEAVE == "Yes"))
+
+
 r_svysummary(include = c("MATLEAVEC1","MATLEAVEC2","MATLEAVEC3",
                          "MATLEAVEC4","MATLEAVEC5","MATLEAVEC6",
                          "MATLEAVEC7"), 
@@ -71,8 +76,17 @@ r_svysummary(include = "DUTIES",
                              Q2FIELD == "Original Fielding"))
 r_svysummary(by = "EMPLOY",
              include = "DUTIES", 
-             data = filter(LTM_dsn, CURRREL %in% c("Yes, by someone else",
+             data = filter(LTM_dsn, EMPLOY %in% c("Yes, by someone else",
                                                   "Yes, self-employed ")))
+# PARTLEAVE 
+r_svysummary(include = "PARTLEAVE_NONE", 
+             data = filter(LTM_dsn, 
+                           MARRIED %in% c("Married", "Committed Partner")))
+r_svysummary(include = "PARTLEAVE", 
+             data = filter(LTM_dsn, 
+                           MARRIED %in% c("Married", "Committed Partner") & 
+                             PARTLEAVE_NONE == "Some time off"))
+
 
 # PARTEMPLOY
 # INSURANCE RACE
@@ -84,6 +98,16 @@ r_svysummary(by = "RACE",
 r_svysummary(by = "RACE", 
              include = "PARTCURREMPLOY",
              data = filter(LTM_dsn, CURRREL_R %in% c("Married", "Committed Partner")))
+
+# PARTCURREMPLOY3
+# RACE 
+r_svysummary(#by = "CURREMPLOY", 
+  include = "PARTCURREMPLOY2", 
+  data = filter(LTM_dsn, 
+                CURRREL_R %in% c("Married", "Committed Partner") & 
+                PARTCURREMPLOY %in% c("Yes, by someone else",
+                                      "Yes, self-employed") & 
+                  PARTCURREMPLOY2 != "I’d prefer not to answer"))
 
 # PARTLEAVETYPE
 r_svysummary(#by = 'PARTEMPLOY', 
@@ -259,6 +283,10 @@ r_svysummary(by = "PTLEAVE",
                            EMPLOYLACT == "Yes, I needed support for lactation or breastfeeding"))
 
 
+# WORKWHILECARE
+r_svysummary(include = "WORKWHILECARE", 
+             data = filter(LTM_dsn, CURREMPLOY %in% c("Yes, for someone else",
+                                                      "Yes, I am self-employed")))
 
 # CHALLENGEWORK
 # CHALLENGEWORK_A1
@@ -274,11 +302,3 @@ r_svysummary(by = "POLIT2",
              include = "EMPLOYINTENT_R",
              data = filter(LTM_dsn, CURREMPLOY == "No"))
 
-# PARTCURREMPLOY3
-# RACE
-r_svysummary(by = "RACE", 
-             include = "PARTCURREMPLOY3", 
-             data = filter(LTM_dsn, 
-                           PARTCURREMPLOY %in% c("Yes, by someone else",
-                                                 "Yes, self-employed")))
-# CAREGIVE

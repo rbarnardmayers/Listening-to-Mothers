@@ -52,9 +52,9 @@ for (i in seq_len(nrow(dict2))) {
 }
 
 LTM_final <- LTM_final %>% 
-  mutate(FINALWT_q1_q2 = as.numeric(FINALWT_q1_q2))
+  mutate(xFINALWT = as.numeric(xFINALWT))
 
 LTM_dsn <- LTM_final %>%
-  as_survey_design(weight = FINALWT_q1_q2, id = 1)
+  as_survey_design(weight = xFINALWT, id = 1)
 # FINALWT_q1_q2
 #  xFINALWT

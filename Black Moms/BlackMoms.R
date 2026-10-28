@@ -1,7 +1,7 @@
 # TO DO ----
-# Pull UID2 from verbatim compendium to see if we can pull races for those individuals
+library(readxl)
+LTM_raw <- read_excel("~/Desktop/LTM Original Data/Q1 Unweighted.xlsx")
 
-# 
 
 # Results ----
 # Run report 2 code but comment out line 7 (subset(MDID2))
@@ -145,15 +145,22 @@ r_svysummary(include = c("WHITE_HISP", "WHITE_HISP_ONLY", "BLACKWHITE", "BLACKWH
 
 # Across all questionnairres ----
 # unweighted_svysummary
-r_svysummary(include = c("AGE4", "BIRTHCOUNTRY", "PARITY", 
+unweighted_svysummary(include = c("AGE4", "BIRTHCOUNTRY", "PARITY", 
                           "EDUCAT", "INSURCAT", "LEARNED2_TRI",
                           "BIRTHATTEND", "MODE1INDEX", 
                           "MODE2INDEX", "ASSISTED",
                          "GESTAGE_TERM",
-                         "BW_CAT", "AROM_ANY"
-                         ), 
+                         "BW_CAT", "AROM_ANY", 
+                         "DISABILITY", "INCCAT", "URBANICITY2"), 
              data = filter(LTM_dsn, RACE == "Black"))
 
+# DATA CHECKING ----
+r_svysummary(include = "LABCSEC", 
+             data = filter(LTM_dsn, RACE == "Black" & CSECTIONTYPE == "Unplanned"))
+
+r_svysummary(by = "RACE", 
+             include = "LABCSEC", 
+             data = filter(LTM_dsn, CSECTIONTYPE == "Unplanned"))
 
 
 

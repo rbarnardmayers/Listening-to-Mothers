@@ -110,16 +110,60 @@ for(name in collist_final){
 }
 
 # WENTWELL DIDN'T GO WELL 
-WENTWELL_t <- LTM_final %>% select(c(MDID, UID2, RACE, RACEC1, RACEC2, RACEC3, 
+WENTWELL_t <- LTM_raw %>% select(c(MDID, UID, RACEC1, RACEC2, RACEC3, 
                                    RACEC4, RACEC5, RACEC6, RACEC7)) %>% 
-  right_join(Edited_V_WENTWELL, join_by( 'UID2' == 'Respondent'))
-WENTWELL_t2 <- Edited_V_WENTWELL %>% 
-  select(c(Respondent)) %>% 
-  left_join(select(LTM_final, c(UID2, WENTWELL)), by = join_by(Respondent == UID2))
+  mutate(RACE = case_when(RACEC1 == 1 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 &
+                            RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "White",
+                          RACEC1 == 0 & RACEC2 == 1 & RACEC3 == 0 & RACEC4 == 0 &
+                            RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "Latina",
+                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 1 & RACEC4 == 0 &
+                            RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "Black",
+                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 1 &
+                            RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "Asian",
+                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 &
+                            RACEC5 == 1 & RACEC6 == 0 & RACEC7 == 0 ~ "AIAN/NHPI",
+                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 &
+                            RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 1 ~ "AIAN/NHPI",
+                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 &
+                            RACEC5 == 0 & RACEC6 == 1 & RACEC7 == 0 ~ "MENA",
+                          TRUE ~ "Multi"),
+         RACEC1 = case_when(RACEC1 == 1 ~ "White"), 
+         RACEC2 = case_when(RACEC2 == 1 ~ "Latina"),
+         RACEC3 = case_when(RACEC3 == 1 ~ "Black"), 
+         RACEC4 = case_when(RACEC4 == 1 ~ "Asian"),
+         RACEC5 = case_when(RACEC5 == 1 ~ "AIAN"),
+         RACEC6 = case_when(RACEC6 == 1 ~ "MENA"),
+         RACEC7 = case_when(RACEC7 == 1 ~ "NHPI"),
+         ) %>% 
+  right_join(Edited_V_WENTWELL, join_by( 'UID' == 'Respondent'))
 
-DIDNTGOWELL_t <- LTM_final %>% select(c(MDID, UID2, RACE, RACEC1, RACEC2, RACEC3, 
-                                     RACEC4, RACEC5, RACEC6, RACEC7)) %>% 
-  right_join(Edited_V_DIDNTGOWELL, join_by( 'UID2' == 'Respondent'))
+DIDNTGOWELL_t <- LTM_raw %>% select(c(MDID, UID, RACEC1, RACEC2, RACEC3, 
+                                     RACEC4, RACEC5, RACEC6, RACEC7)) %>%  
+  select(c(MDID, UID, RACEC1, RACEC2, RACEC3, RACEC4, RACEC5, RACEC6, RACEC7)) %>% 
+  mutate(RACE = case_when(RACEC1 == 1 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 &
+                            RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "White",
+                          RACEC1 == 0 & RACEC2 == 1 & RACEC3 == 0 & RACEC4 == 0 &
+                            RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "Latina",
+                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 1 & RACEC4 == 0 &
+                            RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "Black",
+                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 1 &
+                            RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 0 ~ "Asian",
+                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 &
+                            RACEC5 == 1 & RACEC6 == 0 & RACEC7 == 0 ~ "AIAN/NHPI",
+                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 &
+                            RACEC5 == 0 & RACEC6 == 0 & RACEC7 == 1 ~ "AIAN/NHPI",
+                          RACEC1 == 0 & RACEC2 == 0 & RACEC3 == 0 & RACEC4 == 0 &
+                            RACEC5 == 0 & RACEC6 == 1 & RACEC7 == 0 ~ "MENA",
+                          TRUE ~ "Multi"),
+         RACEC1 = case_when(RACEC1 == 1 ~ "White"), 
+         RACEC2 = case_when(RACEC2 == 1 ~ "Latina"),
+         RACEC3 = case_when(RACEC3 == 1 ~ "Black"), 
+         RACEC4 = case_when(RACEC4 == 1 ~ "Asian"),
+         RACEC5 = case_when(RACEC5 == 1 ~ "AIAN"),
+         RACEC6 = case_when(RACEC6 == 1 ~ "MENA"),
+         RACEC7 = case_when(RACEC7 == 1 ~ "NHPI"),
+  ) %>% 
+  right_join(Edited_V_DIDNTGOWELL, join_by( 'UID' == 'Respondent'))
 
 DIDNTGOWELL_t2 <- Edited_V_DIDNTGOWELL %>% 
   select(c(Respondent)) %>% 

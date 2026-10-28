@@ -3,9 +3,9 @@ setwd("~/Documents/2025-2026/LTM")
 options(scipen = 999)
 
 # Data Read in &  Get rid of identifying information ----
-LTM <- read.csv("Data_FINAL12.csv") #%>% 
-# mutate(MDID2 = as.numeric(MDID2)) %>%
-  # subset(!is.na(MDID2))
+LTM <- read.csv("Data_FINAL12.csv") %>% 
+mutate(MDID2 = as.numeric(MDID2)) %>%
+  subset(!is.na(MDID2))
 
 LTM1 <- LTM %>% 
   mutate(MDID = as.character(MDID)) %>% 
@@ -71,7 +71,20 @@ LTM1 <- convert.miss(LTM1, c('RESPECT', 'KNOWLEDGE', 'HEARD',
                              'TIMELINESS', 'TRUST', 'FEEDING',
                              'SAFE', 'DISCRIMINATION', 'NEGLECT',
                              'WICFEEDING_A1', 'WICFEEDING_A2', 
-                             'WICFEEDING_A3', 'WICFEEDING_A4','WEAN_MONTHS'), 99)
+                             'WICFEEDING_A3', 'WICFEEDING_A4','WEAN_MONTHS', 
+                             "RESOURCEVALUE_A1",  "RESOURCEVALUE_A2" ,
+                             "RESOURCEVALUE_A3" ,"RESOURCEVALUE_A4", 
+                             "RESOURCEVALUE_A5" , "RESOURCEVALUE_A6" ,
+                             "RESOURCEVALUE_A7" , "RESOURCEVALUE_A8", 
+                             "RESOURCEVALUE_A9" ,
+                             "RESOURCEVALUE_A10", "RESOURCEVALUE_A11", 
+                             "RESOURCEVALUE_A12", 
+                             "RESOURCEVALUE2_A1",  "RESOURCEVALUE2_A2" ,
+                             "RESOURCEVALUE2_A3" ,"RESOURCEVALUE2_A4", 
+                             "RESOURCEVALUE2_A5" , "RESOURCEVALUE2_A6" ,
+                             "RESOURCEVALUE2_A7" , "RESOURCEVALUE2_A8", 
+                             "RESOURCEVALUE2_A9" ,
+                             "RESOURCEVALUE2_A10" ), 99)
 LTM1 <- convert.miss(LTM1, c("TIMELINESS"), 97)
 LTM1 <- convert.miss(LTM1, c('WICFEEDING_A1', 'WICFEEDING_A2', 
                              'WICFEEDING_A3', 'WICFEEDING_A4'), 98)
@@ -87,13 +100,14 @@ LTM1 <- convert.miss(LTM1, c('THREATC1', 'SHOUTC1', 'SHAREPRIVC1',
                              'TRAUMADETC4', 'TRAUMADETC5', 'TRAUMADETC6', 'BFANY',
                              'TRAUMADETC7','WICFEEDING_A1', 'WICFEEDING_A2',"BFEXC", 
                              'WICFEEDING_A3', 'WICFEEDING_A4', "MATLEAVEC1",
-                             "MATLEAVEC2","MATLEAVEC3", "MATLEAVEC4","WEAN",
+                             "MATLEAVEC2","MATLEAVEC3", "MATLEAVEC4","WEAN","PARTLEAVE",
                              "MATLEAVEC5","MATLEAVEC6", "MATLEAVEC7", 'PARTLEAVETYPEC1',
                              'PARTLEAVETYPEC2', 'PARTLEAVETYPEC3', 'PARTLEAVETYPEC4', 
-                             'PARTLEAVETYPEC5', 'PARTLEAVETYPEC6', 'PARTLEAVETYPEC7'), 99999)
-LTM1 <- convert.miss(LTM1, c('BFANY'), 9999)
-LTM1 <- convert.miss(LTM1, c('FLEXLEAVE', 'SICKLEAVE', 'VACLEAVE', "PAIDLEAVETIME", "STDLEAVE"), 99999)
-LTM1 <- convert.miss(LTM1, c('FLEXLEAVE', 'SICKLEAVE', 'VACLEAVE', "PAIDLEAVETIME", "STDLEAVE"),9999)
+                             'PARTLEAVETYPEC5', 'PARTLEAVETYPEC6', 'PARTLEAVETYPEC7',
+                             'FLEXLEAVE', 'SICKLEAVE', 'VACLEAVE', "PAIDLEAVETIME", 
+                             "STDLEAVE"), 99999)
+LTM1 <- convert.miss(LTM1, c('BFANY', "PARTLEAVE", 'FLEXLEAVE', 'SICKLEAVE',
+                             'VACLEAVE', "PAIDLEAVETIME", "STDLEAVE"),9999)
 
 # LTM1 <- convert.miss(LTM1, c("COSTMOM1"), 999999999999)
 # LTM1 <- convert.miss(LTM1, c("COSTMOM", "COSTMOM1"), 9999999)
@@ -122,6 +136,10 @@ LTM2 <- LTM1 %>%
                              INCCAT == 4 | INCCAT == 3 ~ "$50,000 to $99,999",
                              INCCAT == 2 ~ "$25,000 to $49,999",
                              INCCAT == 1 ~ "Less than $25,000"), 
+         
+         CHC = case_when(CARESETTINGC3 == 1 ~ "Community Health Center/DPH",
+                         CARESETTINGC4 == 1 ~ "Community Health Center/DPH",
+                         TRUE ~ "Neither"),
          AGE_ATBIRTH = floor(as.numeric(AGE) - (GESTAGE_R_cont/52)),
          PREPREG_WEIGHT_A1 = case_when(PREPREG_WEIGHT_A1 == 99999 ~ NA, 
                                        TRUE ~ as.numeric(PREPREG_WEIGHT_A1)),

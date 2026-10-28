@@ -152,8 +152,8 @@ r_svysummary(include = c("COUNSELBARRC1", 'COUNSELBARRC2', 'COUNSELBARRC3',
                            COUNSELINT == "Yes"))
 
 # PPMEDS
-# RACE, INSURANCE, URBANICITY2, DISABILITY, PARITY, MODE1INDEX
-r_svysummary(by = "RACE",
+# RACE, INSURANCE, URBANICITY2, DISABILITY, PARITY, MODE1INDEX, AGE4
+r_svysummary(by = "URBANICITY2",
              include = c("PP_SUPP_ONLY"),
              data = filter(LTM_dsn, 
                            MH2WK_ANXDEP == 1))
